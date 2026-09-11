@@ -23,6 +23,12 @@ export const dataProvider: DataProvider = {
             params.set('status', String(filter.value));
           } else if (filter.field === 'brand') {
             params.set('brand', String(filter.value));
+          } else if (filter.field === 'roast_level') {
+            params.set('roast_level', String(filter.value));
+          } else if (filter.field === 'process_method') {
+            params.set('process_method', String(filter.value));
+          } else if (filter.field === 'estate_name') {
+            params.set('estate_name', String(filter.value));
           }
         }
       }
@@ -99,3 +105,40 @@ export const dataProvider: DataProvider = {
 
   getApiUrl: () => API_URL,
 };
+
+export async function getCatalogFacets(): Promise<import('../types/product').CatalogFacets> {
+  const res = await fetch(`${API_URL}/products/facets`);
+  if (!res.ok) throw new Error('Failed to fetch catalog facets');
+  return res.json();
+}
+
+export async function publishProduct(id: string): Promise<import('../types/product').Product> {
+  const res = await fetch(`${API_URL}/products/${id}/publish`, { method: 'POST' });
+  if (!res.ok) throw new Error(`Failed to publish product ${id}`);
+  return res.json();
+}
+
+export async function archiveProduct(id: string): Promise<import('../types/product').Product> {
+  const res = await fetch(`${API_URL}/products/${id}/archive`, { method: 'POST' });
+  if (!res.ok) throw new Error(`Failed to archive product ${id}`);
+  return res.json();
+}
+
+export async function searchByDimensions(params: {
+  max_height_cm?: number;
+  max_width_cm?: number;
+  max_depth_cm?: number;
+  category?: string;
+  exclude_id?: string;
+}): Promise<import('../types/product').Product[]> {
+  const q = new URLSearchParams();
+  if (params.max_height_cm) q.set('max_height_cm', String(params.max_height_cm));
+  if (params.max_width_cm) q.set('max_width_cm', String(params.max_width_cm));
+  if (params.max_depth_cm) q.set('max_depth_cm', String(params.max_depth_cm));
+  if (params.category) q.set('category', params.category);
+  if (params.exclude_id) q.set('exclude_id', params.exclude_id);
+
+  const res = await fetch(`${API_URL}/products/search/by-dimensions?${q.toString()}`);
+  if (!res.ok) throw new Error('Failed to search products by dimensions');
+  return res.json();
+}

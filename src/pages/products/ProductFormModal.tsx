@@ -21,13 +21,15 @@ export function ProductFormModal({ isOpen, onClose, onSubmit, initialData, mode 
   const [name, setName] = useState('');
   const [sku, setSku] = useState('');
   const [brand, setBrand] = useState('Hiljhil Roasters');
-  const [category, setCategory] = useState('coffee_beans');
+  const [category, setCategory] = useState('single_estate');
   const [status, setStatus] = useState<'active' | 'draft' | 'archived'>('active');
   const [price, setPrice] = useState(550);
   const [compareAtPrice, setCompareAtPrice] = useState<number | ''>('');
   const [inStock, setInStock] = useState(true);
   const [badge, setBadge] = useState('');
-  const [taxCategory, setTaxCategory] = useState('coffee_beans');
+  const [taxCategory, setTaxCategory] = useState('single_estate');
+
+  const isCoffee = ['single_estate', 'producer_series', 'blends', 'coffee_beans'].includes(category);
   
   // Dimensions & Clearances
   const [widthCm, setWidthCm] = useState(10);
@@ -57,13 +59,13 @@ export function ProductFormModal({ isOpen, onClose, onSubmit, initialData, mode 
       setName(initialData.name || '');
       setSku(initialData.sku || '');
       setBrand(initialData.brand || 'Hiljhil Roasters');
-      setCategory(initialData.category || 'coffee_beans');
+      setCategory(initialData.category || 'single_estate');
       setStatus(initialData.status || 'active');
       setPrice(initialData.price || 0);
       setCompareAtPrice(initialData.compare_at_price ?? '');
       setInStock(initialData.in_stock ?? true);
       setBadge(initialData.badge || '');
-      setTaxCategory(initialData.tax_category || 'coffee_beans');
+      setTaxCategory(initialData.tax_category || 'single_estate');
       setWidthCm(initialData.width_cm || 0);
       setHeightCm(initialData.height_cm || 0);
       setDepthCm(initialData.depth_cm || 0);
@@ -75,36 +77,44 @@ export function ProductFormModal({ isOpen, onClose, onSubmit, initialData, mode 
       setCutoutUrl(initialData.cutout_url || '');
       setDescription(initialData.description || '');
 
+      // Direct coffee attributes
+      if (initialData.roast_level) setRoastLevel(initialData.roast_level);
+      if (initialData.estate_name) setEstate(initialData.estate_name);
+      if (initialData.process_method) setProcess(initialData.process_method);
+      if (initialData.elevation_m) setAltitude(`${initialData.elevation_m} MASL`);
+
       // Parse taste notes
-      if (initialData.taste_notes_json) {
+      if (Array.isArray(initialData.taste_notes) && initialData.taste_notes.length > 0) {
+        setTasteNotes(initialData.taste_notes);
+      } else if (initialData.taste_notes_json) {
         try {
           const parsed = JSON.parse(initialData.taste_notes_json);
           if (Array.isArray(parsed)) setTasteNotes(parsed);
         } catch {}
       }
 
-      // Parse specs JSON
+      // Parse specs JSON fallback
       if (initialData.specs_json) {
         try {
           const specs = JSON.parse(initialData.specs_json);
-          if (specs.RoastLevel || specs['Roast Level']) setRoastLevel(specs.RoastLevel || specs['Roast Level']);
-          if (specs.Estate || specs.Origin) setEstate(specs.Estate || specs.Origin);
-          if (specs.Altitude) setAltitude(specs.Altitude);
-          if (specs.Process) setProcess(specs.Process);
+          if (!initialData.roast_level && (specs.RoastLevel || specs['Roast Level'])) setRoastLevel(specs.RoastLevel || specs['Roast Level']);
+          if (!initialData.estate_name && (specs.Estate || specs.Origin)) setEstate(specs.Estate || specs.Origin);
+          if (!initialData.elevation_m && specs.Altitude) setAltitude(specs.Altitude);
+          if (!initialData.process_method && specs.Process) setProcess(specs.Process);
         } catch {}
       }
     } else {
       // Reset for create
       setName('');
-      setSku(`HJ-${Date.now().toString().slice(-6)}`);
+      setSku('');
       setBrand('Hiljhil Roasters');
-      setCategory('coffee_beans');
+      setCategory('single_estate');
       setStatus('active');
       setPrice(550);
       setCompareAtPrice('');
       setInStock(true);
       setBadge('NEW');
-      setTaxCategory('coffee_beans');
+      setTaxCategory('single_estate');
       setWidthCm(10);
       setHeightCm(20);
       setDepthCm(6);
@@ -143,8 +153,8 @@ export function ProductFormModal({ isOpen, onClose, onSubmit, initialData, mode 
       setActiveTab('identity');
       return;
     }
-    if (!sku.trim()) {
-      setError('SKU is required');
+    if (mode === 'edit' && !sku.trim()) {
+      setError('SKU is required when editing');
       setActiveTab('identity');
       return;
     }
@@ -153,7 +163,7 @@ export function ProductFormModal({ isOpen, onClose, onSubmit, initialData, mode 
     setError(null);
 
     const specsObj: Record<string, string> = {};
-    if (category === 'coffee_beans') {
+    if (category === 'coffee_beans' || category === 'single_estate' || category === 'producer_series' || category === 'blends') {
       if (estate) specsObj['Estate'] = estate;
       if (altitude) specsObj['Altitude'] = altitude;
       if (roastLevel) specsObj['Roast Level'] = roastLevel;
@@ -167,7 +177,7 @@ export function ProductFormModal({ isOpen, onClose, onSubmit, initialData, mode 
 
     const payload: Partial<Product> = {
       name: name.trim(),
-      sku: sku.trim().toUpperCase(),
+      sku: sku.trim() ? sku.trim().toUpperCase() : undefined,
       brand: brand.trim(),
       category,
       status,
@@ -186,6 +196,10 @@ export function ProductFormModal({ isOpen, onClose, onSubmit, initialData, mode 
       image_url: imageUrl.trim() || null,
       cutout_url: cutoutUrl.trim() || null,
       description: description.trim() || null,
+      roast_level: roastLevel ? roastLevel.toLowerCase().replace(/[^a-z0-9]+/g, '_').replace(/^_+|_+$/g, '') : null,
+      process_method: process ? process.toLowerCase().replace(/[^a-z0-9]+/g, '_').replace(/^_+|_+$/g, '') : null,
+      estate_name: estate || null,
+      taste_notes: tasteNotes,
       taste_notes_json: JSON.stringify(tasteNotes),
       specs_json: JSON.stringify(specsObj),
     };
@@ -257,7 +271,7 @@ export function ProductFormModal({ isOpen, onClose, onSubmit, initialData, mode 
             2. Pricing & Stock
           </button>
 
-          {category === 'coffee_beans' && (
+          {isCoffee && (
             <button
               type="button"
               onClick={() => setActiveTab('coffee')}
@@ -282,7 +296,7 @@ export function ProductFormModal({ isOpen, onClose, onSubmit, initialData, mode 
             }`}
           >
             <Ruler className="w-4 h-4" />
-            {category === 'coffee_beans' ? '4. Package Size' : '3. CounterCheck™ Clearances'}
+            {isCoffee ? '4. Package Size' : '3. CounterCheck™ Clearances'}
           </button>
 
           <button
@@ -324,15 +338,22 @@ export function ProductFormModal({ isOpen, onClose, onSubmit, initialData, mode 
               </div>
 
               <div className="space-y-1.5">
-                <label className="text-xs font-bold text-slate-700">SKU (Stock Keeping Unit) *</label>
+                <label className="text-xs font-bold text-slate-700">
+                  SKU (Stock Keeping Unit) {mode === 'edit' && '*'}
+                </label>
                 <input
                   type="text"
                   value={sku}
                   onChange={(e) => setSku(e.target.value.toUpperCase())}
-                  placeholder="e.g. HJ-BAARBARA-250"
+                  placeholder={mode === 'create' ? 'Leave blank to auto-generate (e.g. HJ-BAARBARA-250)' : 'e.g. HJ-BAARBARA-250'}
                   className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm focus:outline-hidden focus:ring-2 focus:ring-amber-800/20 focus:border-amber-800 uppercase font-mono"
-                  required
+                  required={mode === 'edit'}
                 />
+                {mode === 'create' && (
+                  <span className="text-[11px] text-slate-400 block">
+                    Optional: Leave blank for automated SKU generation (Format: HJ-DESCRIPTOR-SIZE)
+                  </span>
+                )}
               </div>
 
               <div className="space-y-1.5">
@@ -341,7 +362,7 @@ export function ProductFormModal({ isOpen, onClose, onSubmit, initialData, mode 
                   type="text"
                   value={brand}
                   onChange={(e) => setBrand(e.target.value)}
-                  placeholder="e.g. Hiljhil Roasters or Breville"
+                  placeholder="e.g. Hiljhil Roasters"
                   className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm focus:outline-hidden focus:ring-2 focus:ring-amber-800/20 focus:border-amber-800"
                 />
               </div>
@@ -353,13 +374,14 @@ export function ProductFormModal({ isOpen, onClose, onSubmit, initialData, mode 
                   onChange={(e) => setCategory(e.target.value)}
                   className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm focus:outline-hidden focus:ring-2 focus:ring-amber-800/20 focus:border-amber-800 bg-white"
                 >
-                  <option value="coffee_beans">Specialty Coffee Beans</option>
+                  <option value="single_estate">Single Estate (Terroir-specific)</option>
+                  <option value="producer_series">Producer Series (Limited nano-lots)</option>
+                  <option value="blends">Artisan Roaster Blends</option>
+                  <option value="equipment">CounterCheck™ Equipment & Brewing Gear</option>
+                  <option value="coffee_beans">Specialty Coffee Beans (General)</option>
                   <option value="espresso_machine">Espresso Machines</option>
                   <option value="grinder">Burr Grinders</option>
-                  <option value="brewing_gear">Brewing Equipment</option>
                   <option value="drinkware">Barista Drinkware & Accessories</option>
-                  <option value="stand_mixer">Stand Mixers</option>
-                  <option value="air_fryer">Air Fryers</option>
                 </select>
               </div>
 
@@ -468,7 +490,7 @@ export function ProductFormModal({ isOpen, onClose, onSubmit, initialData, mode 
           )}
 
           {/* TAB 3: COFFEE ROASTERY SPECS */}
-          {activeTab === 'coffee' && category === 'coffee_beans' && (
+          {activeTab === 'coffee' && isCoffee && (
             <div className="space-y-5">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                 <div className="space-y-1.5">

@@ -12,10 +12,12 @@ import {
   Layers,
   AlertCircle,
   CheckCircle2,
+  Archive,
+  Globe,
 } from 'lucide-react';
 import { Product } from '../../types/product';
 import { ProductFormModal } from './ProductFormModal';
-import { dataProvider } from '../../providers/dataProvider';
+import { dataProvider, publishProduct, archiveProduct } from '../../providers/dataProvider';
 
 export function ProductList() {
   const [products, setProducts] = useState<Product[]>([]);
@@ -106,17 +108,42 @@ export function ProductList() {
     }
   };
 
-  const handleDeleteProduct = async (prod: Product) => {
+  const handlePublishProduct = async (prod: Product) => {
+    try {
+      await publishProduct(prod.id);
+      showToast(`Published "${prod.name}" to storefront`);
+      fetchProducts();
+    } catch (err: any) {
+      console.error('Failed to publish product', err);
+      showToast(`Publish failed: ${err.message}`);
+    }
+  };
+
+  const handleArchiveProduct = async (prod: Product) => {
     if (window.confirm(`Are you sure you want to archive "${prod.name}"?`)) {
+      try {
+        await archiveProduct(prod.id);
+        showToast(`Archived "${prod.name}"`);
+        fetchProducts();
+      } catch (err: any) {
+        console.error('Failed to archive product', err);
+        showToast(`Archive failed: ${err.message}`);
+      }
+    }
+  };
+
+  const handleDeleteProduct = async (prod: Product) => {
+    if (window.confirm(`Are you sure you want to permanently delete "${prod.name}"?`)) {
       try {
         await dataProvider.deleteOne({
           resource: 'products',
           id: prod.id,
         });
-        showToast(`Archived "${prod.name}"`);
+        showToast(`Deleted "${prod.name}"`);
         fetchProducts();
-      } catch (err) {
+      } catch (err: any) {
         console.error('Failed to delete', err);
+        showToast(`Delete failed: ${err.message}`);
       }
     }
   };
@@ -135,8 +162,8 @@ export function ProductList() {
 
   // Metrics
   const totalCount = products.length;
-  const coffeeCount = products.filter((p) => p.category === 'coffee_beans').length;
-  const gearCount = products.filter((p) => p.category !== 'coffee_beans').length;
+  const coffeeCount = products.filter((p) => p.category !== 'equipment').length;
+  const gearCount = products.filter((p) => p.category === 'equipment').length;
   const inStockCount = products.filter((p) => p.in_stock).length;
 
   return (
@@ -166,7 +193,7 @@ export function ProductList() {
             <Coffee className="w-4 h-4 text-amber-700" />
           </div>
           <p className="text-2xl font-serif font-black text-amber-950">{coffeeCount}</p>
-          <span className="text-[11px] text-slate-400">Single estate & dark roasts</span>
+          <span className="text-[11px] text-slate-400">Single estate, producer series & blends</span>
         </div>
 
         <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-2xs space-y-1">
@@ -175,7 +202,7 @@ export function ProductList() {
             <Ruler className="w-4 h-4 text-slate-500" />
           </div>
           <p className="text-2xl font-serif font-black text-slate-900">{gearCount}</p>
-          <span className="text-[11px] text-slate-400">Machines & burr grinders</span>
+          <span className="text-[11px] text-slate-400">Machines & brew gear</span>
         </div>
 
         <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-2xs space-y-1">
@@ -223,11 +250,10 @@ export function ProductList() {
           <div className="flex flex-wrap gap-1.5 text-xs font-bold">
             {[
               { id: 'all', label: 'All Products' },
-              { id: 'coffee_beans', label: 'Coffee Beans' },
-              { id: 'espresso_machine', label: 'Espresso Machines' },
-              { id: 'grinder', label: 'Grinders' },
-              { id: 'brewing_gear', label: 'Brewing Equipment' },
-              { id: 'drinkware', label: 'Drinkware' },
+              { id: 'single_estate', label: 'Single Estate' },
+              { id: 'producer_series', label: 'Producer Series' },
+              { id: 'blends', label: 'Artisan Blends' },
+              { id: 'equipment', label: 'Equipment & Gear' },
             ].map((cat) => (
               <button
                 key={cat.id}
@@ -315,9 +341,34 @@ export function ProductList() {
                             <span className="font-bold text-slate-900 block leading-tight text-xs">
                               {prod.name}
                             </span>
-                            <span className="text-[11px] text-slate-400 font-mono">
+                            <span className="text-[11px] text-slate-400 font-mono block">
                               SKU: {prod.sku} • {prod.brand}
                             </span>
+                            {/* Specialty Coffee Terroir & Notes */}
+                            {prod.category !== 'equipment' && (
+                              <div className="flex flex-wrap items-center gap-1 mt-1">
+                                {prod.estate_name && (
+                                  <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[9px] font-semibold bg-stone-100 text-stone-700">
+                                    {prod.estate_name}
+                                  </span>
+                                )}
+                                {prod.roast_level && (
+                                  <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[9px] font-semibold bg-amber-50 text-amber-900 border border-amber-200/60">
+                                    {prod.roast_level}
+                                  </span>
+                                )}
+                                {prod.process_method && (
+                                  <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[9px] font-semibold bg-emerald-50 text-emerald-800">
+                                    {prod.process_method}
+                                  </span>
+                                )}
+                                {Array.isArray(prod.taste_notes) && prod.taste_notes.length > 0 && (
+                                  <span className="text-[9px] text-amber-700 font-medium italic">
+                                    ♪ {prod.taste_notes.slice(0, 3).join(', ')}
+                                  </span>
+                                )}
+                              </div>
+                            )}
                           </div>
                         </div>
                       </td>
@@ -325,7 +376,7 @@ export function ProductList() {
                       {/* Category */}
                       <td className="py-3 px-4">
                         <span className="px-2.5 py-1 rounded-full text-[10px] font-bold bg-slate-100 text-slate-700 uppercase tracking-wider">
-                          {prod.category.replace('_', ' ')}
+                          {prod.category.replace(/_/g, ' ')}
                         </span>
                       </td>
 
@@ -374,9 +425,9 @@ export function ProductList() {
                         </button>
                       </td>
 
-                      {/* Dimensions & Clearance */}
+                      {/* Dimensions & Package Specs */}
                       <td className="py-3 px-4">
-                        {prod.category !== 'coffee_beans' && prod.height_cm > 0 ? (
+                        {prod.category === 'equipment' && prod.height_cm > 0 ? (
                           <div className="text-[11px] space-y-0.5">
                             <span className="text-slate-700 font-semibold block">
                               {prod.width_cm} × {prod.height_cm} × {prod.depth_cm} cm
@@ -385,8 +436,17 @@ export function ProductList() {
                               Headroom: {totalHeight.toFixed(1)} cm
                             </span>
                           </div>
+                        ) : prod.weight_kg ? (
+                          <div className="text-[11px] space-y-0.5">
+                            <span className="text-slate-700 font-semibold block">
+                              {Math.round(prod.weight_kg * 1000)}g bag
+                            </span>
+                            <span className="text-slate-400 text-[10px] block">
+                              {prod.width_cm > 0 ? `${prod.width_cm}×${prod.height_cm}cm pack` : 'Standard pouch'}
+                            </span>
+                          </div>
                         ) : (
-                          <span className="text-slate-400 text-[11px]">—</span>
+                          <span className="text-slate-400 text-[11px]">250g / 1kg pouch</span>
                         )}
                       </td>
 
@@ -404,6 +464,30 @@ export function ProductList() {
                             <ExternalLink className="w-4 h-4" />
                           </a>
 
+                          {/* Quick Publish */}
+                          {prod.status !== 'active' && (
+                            <button
+                              type="button"
+                              onClick={() => handlePublishProduct(prod)}
+                              title="Publish SKU to live catalog"
+                              className="p-1.5 rounded-lg text-emerald-600 hover:text-emerald-700 hover:bg-emerald-50 transition-colors"
+                            >
+                              <Globe className="w-4 h-4" />
+                            </button>
+                          )}
+
+                          {/* Quick Archive */}
+                          {prod.status !== 'archived' && (
+                            <button
+                              type="button"
+                              onClick={() => handleArchiveProduct(prod)}
+                              title="Archive SKU"
+                              className="p-1.5 rounded-lg text-amber-700 hover:text-amber-800 hover:bg-amber-50 transition-colors"
+                            >
+                              <Archive className="w-4 h-4" />
+                            </button>
+                          )}
+
                           {/* Edit Button */}
                           <button
                             type="button"
@@ -414,11 +498,11 @@ export function ProductList() {
                             <Edit2 className="w-4 h-4" />
                           </button>
 
-                          {/* Delete / Archive Button */}
+                          {/* Delete Button */}
                           <button
                             type="button"
                             onClick={() => handleDeleteProduct(prod)}
-                            title="Archive SKU"
+                            title="Delete Product"
                             className="p-1.5 rounded-lg text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition-colors"
                           >
                             <Trash2 className="w-4 h-4" />
