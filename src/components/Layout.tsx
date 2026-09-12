@@ -3,8 +3,8 @@ import { Header } from './Header';
 
 interface LayoutProps {
   children: React.ReactNode;
-  activeTab?: 'products' | 'lanes';
-  onSelectTab?: (tab: 'products' | 'lanes') => void;
+  activeTab?: 'products' | 'cms';
+  onSelectTab?: (tab: 'products' | 'cms') => void;
 }
 
 export function Layout({ children, activeTab, onSelectTab }: LayoutProps) {

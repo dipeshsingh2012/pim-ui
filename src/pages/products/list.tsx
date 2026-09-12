@@ -307,7 +307,7 @@ export function ProductList() {
               {loading ? (
                 <tr>
                   <td colSpan={7} className="py-12 text-center text-slate-400">
-                    Loading catalog from product-catalog-service (:8001)...
+                    Loading catalog from product-catalog-service...
                   </td>
                 </tr>
               ) : products.length === 0 ? (

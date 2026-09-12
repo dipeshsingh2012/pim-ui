@@ -627,7 +627,7 @@ export function LaneFormModal({
               <div className="p-4 border-b border-slate-200 flex items-center justify-between bg-slate-50">
                 <div className="flex items-center gap-2">
                   <Package className="w-4 h-4 text-amber-700" />
-                  <span className="text-sm font-bold text-slate-900">Select Product from Catalog (:8001)</span>
+                  <span className="text-sm font-bold text-slate-900">Select Product from Catalog</span>
                 </div>
                 <button
                   type="button"

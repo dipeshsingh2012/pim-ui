@@ -134,7 +134,7 @@ export function LaneList() {
         <div>
           <div className="flex items-center gap-2">
             <span className="px-2.5 py-0.5 text-[10px] font-black uppercase tracking-wider rounded-md bg-amber-100 text-amber-900 border border-amber-300">
-              CONTENT SERVICE :8006
+              CONTENT SERVICE
             </span>
             <span className="text-xs font-semibold text-slate-500">• Experience CMS</span>
           </div>
@@ -142,7 +142,7 @@ export function LaneList() {
             Storefront Product & Category Lanes
           </h1>
           <p className="text-xs text-slate-500 mt-1 max-w-xl">
-            Configure circular card sliders, bestseller rails, and curated collections published to Hiljhil Cafe landing and discovery pages.
+            Configure circular card sliders, bestseller rails, and curated collections published to storefront landing and discovery pages.
           </p>
         </div>
 
@@ -216,7 +216,7 @@ export function LaneList() {
       {loading ? (
         <div className="bg-white rounded-3xl p-12 text-center border border-slate-200">
           <div className="w-8 h-8 border-3 border-amber-800 border-t-transparent rounded-full animate-spin mx-auto mb-3" />
-          <p className="text-xs text-slate-500">Loading content lanes from :8006...</p>
+          <p className="text-xs text-slate-500">Loading content lanes...</p>
         </div>
       ) : lanes.length === 0 ? (
         <div className="bg-white rounded-3xl p-12 text-center border border-slate-200">

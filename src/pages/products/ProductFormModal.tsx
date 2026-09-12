@@ -20,7 +20,7 @@ export function ProductFormModal({ isOpen, onClose, onSubmit, initialData, mode 
   // Form state
   const [name, setName] = useState('');
   const [sku, setSku] = useState('');
-  const [brand, setBrand] = useState('Hiljhil Roasters');
+  const [brand, setBrand] = useState('Artisan Roasters');
   const [category, setCategory] = useState('single_estate');
   const [status, setStatus] = useState<'active' | 'draft' | 'archived'>('active');
   const [price, setPrice] = useState(550);
@@ -58,7 +58,7 @@ export function ProductFormModal({ isOpen, onClose, onSubmit, initialData, mode 
     if (initialData && mode === 'edit') {
       setName(initialData.name || '');
       setSku(initialData.sku || '');
-      setBrand(initialData.brand || 'Hiljhil Roasters');
+      setBrand(initialData.brand || 'Artisan Roasters');
       setCategory(initialData.category || 'single_estate');
       setStatus(initialData.status || 'active');
       setPrice(initialData.price || 0);
@@ -107,7 +107,7 @@ export function ProductFormModal({ isOpen, onClose, onSubmit, initialData, mode 
       // Reset for create
       setName('');
       setSku('');
-      setBrand('Hiljhil Roasters');
+      setBrand('Artisan Roasters');
       setCategory('single_estate');
       setStatus('active');
       setPrice(550);
@@ -124,7 +124,7 @@ export function ProductFormModal({ isOpen, onClose, onSubmit, initialData, mode 
       setRearClearanceCm(0);
       setImageUrl('https://images.unsplash.com/photo-1587734195503-904fca47e0e9?w=800&auto=format&fit=crop&q=80');
       setCutoutUrl('');
-      setDescription('Single origin specialty harvest batch-roasted fresh weekly at Hiljhil Roasters.');
+      setDescription('Single origin specialty harvest batch-roasted fresh weekly at Artisan Roasters.');
       setTasteNotes(['Hazelnut', 'Dark Chocolate', 'Caramel']);
       setRoastLevel('Medium');
       setEstate('Attikan Estate, BR Hills');
@@ -362,7 +362,7 @@ export function ProductFormModal({ isOpen, onClose, onSubmit, initialData, mode 
                   type="text"
                   value={brand}
                   onChange={(e) => setBrand(e.target.value)}
-                  placeholder="e.g. Hiljhil Roasters"
+                  placeholder="e.g. Artisan Roasters"
                   className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm focus:outline-hidden focus:ring-2 focus:ring-amber-800/20 focus:border-amber-800"
                 />
               </div>

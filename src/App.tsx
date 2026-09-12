@@ -3,10 +3,10 @@ import { Refine } from '@refinedev/core';
 import { dataProvider } from './providers/dataProvider';
 import { Layout } from './components/Layout';
 import { ProductList } from './pages/products/list';
-import { LaneList } from './pages/lanes/list';
+import { CmsStudio } from './pages/cms';
 
 export function App() {
-  const [activeTab, setActiveTab] = useState<'products' | 'lanes'>('products');
+  const [activeTab, setActiveTab] = useState<'products' | 'cms'>('products');
 
   return (
     <Refine
@@ -23,7 +23,7 @@ export function App() {
       ]}
     >
       <Layout activeTab={activeTab} onSelectTab={setActiveTab}>
-        {activeTab === 'products' ? <ProductList /> : <LaneList />}
+        {activeTab === 'products' ? <ProductList /> : <CmsStudio />}
       </Layout>
     </Refine>
   );

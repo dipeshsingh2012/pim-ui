@@ -3,8 +3,8 @@ import { Coffee, ExternalLink, Activity, Sparkles, Layers, Package } from 'lucid
 import { CATALOG_API_URL, CONTENT_API_URL } from '../providers/dataProvider';
 
 interface HeaderProps {
-  activeTab?: 'products' | 'lanes';
-  onSelectTab?: (tab: 'products' | 'lanes') => void;
+  activeTab?: 'products' | 'cms';
+  onSelectTab?: (tab: 'products' | 'cms') => void;
 }
 
 const STOREFRONT_URL = import.meta.env.VITE_STOREFRONT_URL || '';
@@ -15,7 +15,7 @@ export function Header({ activeTab = 'products', onSelectTab }: HeaderProps) {
 
   useEffect(() => {
     if (CATALOG_API_URL) {
-      fetch(`${CATALOG_API_URL}/health`, { signal: AbortSignal.timeout(2500) })
+      fetch(`${CATALOG_API_URL}/health`, { signal: AbortSignal.timeout(8000) })
         .then((res) => (res.ok ? setCatalogOk(true) : setCatalogOk(false)))
         .catch(() => setCatalogOk(false));
     } else {
@@ -23,7 +23,7 @@ export function Header({ activeTab = 'products', onSelectTab }: HeaderProps) {
     }
 
     if (CONTENT_API_URL) {
-      fetch(`${CONTENT_API_URL}/health`, { signal: AbortSignal.timeout(2500) })
+      fetch(`${CONTENT_API_URL}/health`, { signal: AbortSignal.timeout(8000) })
         .then((res) => (res.ok ? setContentOk(true) : setContentOk(false)))
         .catch(() => setContentOk(false));
     } else {
@@ -43,7 +43,7 @@ export function Header({ activeTab = 'products', onSelectTab }: HeaderProps) {
             <div>
               <div className="flex items-center gap-2">
                 <span className="font-serif font-bold text-slate-900 tracking-tight text-lg">
-                  Hiljhil Cafe PIM
+                  Commerce PIM & CMS
                 </span>
                 <span className="px-2 py-0.5 text-[10px] font-black uppercase tracking-wider rounded-md bg-amber-100 text-amber-900 border border-amber-300">
                   MERCHANT COCKPIT
@@ -72,17 +72,17 @@ export function Header({ activeTab = 'products', onSelectTab }: HeaderProps) {
               </button>
               <button
                 type="button"
-                onClick={() => onSelectTab('lanes')}
+                onClick={() => onSelectTab('cms')}
                 className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
-                  activeTab === 'lanes'
+                  activeTab === 'cms'
                     ? 'bg-white text-slate-900 shadow-xs border border-slate-200/80'
                     : 'text-slate-600 hover:text-slate-900 hover:bg-slate-200/60'
                 }`}
               >
                 <Layers className="w-3.5 h-3.5 text-amber-700" />
-                <span>Product Lanes (CMS)</span>
+                <span>Experience CMS</span>
                 <span className="px-1.5 py-0.2 text-[9px] font-black rounded-full bg-amber-600 text-white">
-                  NEW
+                  STUDIO
                 </span>
               </button>
             </nav>
@@ -99,7 +99,7 @@ export function Header({ activeTab = 'products', onSelectTab }: HeaderProps) {
               }`}
             />
             <span className="text-slate-600 font-mono">
-              Catalog :8001 {catalogOk ? '✓' : '✗'}
+              Catalog API {catalogOk ? '✓' : '✗'}
             </span>
           </div>
 
@@ -111,7 +111,7 @@ export function Header({ activeTab = 'products', onSelectTab }: HeaderProps) {
               }`}
             />
             <span className="text-slate-600 font-mono">
-              Content :8006 {contentOk ? '✓' : '✗'}
+              Content CMS {contentOk ? '✓' : '✗'}
             </span>
           </div>
 

@@ -1,7 +1,16 @@
 import type { DataProvider } from '@refinedev/core';
 
-export const CATALOG_API_URL = import.meta.env.VITE_CATALOG_API_URL || '';
-export const CONTENT_API_URL = import.meta.env.VITE_CONTENT_API_URL || '';
+const DEFAULT_CATALOG_URL = 'https://product-catalog-service-518971663061.us-central1.run.app';
+const DEFAULT_CONTENT_URL = 'https://content-service-518971663061.us-central1.run.app';
+
+function normalizeApiUrl(rawUrl: string | undefined, defaultUrl: string): string {
+  const url = rawUrl && rawUrl.trim() !== '' ? rawUrl.trim() : defaultUrl;
+  const cleaned = url.replace(/\/+$/, '');
+  return cleaned.endsWith('/api/v1') ? cleaned : `${cleaned}/api/v1`;
+}
+
+export const CATALOG_API_URL = normalizeApiUrl(import.meta.env.VITE_CATALOG_API_URL, DEFAULT_CATALOG_URL);
+export const CONTENT_API_URL = normalizeApiUrl(import.meta.env.VITE_CONTENT_API_URL, DEFAULT_CONTENT_URL);
 export const API_URL = CATALOG_API_URL; // Backwards compatibility alias
 
 const FALLBACK_PIM_PRODUCTS: any[] = [
@@ -31,9 +40,9 @@ const FALLBACK_PIM_PRODUCTS: any[] = [
     taste_notes: ['Espresso', 'Microfoam', 'Touchscreen'],
   },
   {
-    id: 'prod_hiljhil_guji',
+    id: 'prod_artisan_guji',
     name: 'Ethiopian Guji Single Origin (250g)',
-    brand: 'Hiljhil Roasters',
+    brand: 'Artisan Roasters',
     sku: 'ETH-GUJ-250',
     category: 'coffee_beans',
     price: 22.0,
@@ -157,7 +166,7 @@ export const dataProvider: DataProvider = {
     if (baseUrl) {
       try {
         const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 3000);
+        const timeoutId = setTimeout(() => controller.abort(), 10000);
         const response = await fetch(`${baseUrl}/${resource}?${params.toString()}`, { signal: controller.signal });
         clearTimeout(timeoutId);
         if (response.ok) {
@@ -184,7 +193,7 @@ export const dataProvider: DataProvider = {
     if (baseUrl) {
       try {
         const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 3000);
+        const timeoutId = setTimeout(() => controller.abort(), 10000);
         const response = await fetch(`${baseUrl}/${resource}/${id}`, { signal: controller.signal });
         clearTimeout(timeoutId);
         if (response.ok) {
@@ -271,7 +280,7 @@ export const dataProvider: DataProvider = {
 export async function getCatalogFacets(): Promise<import('../types/product').CatalogFacets> {
   if (CATALOG_API_URL) {
     try {
-      const res = await fetch(`${CATALOG_API_URL}/products/facets`, { signal: AbortSignal.timeout(3000) });
+      const res = await fetch(`${CATALOG_API_URL}/products/facets`, { signal: AbortSignal.timeout(10000) });
       if (res.ok) return await res.json();
     } catch {
       // Fall through
@@ -279,7 +288,7 @@ export async function getCatalogFacets(): Promise<import('../types/product').Cat
   }
   return {
     categories: ['coffee_beans', 'espresso_machine', 'grinder', 'cafe_menu'],
-    brands: ['Hiljhil Roasters', 'Breville', "De'Longhi"],
+    brands: ['Artisan Roasters', 'Breville', "De'Longhi"],
     roast_levels: ['Light', 'Medium Light', 'Medium', 'Medium Dark', 'Dark Espresso'],
     process_methods: ['Washed', 'Natural', 'Pulp Sun-Dried', 'Honey'],
     estates: ['Shakiso Highlands', 'Kalledevarapura Estate'],
@@ -292,7 +301,7 @@ export async function getCatalogFacets(): Promise<import('../types/product').Cat
 export async function publishProduct(id: string): Promise<import('../types/product').Product> {
   if (CATALOG_API_URL) {
     try {
-      const res = await fetch(`${CATALOG_API_URL}/products/${id}/publish`, { method: 'POST', signal: AbortSignal.timeout(3000) });
+      const res = await fetch(`${CATALOG_API_URL}/products/${id}/publish`, { method: 'POST', signal: AbortSignal.timeout(10000) });
       if (res.ok) return await res.json();
     } catch {
       // Fall through
@@ -305,7 +314,7 @@ export async function publishProduct(id: string): Promise<import('../types/produ
 export async function archiveProduct(id: string): Promise<import('../types/product').Product> {
   if (CATALOG_API_URL) {
     try {
-      const res = await fetch(`${CATALOG_API_URL}/products/${id}/archive`, { method: 'POST', signal: AbortSignal.timeout(3000) });
+      const res = await fetch(`${CATALOG_API_URL}/products/${id}/archive`, { method: 'POST', signal: AbortSignal.timeout(10000) });
       if (res.ok) return await res.json();
     } catch {
       // Fall through
@@ -331,7 +340,7 @@ export async function searchByDimensions(params: {
       if (params.category) q.set('category', params.category);
       if (params.exclude_id) q.set('exclude_id', params.exclude_id);
 
-      const res = await fetch(`${CATALOG_API_URL}/products/search/by-dimensions?${q.toString()}`, { signal: AbortSignal.timeout(3000) });
+      const res = await fetch(`${CATALOG_API_URL}/products/search/by-dimensions?${q.toString()}`, { signal: AbortSignal.timeout(10000) });
       if (res.ok) return await res.json();
     } catch {
       // Fall through
