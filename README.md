@@ -52,7 +52,7 @@
 * **Media & Brand Story:** High-resolution product image URL with instant live thumbnail preview, optional cutout PNG, and roastery story copy.
 
 ### 3. Storefront Integration
-* Direct **"Preview in Storefront"** action on every product row, opening the canonical Next.js Product Detail Page (`http://localhost:5170/product/[id]`) in a new tab.
+* Direct **"Preview in Storefront"** action on every product row, opening the canonical Next.js Product Detail Page (`${VITE_STOREFRONT_URL}/product/[id]`) in a new tab.
 
 ---
 
@@ -61,7 +61,7 @@
 ### Prerequisites
 * **Node.js** >= 18.0.0
 * **npm** >= 9.0.0
-* **`product-catalog-service`** running on `http://localhost:8001`
+* **`product-catalog-service`** running on port `8001` (optional; mock data used if offline)
 
 ### Installation
 ```bash
@@ -78,7 +78,7 @@ npm install
 # Start the Vite development server (Port 5180)
 npm run dev
 ```
-Open **`http://localhost:5180`** in your browser.
+Open port **`5180`** in your browser.
 
 ### Production Build
 ```bash
@@ -95,8 +95,8 @@ npm run preview
 
 | Variable | Default Value | Description |
 | :--- | :--- | :--- |
-| `VITE_CATALOG_API_URL` | `http://localhost:8001/api/v1` | Base REST API URL of `product-catalog-service` |
-| `VITE_STOREFRONT_URL` | `http://localhost:5170` | Canonical URL of `mycommerce` storefront |
+| `VITE_CATALOG_API_URL` | `''` (Offline simulated fallback) | Base REST API URL of `product-catalog-service` |
+| `VITE_STOREFRONT_URL` | `''` (Relative `/`) | Canonical URL of `mycommerce` storefront |
 
 ---
 
