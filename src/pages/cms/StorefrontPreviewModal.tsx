@@ -8,11 +8,14 @@ import {
   Coffee,
   Search,
   ShoppingBag,
-  Ruler,
   Star,
   CheckCircle2,
   ChevronRight,
   ArrowRight,
+  Globe,
+  Layers,
+  RotateCw,
+  Lock,
 } from 'lucide-react';
 import { CMSPage, GlobalShellConfig, ThemeColor } from '../../types/cms';
 
@@ -59,8 +62,22 @@ export function StorefrontPreviewModal({
 }: StorefrontPreviewModalProps) {
   if (!isOpen || !page) return null;
 
+  const [previewMode, setPreviewMode] = useState<'iframe' | 'simulator'>('iframe');
   const [viewport, setViewport] = useState<'desktop' | 'tablet' | 'mobile'>('desktop');
-  const STOREFRONT_URL = import.meta.env.VITE_STOREFRONT_URL || 'http://localhost:5170';
+  const [iframeKey, setIframeKey] = useState<number>(0);
+  const [isLoadingIframe, setIsLoadingIframe] = useState<boolean>(true);
+
+  const DEFAULT_DEPLOYED_URL = 'https://mycommerce.vercel.app';
+  const [storefrontBaseUrl, setStorefrontBaseUrl] = useState<string>(() => {
+    return (
+      localStorage.getItem('pim_storefront_url') ||
+      import.meta.env.VITE_STOREFRONT_URL ||
+      DEFAULT_DEPLOYED_URL
+    );
+  });
+
+  const [urlInputValue, setUrlInputValue] = useState<string>('');
+  const [isEditingUrl, setIsEditingUrl] = useState<boolean>(false);
 
   const viewportWidths = {
     desktop: 'max-w-6xl',
@@ -68,71 +85,138 @@ export function StorefrontPreviewModal({
     mobile: 'max-w-sm',
   };
 
+  const getTargetUrl = (base = storefrontBaseUrl) => {
+    const cleanBase = base.replace(/\/$/, '');
+    const slug = page.slug || '/';
+    if (slug === '/' || slug === '#/' || slug === '#') {
+      return `${cleanBase}/#/`;
+    }
+    if (slug.startsWith('#')) {
+      return `${cleanBase}/${slug}`;
+    }
+    return `${cleanBase}/#${slug.startsWith('/') ? slug : `/${slug}`}`;
+  };
+
+  const currentUrl = getTargetUrl(storefrontBaseUrl);
+
+  const handleUpdateStorefrontBaseUrl = (newBase: string) => {
+    let trimmed = newBase.trim();
+    if (!trimmed) return;
+    if (!trimmed.startsWith('http://') && !trimmed.startsWith('https://')) {
+      trimmed = `https://${trimmed}`;
+    }
+    try {
+      const parsed = new URL(trimmed);
+      trimmed = `${parsed.protocol}//${parsed.host}`;
+    } catch {}
+    setStorefrontBaseUrl(trimmed);
+    localStorage.setItem('pim_storefront_url', trimmed);
+    setIsEditingUrl(false);
+    setIsLoadingIframe(true);
+    setIframeKey((k) => k + 1);
+  };
+
   const activeSections = page.sections.filter((s) => s.is_active);
 
   return (
     <div className="fixed inset-0 z-50 flex flex-col bg-slate-950/80 backdrop-blur-sm">
       {/* Top Controller Bar */}
-      <div className="bg-slate-900 border-b border-slate-800 px-6 py-3 flex items-center justify-between text-white shrink-0">
+      <div className="bg-slate-900 border-b border-slate-800 px-6 py-3 flex flex-wrap items-center justify-between text-white shrink-0 gap-4">
+        {/* Left: Title & Page Tag */}
         <div className="flex items-center gap-3">
           <div className="flex items-center gap-2">
             <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse"></span>
-            <span className="font-bold text-sm">Storefront Live Preview</span>
+            <span className="font-bold text-sm">Storefront Preview</span>
           </div>
-          <span className="text-xs px-2 py-0.5 rounded bg-slate-800 text-amber-300 font-mono">
+          <span className="text-xs px-2.5 py-1 rounded-lg bg-slate-800 text-amber-300 font-mono border border-slate-700">
             {page.title} ({page.slug})
           </span>
         </div>
 
-        {/* Viewport Switcher */}
-        <div className="flex items-center gap-1 bg-slate-800 p-1 rounded-xl border border-slate-700">
-          <button
-            type="button"
-            onClick={() => setViewport('desktop')}
-            className={`p-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
-              viewport === 'desktop' ? 'bg-amber-800 text-white' : 'text-slate-400 hover:text-white'
-            }`}
-            title="Desktop 100%"
-          >
-            <Monitor className="w-4 h-4" />
-          </button>
-          <button
-            type="button"
-            onClick={() => setViewport('tablet')}
-            className={`p-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
-              viewport === 'tablet' ? 'bg-amber-800 text-white' : 'text-slate-400 hover:text-white'
-            }`}
-            title="Tablet (768px)"
-          >
-            <Tablet className="w-4 h-4" />
-          </button>
-          <button
-            type="button"
-            onClick={() => setViewport('mobile')}
-            className={`p-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
-              viewport === 'mobile' ? 'bg-amber-800 text-white' : 'text-slate-400 hover:text-white'
-            }`}
-            title="Mobile (390px)"
-          >
-            <Smartphone className="w-4 h-4" />
-          </button>
+        {/* Center: Mode Switcher & Viewport Switcher */}
+        <div className="flex items-center gap-3">
+          {/* Mode Switcher */}
+          <div className="flex items-center bg-slate-950 p-1 rounded-xl border border-slate-800">
+            <button
+              type="button"
+              onClick={() => setPreviewMode('iframe')}
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                previewMode === 'iframe'
+                  ? 'bg-amber-800 text-white shadow-xs'
+                  : 'text-slate-400 hover:text-white'
+              }`}
+              title="Live Storefront via iframe"
+            >
+              <Globe className="w-3.5 h-3.5" />
+              <span>Live Storefront (iFrame)</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => setPreviewMode('simulator')}
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                previewMode === 'simulator'
+                  ? 'bg-amber-800 text-white shadow-xs'
+                  : 'text-slate-400 hover:text-white'
+              }`}
+              title="Interactive CMS Simulator canvas"
+            >
+              <Layers className="w-3.5 h-3.5" />
+              <span>CMS Simulator</span>
+            </button>
+          </div>
+
+          {/* Viewport Switcher */}
+          <div className="flex items-center gap-1 bg-slate-800 p-1 rounded-xl border border-slate-700">
+            <button
+              type="button"
+              onClick={() => setViewport('desktop')}
+              className={`p-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                viewport === 'desktop' ? 'bg-amber-800 text-white' : 'text-slate-400 hover:text-white'
+              }`}
+              title="Desktop View (100%)"
+            >
+              <Monitor className="w-4 h-4" />
+            </button>
+            <button
+              type="button"
+              onClick={() => setViewport('tablet')}
+              className={`p-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                viewport === 'tablet' ? 'bg-amber-800 text-white' : 'text-slate-400 hover:text-white'
+              }`}
+              title="Tablet View (768px)"
+            >
+              <Tablet className="w-4 h-4" />
+            </button>
+            <button
+              type="button"
+              onClick={() => setViewport('mobile')}
+              className={`p-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                viewport === 'mobile' ? 'bg-amber-800 text-white' : 'text-slate-400 hover:text-white'
+              }`}
+              title="Mobile View (390px)"
+            >
+              <Smartphone className="w-4 h-4" />
+            </button>
+          </div>
         </div>
 
-        {/* External Link & Close */}
+        {/* Right: External Link & Close */}
         <div className="flex items-center gap-3">
           <a
-            href={STOREFRONT_URL}
+            href={currentUrl}
             target="_blank"
             rel="noopener noreferrer"
             className="flex items-center gap-1.5 text-xs font-bold text-amber-300 hover:text-amber-200 bg-amber-950/60 border border-amber-800/60 px-3 py-1.5 rounded-xl transition-colors"
+            title="Open in new browser tab"
           >
-            <span>Open Consumer Storefront</span>
+            <span>Open in New Tab</span>
             <ExternalLink className="w-3.5 h-3.5" />
           </a>
           <button
             type="button"
             onClick={onClose}
             className="text-slate-400 hover:text-white p-1.5 rounded-lg hover:bg-slate-800 transition-colors cursor-pointer"
+            title="Close Preview"
           >
             <X className="w-5 h-5" />
           </button>
@@ -140,10 +224,154 @@ export function StorefrontPreviewModal({
       </div>
 
       {/* Viewport Frame Container */}
-      <div className="flex-1 overflow-y-auto p-4 sm:p-8 flex justify-center bg-slate-950">
-        <div
-          className={`w-full ${viewportWidths[viewport]} bg-white shadow-2xl rounded-2xl overflow-hidden border border-slate-800 flex flex-col transition-all duration-300 min-h-screen text-slate-900 font-sans`}
-        >
+      <div className="flex-1 overflow-y-auto p-4 sm:p-6 flex flex-col items-center justify-start bg-slate-950">
+        {previewMode === 'iframe' ? (
+          <div className="w-full flex flex-col items-center gap-3">
+            {/* Device Frame */}
+            <div
+              className={`w-full ${viewportWidths[viewport]} bg-slate-900 shadow-2xl rounded-2xl overflow-hidden border border-slate-700 flex flex-col transition-all duration-300 ${
+                viewport === 'mobile'
+                  ? 'h-[760px] border-4 border-slate-800 rounded-[36px]'
+                  : viewport === 'tablet'
+                  ? 'h-[82vh] border-4 border-slate-800 rounded-3xl'
+                  : 'h-[82vh]'
+              }`}
+            >
+              {/* Browser Address Bar Chrome */}
+              <div className="bg-slate-900 border-b border-slate-800 px-4 py-2.5 flex items-center justify-between text-xs text-slate-300 select-none shrink-0 gap-3">
+                <div className="flex items-center gap-1.5 shrink-0">
+                  <span className="w-2.5 h-2.5 rounded-full bg-rose-500/80 inline-block"></span>
+                  <span className="w-2.5 h-2.5 rounded-full bg-amber-500/80 inline-block"></span>
+                  <span className="w-2.5 h-2.5 rounded-full bg-emerald-500/80 inline-block"></span>
+                </div>
+
+                <form
+                  onSubmit={(e) => {
+                    e.preventDefault();
+                    if (urlInputValue.trim()) {
+                      handleUpdateStorefrontBaseUrl(urlInputValue);
+                    } else {
+                      setIsEditingUrl(false);
+                    }
+                  }}
+                  className="flex items-center gap-2 bg-slate-950/90 border border-slate-800 px-3 py-1 rounded-lg text-[11px] font-mono text-slate-300 flex-1 max-w-xl mx-auto focus-within:border-amber-600 transition-colors"
+                >
+                  <Lock className="w-3 h-3 text-emerald-400 shrink-0" />
+                  {isEditingUrl ? (
+                    <input
+                      type="text"
+                      autoFocus
+                      value={urlInputValue}
+                      onChange={(e) => setUrlInputValue(e.target.value)}
+                      onBlur={() => {
+                        if (urlInputValue.trim()) {
+                          handleUpdateStorefrontBaseUrl(urlInputValue);
+                        }
+                        setIsEditingUrl(false);
+                      }}
+                      className="w-full bg-transparent border-0 text-white focus:outline-hidden text-[11px] font-mono"
+                      placeholder="https://mycommerce.vercel.app"
+                    />
+                  ) : (
+                    <span
+                      onClick={() => {
+                        setUrlInputValue(storefrontBaseUrl);
+                        setIsEditingUrl(true);
+                      }}
+                      className="truncate cursor-text flex-1 select-all hover:text-white"
+                      title="Click to edit live deployed storefront host URL"
+                    >
+                      {currentUrl}
+                    </span>
+                  )}
+                  <span className="text-[9px] uppercase px-1.5 py-0.5 rounded bg-emerald-950/80 text-emerald-300 font-bold border border-emerald-800/40 shrink-0">
+                    LIVE
+                  </span>
+                </form>
+
+                <div className="flex items-center gap-1.5 shrink-0">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setIsLoadingIframe(true);
+                      setIframeKey((k) => k + 1);
+                    }}
+                    className="p-1 text-slate-400 hover:text-white rounded-md hover:bg-slate-800 transition-colors cursor-pointer"
+                    title="Reload Storefront Frame"
+                  >
+                    <RotateCw className={`w-3.5 h-3.5 ${isLoadingIframe ? 'animate-spin text-amber-400' : ''}`} />
+                  </button>
+                  <a
+                    href={currentUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="p-1 text-slate-400 hover:text-white rounded-md hover:bg-slate-800 transition-colors"
+                    title="Open Fullscreen in New Tab"
+                  >
+                    <ExternalLink className="w-3.5 h-3.5" />
+                  </a>
+                </div>
+              </div>
+
+              {/* Iframe Viewport Area */}
+              <div className="relative flex-1 w-full h-full bg-white overflow-hidden">
+                {isLoadingIframe && (
+                  <div className="absolute inset-0 z-10 bg-slate-950/90 backdrop-blur-xs flex flex-col items-center justify-center gap-3 text-slate-300">
+                    <div className="w-8 h-8 border-3 border-amber-600 border-t-transparent rounded-full animate-spin" />
+                    <div className="text-xs font-semibold">
+                      Connecting to live deployed storefront at <span className="font-mono text-amber-300">{currentUrl}</span>
+                    </div>
+                    <p className="text-[11px] text-slate-500">
+                      Live Host: <span className="font-mono text-slate-300">{storefrontBaseUrl}</span>
+                    </p>
+                  </div>
+                )}
+                <iframe
+                  key={iframeKey}
+                  src={currentUrl}
+                  onLoad={() => setIsLoadingIframe(false)}
+                  className="w-full h-full border-0 bg-white"
+                  title="Live Storefront Preview"
+                  sandbox="allow-same-origin allow-scripts allow-forms allow-popups allow-modals"
+                />
+              </div>
+            </div>
+
+            {/* Bottom Info Banner */}
+            <div className="w-full max-w-4xl flex flex-col sm:flex-row items-center justify-between text-xs text-slate-400 bg-slate-900/90 border border-slate-800 px-4 py-2.5 rounded-xl backdrop-blur-xs gap-2">
+              <div className="flex items-center gap-2">
+                <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                <span>
+                  Rendering live deployed storefront app from{' '}
+                  <span className="font-mono text-slate-200 font-bold">{storefrontBaseUrl}</span>
+                </span>
+              </div>
+              <div className="flex items-center gap-3 text-[11px]">
+                <button
+                  type="button"
+                  onClick={() => {
+                    const entered = prompt('Enter custom deployed Storefront URL:', storefrontBaseUrl);
+                    if (entered) handleUpdateStorefrontBaseUrl(entered);
+                  }}
+                  className="text-slate-400 hover:text-slate-200 underline cursor-pointer"
+                >
+                  Change Host URL
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setPreviewMode('simulator')}
+                  className="text-amber-400 hover:text-amber-300 font-bold underline cursor-pointer flex items-center gap-1"
+                >
+                  <Layers className="w-3 h-3" />
+                  <span>Switch to CMS Simulator</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        ) : (
+          <div
+            className={`w-full ${viewportWidths[viewport]} bg-white shadow-2xl rounded-2xl overflow-hidden border border-slate-800 flex flex-col transition-all duration-300 min-h-screen text-slate-900 font-sans`}
+          >
           {/* 1. TOP PROMO BAR */}
           {shell.promo_bar.enabled && (
             <div
@@ -200,12 +428,6 @@ export function StorefrontPreviewModal({
 
             {/* Icons */}
             <div className="flex items-center gap-2">
-              {shell.header.show_spatial_finder && (
-                <span className="flex items-center gap-1 px-2 py-1 text-[11px] font-bold text-amber-900 bg-amber-50 rounded-lg border border-amber-200">
-                  <Ruler className="w-3 h-3" />
-                  <span>3D Fit</span>
-                </span>
-              )}
               {shell.header.show_search && <Search className="w-4 h-4 text-slate-600" />}
               {shell.header.show_cart && (
                 <div className="relative">
@@ -551,6 +773,7 @@ export function StorefrontPreviewModal({
             </div>
           </footer>
         </div>
+        )}
       </div>
     </div>
   );

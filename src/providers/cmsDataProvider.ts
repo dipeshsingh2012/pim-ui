@@ -1,9 +1,13 @@
 import {
   GlobalShellConfig,
+  PromoBarConfig,
+  HeaderConfig,
+  FooterConfig,
   CMSPage,
   PageSection,
   SectionType,
 } from '../types/cms';
+import { CONTENT_API_URL } from './dataProvider';
 
 const STORAGE_SHELL_KEY = 'pim_cms_global_shell_v1';
 const STORAGE_PAGES_KEY = 'pim_cms_pages_v1';
@@ -27,7 +31,6 @@ export const DEFAULT_GLOBAL_SHELL: GlobalShellConfig = {
     brand_badge: 'FLAGSHIP ROASTERY',
     show_search: true,
     show_cart: true,
-    show_spatial_finder: true,
     sticky: true,
     nodes: [
       {
@@ -85,7 +88,7 @@ export const DEFAULT_GLOBAL_SHELL: GlobalShellConfig = {
         id: 'nav_discovery',
         label: 'Discovery (CounterCheck™)',
         url: '#/discovery',
-        badge: 'SPATIAL 3D',
+        badge: 'GUIDE',
       },
       {
         id: 'nav_subscriptions',
@@ -173,7 +176,7 @@ export const DEFAULT_CMS_PAGES: CMSPage[] = [
     page_type: 'home',
     title: 'Storefront Flagship Homepage',
     slug: '/',
-    description: 'Main flagship storefront landing experience featuring hero banner, origin lanes, and spatial discovery.',
+    description: 'Main flagship storefront landing experience featuring hero banner, origin lanes, and curated collections.',
     is_published: true,
     updated_at: new Date().toISOString(),
     sections: [
@@ -191,7 +194,7 @@ export const DEFAULT_CMS_PAGES: CMSPage[] = [
           badge: 'AUTUMN 2026 RESERVE',
           primary_cta_text: 'Explore Fresh Harvests',
           primary_cta_url: '#/coffees',
-          secondary_cta_text: 'CounterCheck™ Spatial Finder',
+          secondary_cta_text: 'Equipment & Gear Guide',
           secondary_cta_url: '#/discovery',
           background_image:
             'https://images.unsplash.com/photo-1447933601403-0c6688de566e?w=1600&auto=format&fit=crop&q=85',
@@ -275,13 +278,13 @@ export const DEFAULT_CMS_PAGES: CMSPage[] = [
         id: 'sec_home_promo_callout',
         type: 'promo_callout',
         title: 'CounterCheck™ Guarantee Highlight',
-        subtitle: 'Spatial dimension fitment guarantee callout',
+        subtitle: 'Dimension fitment guarantee callout',
         is_active: true,
         sort_order: 4,
         config: {
           headline: 'Guaranteed Kitchen Fit Before You Buy',
           body: 'Never return an espresso machine that does not clear your kitchen cabinets. CounterCheck™ calculates machine height, top water-reservoir clearance, and portafilter swing radius in real-time.',
-          badge: 'PATENTED SPATIAL TECH',
+          badge: 'PATENTED FIT TECH',
           button_text: 'Launch CounterCheck™ Finder',
           button_url: '#/discovery',
           image_url:
@@ -440,63 +443,63 @@ export const DEFAULT_CMS_PAGES: CMSPage[] = [
     ],
   },
   {
-    id: 'page_discovery',
-    page_type: 'discovery',
-    title: 'CounterCheck™ Spatial Fitment Discovery',
-    slug: '/discovery',
-    description: 'Spatial dimension verification workbench and under-cabinet clearance finder.',
+    id: 'page_product_detail',
+    page_type: 'product',
+    title: 'Mooleh Manay Excelsa Product Showcase (PDP)',
+    slug: '/products/mooleh-manay-excelsa',
+    description: 'Product detail showcase featuring terroir specs, roast development curve, and brew guidelines.',
     is_published: true,
     updated_at: new Date().toISOString(),
     sections: [
       {
-        id: 'sec_disc_hero',
+        id: 'sec_pdp_hero',
         type: 'hero_banner',
-        title: 'Discovery Experience Hero',
-        subtitle: 'Dimensional clearance hero',
+        title: 'Single Origin Lot Product Hero',
+        subtitle: 'Harvest details and cupping scores',
         is_active: true,
         sort_order: 1,
         config: {
-          headline: 'Precision Spatial Clearance Engine',
+          headline: 'Mooleh Manay Carbonic Maceration Excelsa',
           subheadline:
-            'Measure your kitchen counter space once. Discover premium espresso gear guaranteed to fit under your cabinets with full reservoir access.',
-          badge: 'PATENTED FITMENT TECH',
-          primary_cta_text: 'Enter Kitchen Dimensions',
-          primary_cta_url: '#/discovery',
+            'Rare single-estate nano lot from Coorg, Karnataka. Vibrant notes of dark cherry, elderflower, and dark chocolate liqueur.',
+          badge: 'CUPPING SCORE: 88.5',
+          primary_cta_text: 'Order Roasted Beans ($24)',
+          primary_cta_url: '#/products/mooleh-manay-excelsa',
           background_image:
-            'https://images.unsplash.com/photo-1517668808822-9ebb02f2a0e6?w=1600&auto=format&fit=crop&q=85',
-          overlay_opacity: 70,
-          text_align: 'center',
+            'https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?w=1600&auto=format&fit=crop&q=85',
+          overlay_opacity: 65,
+          text_align: 'left',
         },
       },
       {
-        id: 'sec_disc_lane',
-        type: 'product_lane',
-        title: 'CounterCheck™ Verified Slim Machines',
-        subtitle: 'Under 35cm total height for tight overhead cabinets',
+        id: 'sec_pdp_callout',
+        type: 'promo_callout',
+        title: 'Fermentation & Roasting Profile',
+        subtitle: 'Technical cupping notes',
         is_active: true,
         sort_order: 2,
         config: {
-          filter_category: 'espresso_machine',
-          card_style: 'slider',
-          limit: 6,
+          headline: 'Experimental 96-Hour Carbonic Maceration',
+          body: 'Sealed stainless fermentation tanks with CO2 purging allow enzymatic breakdown of mucilage sugars, magnifying stonefruit esters without vinegary acetic development.',
+          badge: 'PROCESS METHOD',
+          button_text: 'Download Roast Curve PDF',
+          button_url: '#/about',
+          image_url:
+            'https://images.unsplash.com/photo-1559056199-641a0ac8b55e?w=800&auto=format&fit=crop&q=80',
+          layout: 'image_right',
         },
       },
       {
-        id: 'sec_disc_callout',
-        type: 'promo_callout',
-        title: 'How CounterCheck™ Spatial Verification Works',
-        subtitle: '3-point measurement explanation',
+        id: 'sec_pdp_lane',
+        type: 'product_lane',
+        title: 'Recommended Equipment Pairing',
+        subtitle: 'Dialed in precision grinders and brewers for this roast',
         is_active: true,
         sort_order: 3,
         config: {
-          headline: '3-Point Counter Clearance Guarantee',
-          body: 'Every machine in our catalog has been 3D scanned in our roastery test lab. We measure operational clearances for top hopper lids, side steam wand reach, and front portafilter insertion.',
-          badge: 'VERIFIED TOLERANCE',
-          button_text: 'Read Fitment Whitepaper',
-          button_url: '#/about',
-          image_url:
-            'https://images.unsplash.com/photo-1570968915860-54d5c301fa9f?w=800&auto=format&fit=crop&q=80',
-          layout: 'image_left',
+          filter_category: 'grinder',
+          card_style: 'slider',
+          limit: 4,
         },
       },
     ],
@@ -576,7 +579,7 @@ export const DEFAULT_CMS_PAGES: CMSPage[] = [
 ];
 
 // ==========================================
-// Provider Operations with Local Storage Sync
+// Provider Operations with Content Service API & Local Storage Sync
 // ==========================================
 
 export function getGlobalShell(): GlobalShellConfig {
@@ -591,11 +594,197 @@ export function getGlobalShell(): GlobalShellConfig {
   return DEFAULT_GLOBAL_SHELL;
 }
 
-export function saveGlobalShell(config: GlobalShellConfig): void {
+export async function fetchGlobalShell(): Promise<GlobalShellConfig> {
+  if (CONTENT_API_URL) {
+    try {
+      const res = await fetch(`${CONTENT_API_URL}/cms/shell`, { signal: AbortSignal.timeout(8000) });
+      if (res.ok) {
+        const data = await res.json();
+        const config: GlobalShellConfig = {
+          promo_bar: data.promo_bar,
+          header: data.header,
+          footer: data.footer,
+        };
+        try {
+          localStorage.setItem(STORAGE_SHELL_KEY, JSON.stringify(config));
+        } catch {}
+        return config;
+      }
+    } catch (e) {
+      console.warn('Could not fetch global shell from content-service, using cached:', e);
+    }
+  }
+  return getGlobalShell();
+}
+
+export async function saveGlobalShell(config: GlobalShellConfig): Promise<void> {
   try {
     localStorage.setItem(STORAGE_SHELL_KEY, JSON.stringify(config));
   } catch (e) {
     console.error('Failed to save global shell to storage:', e);
+  }
+
+  if (CONTENT_API_URL) {
+    try {
+      await fetch(`${CONTENT_API_URL}/cms/shell`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(config),
+      });
+    } catch (e) {
+      console.warn('Could not sync global shell to content-service:', e);
+    }
+  }
+}
+
+export async function fetchPromoBar(): Promise<PromoBarConfig> {
+  if (CONTENT_API_URL) {
+    try {
+      const res = await fetch(`${CONTENT_API_URL}/cms/shell/promo-bar`, { signal: AbortSignal.timeout(8000) });
+      if (res.ok) {
+        return await res.json();
+      }
+    } catch (e) {
+      console.warn('Could not fetch promo-bar from content-service:', e);
+    }
+  }
+  return getGlobalShell().promo_bar;
+}
+
+export async function savePromoBar(promo: PromoBarConfig): Promise<void> {
+  const currentShell = getGlobalShell();
+  currentShell.promo_bar = promo;
+  try {
+    localStorage.setItem(STORAGE_SHELL_KEY, JSON.stringify(currentShell));
+  } catch (e) {
+    console.error('Failed to save promo bar locally:', e);
+  }
+
+  if (CONTENT_API_URL) {
+    try {
+      await fetch(`${CONTENT_API_URL}/cms/shell/promo-bar`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(promo),
+      });
+    } catch (e) {
+      console.warn('Could not save promo bar via dedicated endpoint:', e);
+    }
+  }
+}
+
+export interface SaveHeaderResponse {
+  success: boolean;
+  syncedToApi: boolean;
+  header: HeaderConfig;
+  message: string;
+}
+
+export async function fetchHeader(): Promise<HeaderConfig> {
+  if (CONTENT_API_URL) {
+    try {
+      const res = await fetch(`${CONTENT_API_URL}/cms/shell/header`, { signal: AbortSignal.timeout(8000) });
+      if (res.ok) {
+        const data = await res.json();
+        const currentShell = getGlobalShell();
+        currentShell.header = data;
+        try {
+          localStorage.setItem(STORAGE_SHELL_KEY, JSON.stringify(currentShell));
+        } catch {}
+        return data;
+      }
+    } catch (e) {
+      console.warn('Could not fetch header from content-service:', e);
+    }
+  }
+  return getGlobalShell().header;
+}
+
+export async function saveHeader(header: HeaderConfig): Promise<SaveHeaderResponse> {
+  const currentShell = getGlobalShell();
+  currentShell.header = header;
+  try {
+    localStorage.setItem(STORAGE_SHELL_KEY, JSON.stringify(currentShell));
+  } catch (e) {
+    console.error('Failed to save header locally:', e);
+  }
+
+  let syncedToApi = false;
+  let message = 'Header configuration saved locally to browser storage';
+
+  if (CONTENT_API_URL) {
+    try {
+      const res = await fetch(`${CONTENT_API_URL}/cms/shell/header`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(header),
+        signal: AbortSignal.timeout(8000),
+      });
+      if (res.ok) {
+        syncedToApi = true;
+        message = 'Header configuration saved and synced to content-service API';
+      } else {
+        // Fallback to full shell update endpoint
+        const shellRes = await fetch(`${CONTENT_API_URL}/cms/shell`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(currentShell),
+          signal: AbortSignal.timeout(8000),
+        });
+        if (shellRes.ok) {
+          syncedToApi = true;
+          message = 'Header configuration saved and synced to content-service API';
+        } else {
+          message = `Header saved locally (content-service API returned ${res.status})`;
+        }
+      }
+    } catch (e: any) {
+      console.warn('Could not save header via dedicated endpoint:', e);
+      message = 'Header saved locally (backend service unreachable)';
+    }
+  }
+
+  return {
+    success: true,
+    syncedToApi,
+    header,
+    message,
+  };
+}
+
+export async function fetchFooter(): Promise<FooterConfig> {
+  if (CONTENT_API_URL) {
+    try {
+      const res = await fetch(`${CONTENT_API_URL}/cms/shell/footer`, { signal: AbortSignal.timeout(8000) });
+      if (res.ok) {
+        return await res.json();
+      }
+    } catch (e) {
+      console.warn('Could not fetch footer from content-service:', e);
+    }
+  }
+  return getGlobalShell().footer;
+}
+
+export async function saveFooter(footer: FooterConfig): Promise<void> {
+  const currentShell = getGlobalShell();
+  currentShell.footer = footer;
+  try {
+    localStorage.setItem(STORAGE_SHELL_KEY, JSON.stringify(currentShell));
+  } catch (e) {
+    console.error('Failed to save footer locally:', e);
+  }
+
+  if (CONTENT_API_URL) {
+    try {
+      await fetch(`${CONTENT_API_URL}/cms/shell/footer`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(footer),
+      });
+    } catch (e) {
+      console.warn('Could not save footer via dedicated endpoint:', e);
+    }
   }
 }
 
@@ -614,12 +803,46 @@ export function getCmsPages(): CMSPage[] {
   return DEFAULT_CMS_PAGES;
 }
 
+export async function fetchCmsPages(): Promise<CMSPage[]> {
+  if (CONTENT_API_URL) {
+    try {
+      const res = await fetch(`${CONTENT_API_URL}/cms/pages?limit=100`, { signal: AbortSignal.timeout(8000) });
+      if (res.ok) {
+        const data = await res.json();
+        if (data.items && Array.isArray(data.items)) {
+          try {
+            localStorage.setItem(STORAGE_PAGES_KEY, JSON.stringify(data.items));
+          } catch {}
+          return data.items;
+        }
+      }
+    } catch (e) {
+      console.warn('Could not fetch CMS pages from content-service, using cached:', e);
+    }
+  }
+  return getCmsPages();
+}
+
 export function getCmsPage(id: string): CMSPage | undefined {
   const pages = getCmsPages();
   return pages.find((p) => p.id === id);
 }
 
-export function saveCmsPage(page: CMSPage): void {
+export async function fetchCmsPage(id: string): Promise<CMSPage | undefined> {
+  if (CONTENT_API_URL) {
+    try {
+      const res = await fetch(`${CONTENT_API_URL}/cms/pages/${id}`, { signal: AbortSignal.timeout(8000) });
+      if (res.ok) {
+        return await res.json();
+      }
+    } catch (e) {
+      console.warn(`Could not fetch CMS page #${id} from content-service:`, e);
+    }
+  }
+  return getCmsPage(id);
+}
+
+export async function saveCmsPage(page: CMSPage): Promise<void> {
   const pages = getCmsPages();
   const index = pages.findIndex((p) => p.id === page.id);
   const updatedPage = { ...page, updated_at: new Date().toISOString() };
@@ -633,45 +856,107 @@ export function saveCmsPage(page: CMSPage): void {
   } catch (e) {
     console.error('Failed to save CMS page:', e);
   }
+
+  if (CONTENT_API_URL) {
+    try {
+      const patchRes = await fetch(`${CONTENT_API_URL}/cms/pages/${page.id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(page),
+      });
+      if (patchRes.status === 404) {
+        await fetch(`${CONTENT_API_URL}/cms/pages`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(page),
+        });
+      }
+    } catch (e) {
+      console.warn(`Could not sync CMS page #${page.id} to content-service:`, e);
+    }
+  }
 }
 
-export function createCmsPage(pageData: Omit<CMSPage, 'id' | 'updated_at'>): CMSPage {
-  const pages = getCmsPages();
-  const newPage: CMSPage = {
+export async function createCmsPage(pageData: Omit<CMSPage, 'id' | 'updated_at'>): Promise<CMSPage> {
+  let createdPage: CMSPage = {
     ...pageData,
     id: `page_${Date.now()}`,
     updated_at: new Date().toISOString(),
   };
-  pages.push(newPage);
+
+  if (CONTENT_API_URL) {
+    try {
+      const res = await fetch(`${CONTENT_API_URL}/cms/pages`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(pageData),
+      });
+      if (res.ok) {
+        createdPage = await res.json();
+      }
+    } catch (e) {
+      console.warn('Could not create CMS page on content-service, saving locally:', e);
+    }
+  }
+
+  const pages = getCmsPages();
+  pages.push(createdPage);
   try {
     localStorage.setItem(STORAGE_PAGES_KEY, JSON.stringify(pages));
   } catch (e) {
-    console.error('Failed to create CMS page:', e);
+    console.error('Failed to save created CMS page locally:', e);
   }
-  return newPage;
+  return createdPage;
 }
 
-export function deleteCmsPage(id: string): boolean {
+export async function deleteCmsPage(id: string): Promise<boolean> {
   const pages = getCmsPages();
   const filtered = pages.filter((p) => p.id !== id);
   if (filtered.length !== pages.length) {
     try {
       localStorage.setItem(STORAGE_PAGES_KEY, JSON.stringify(filtered));
-      return true;
     } catch (e) {
-      console.error('Failed to delete CMS page:', e);
+      console.error('Failed to delete CMS page locally:', e);
     }
   }
-  return false;
+
+  if (CONTENT_API_URL) {
+    try {
+      await fetch(`${CONTENT_API_URL}/cms/pages/${id}`, {
+        method: 'DELETE',
+      });
+    } catch (e) {
+      console.warn(`Could not delete CMS page #${id} on content-service:`, e);
+    }
+  }
+  return true;
 }
 
-export function resetCmsDefaults(): { shell: GlobalShellConfig; pages: CMSPage[] } {
+export async function resetCmsDefaults(): Promise<{ shell: GlobalShellConfig; pages: CMSPage[] }> {
   try {
     localStorage.removeItem(STORAGE_SHELL_KEY);
     localStorage.removeItem(STORAGE_PAGES_KEY);
   } catch (e) {
     console.warn('Failed to reset CMS keys in localStorage:', e);
   }
+
+  if (CONTENT_API_URL) {
+    try {
+      const res = await fetch(`${CONTENT_API_URL}/cms/reset-defaults`, {
+        method: 'POST',
+      });
+      if (res.ok) {
+        const data = await res.json();
+        return {
+          shell: data.shell,
+          pages: data.pages,
+        };
+      }
+    } catch (e) {
+      console.warn('Could not reset CMS defaults on content-service:', e);
+    }
+  }
+
   return {
     shell: DEFAULT_GLOBAL_SHELL,
     pages: DEFAULT_CMS_PAGES,

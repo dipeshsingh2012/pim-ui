@@ -49,7 +49,7 @@ const SECTION_TYPE_LABELS: Record<SectionType, { label: string; description: str
   },
   promo_callout: {
     label: 'Feature / Promo Callout',
-    description: 'Spotlight card highlighting spatial fitment, sourcing ethics, or craft guarantee.',
+    description: 'Spotlight card highlighting dimension fitment, sourcing ethics, or craft guarantee.',
   },
 };
 
@@ -675,7 +675,7 @@ export function SectionFormModal({
                     value={config.badge || ''}
                     onChange={(e) => updateConfig('badge', e.target.value)}
                     className="w-full px-3 py-2 text-sm rounded-lg border border-slate-200"
-                    placeholder="e.g. PATENTED SPATIAL TECH"
+                    placeholder="e.g. PATENTED FIT TECH"
                   />
                 </div>
                 <div>

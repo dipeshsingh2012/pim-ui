@@ -230,7 +230,7 @@ export function ProductFormModal({ isOpen, onClose, onSubmit, initialData, mode 
                 {mode === 'create' ? 'Configure New Product' : `Edit Product: ${initialData?.name}`}
               </h2>
               <p className="text-xs text-slate-500">
-                Configure commercial attributes, coffee roast specs, and CounterCheck™ spatial clearances.
+                Configure commercial attributes, coffee roast specs, and CounterCheck™ clearance dimensions.
               </p>
             </div>
           </div>
@@ -595,7 +595,7 @@ export function ProductFormModal({ isOpen, onClose, onSubmit, initialData, mode 
               <div className="p-4 rounded-2xl bg-amber-50/60 border border-amber-200 text-xs text-amber-950 flex items-start gap-3">
                 <Ruler className="w-5 h-5 text-amber-800 shrink-0 mt-0.5" />
                 <div className="space-y-1">
-                  <span className="font-bold">CounterCheck™ Spatial Clearance Rules</span>
+                  <span className="font-bold">CounterCheck™ Dimensions & Clearance Rules</span>
                   <p className="text-amber-800/90 leading-relaxed">
                     Enter physical appliance measurements and required operational headroom (such as top lid opening, bean hopper refilling, and side/rear heat dissipation).
                   </p>

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   FileText,
   Plus,
@@ -23,7 +23,7 @@ import { SectionFormModal } from './SectionFormModal';
 interface PagesBuilderViewProps {
   pages: CMSPage[];
   onUpdatePage: (page: CMSPage) => void;
-  onCreatePage: (pageData: Omit<CMSPage, 'id' | 'updated_at'>) => void;
+  onCreatePage: (pageData: Omit<CMSPage, 'id' | 'updated_at'>) => Promise<CMSPage | void> | void;
   onDeletePage: (id: string) => void;
   onPreviewStorefront: (page: CMSPage) => void;
   showToast: (msg: string) => void;
@@ -44,9 +44,10 @@ const SECTION_TYPE_INFO: Record<
 
 const PAGE_TYPE_LABELS: Record<PageType, { label: string; icon: string }> = {
   home: { label: 'Flagship Homepage', icon: '🏠' },
+  product: { label: 'Product Page (PDP)', icon: '📦' },
   collection: { label: 'Collection / PLP', icon: '☕' },
-  discovery: { label: 'Spatial Discovery', icon: '📐' },
   static: { label: 'Story & Content', icon: '📄' },
+  discovery: { label: 'Discovery Experience', icon: '🧭' },
 };
 
 export function PagesBuilderView({
@@ -62,6 +63,12 @@ export function PagesBuilderView({
   const [sectionModalOpen, setSectionModalOpen] = useState(false);
   const [showAddSectionMenu, setShowAddSectionMenu] = useState(false);
   const [showNewPageModal, setShowNewPageModal] = useState(false);
+
+  useEffect(() => {
+    if (pages.length > 0 && !pages.some((p) => p.id === selectedPageId)) {
+      setSelectedPageId(pages[0].id);
+    }
+  }, [pages, selectedPageId]);
 
   // New Page form state
   const [newPageTitle, setNewPageTitle] = useState('');
@@ -192,7 +199,7 @@ export function PagesBuilderView({
       };
     } else if (type === 'promo_callout') {
       defaultConfig = {
-        headline: 'CounterCheck™ Spatial Guarantee',
+        headline: 'CounterCheck™ Dimension Guarantee',
         body: 'Verified countertop fitment before your equipment is dispatched.',
         badge: 'PATENTED TECH',
         button_text: 'Explore Sizing',
@@ -220,11 +227,11 @@ export function PagesBuilderView({
   };
 
   // Handle creating a new page
-  const handleCreateNewPage = (e: React.FormEvent) => {
+  const handleCreateNewPage = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!newPageTitle.trim()) return;
 
-    onCreatePage({
+    const created = await onCreatePage({
       title: newPageTitle.trim(),
       slug: newPageSlug.trim().startsWith('/') ? newPageSlug.trim() : `/${newPageSlug.trim()}`,
       page_type: newPageType,
@@ -232,6 +239,10 @@ export function PagesBuilderView({
       is_published: true,
       sections: [],
     });
+
+    if (created && created.id) {
+      setSelectedPageId(created.id);
+    }
 
     setNewPageTitle('');
     setNewPageSlug('');
@@ -606,10 +617,10 @@ export function PagesBuilderView({
                   onChange={(e) => setNewPageType(e.target.value as PageType)}
                   className="w-full px-3 py-2 text-sm rounded-lg border border-slate-200 bg-white"
                 >
+                  <option value="home">Homepage</option>
+                  <option value="product">Product Page (PDP)</option>
+                  <option value="collection">Collection Page (PLP)</option>
                   <option value="static">Static Page (Story, Guides, Legal)</option>
-                  <option value="collection">Collection / PLP Template</option>
-                  <option value="discovery">Spatial Discovery Experience</option>
-                  <option value="home">Alternative Homepage</option>
                 </select>
               </div>
               <div className="pt-2 flex items-center justify-end gap-2">

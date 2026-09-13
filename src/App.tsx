@@ -20,6 +20,10 @@ export function App() {
           name: 'lanes',
           list: '/lanes',
         },
+        {
+          name: 'pages',
+          list: '/cms',
+        },
       ]}
     >
       <Layout activeTab={activeTab} onSelectTab={setActiveTab}>

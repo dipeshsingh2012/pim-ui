@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Megaphone,
   Menu,
@@ -15,9 +15,10 @@ import {
   Sparkles,
   ShoppingBag,
   Search,
-  Ruler,
   Coffee,
   Save,
+  RefreshCw,
+  Loader2,
 } from 'lucide-react';
 import {
   GlobalShellConfig,
@@ -28,6 +29,12 @@ import {
   FooterColumn,
   ThemeColor,
 } from '../../types/cms';
+import {
+  savePromoBar as apiSavePromoBar,
+  saveHeader as apiSaveHeader,
+  fetchHeader as apiFetchHeader,
+  saveFooter as apiSaveFooter,
+} from '../../providers/cmsDataProvider';
 
 interface SiteShellViewProps {
   shell: GlobalShellConfig;
@@ -76,42 +83,93 @@ export function SiteShellView({ shell, onUpdateShell, showToast }: SiteShellView
   const [header, setHeader] = useState<HeaderConfig>(shell.header);
   const [footer, setFooter] = useState<FooterConfig>(shell.footer);
 
+  useEffect(() => {
+    setPromo(shell.promo_bar);
+    setHeader(shell.header);
+    setFooter(shell.footer);
+  }, [shell]);
+
   // Editing modals/drawers
   const [editingNode, setEditingNode] = useState<{ parentId?: string; node?: NavNode } | null>(null);
   const [nodeLabel, setNodeLabel] = useState('');
   const [nodeUrl, setNodeUrl] = useState('');
   const [nodeBadge, setNodeBadge] = useState('');
 
+  // Header API integration & save states
+  const [isSavingHeader, setIsSavingHeader] = useState(false);
+  const [isLoadingHeader, setIsLoadingHeader] = useState(false);
+  const [headerApiStatus, setHeaderApiStatus] = useState<'idle' | 'synced' | 'local_only' | 'error'>('idle');
+
+  const loadHeaderFromApi = async () => {
+    setIsLoadingHeader(true);
+    try {
+      const fetched = await apiFetchHeader();
+      setHeader(fetched);
+      onUpdateShell({ ...shell, header: fetched });
+      setHeaderApiStatus('synced');
+      showToast('Header configuration synced from content-service API');
+    } catch (err) {
+      console.warn('Could not sync header from API:', err);
+      setHeaderApiStatus('local_only');
+    } finally {
+      setIsLoadingHeader(false);
+    }
+  };
+
+  useEffect(() => {
+    if (activeTab === 'header') {
+      loadHeaderFromApi();
+    }
+  }, [activeTab]);
+
   // Explicit save triggers
-  const handleSavePromo = () => {
+  const handleSavePromo = async () => {
+    await apiSavePromoBar(promo);
     onUpdateShell({ ...shell, promo_bar: promo });
-    showToast('Promo bar saved successfully');
+    showToast('Promo bar saved via dedicated endpoint');
   };
 
-  const handleSaveHeader = () => {
-    onUpdateShell({ ...shell, header: header });
-    showToast('Header navigation saved successfully');
+  const handleSaveHeader = async () => {
+    setIsSavingHeader(true);
+    try {
+      const res = await apiSaveHeader(header);
+      onUpdateShell({ ...shell, header: header });
+      if (res.syncedToApi) {
+        setHeaderApiStatus('synced');
+        showToast('Header configuration saved and synced to content-service API');
+      } else {
+        setHeaderApiStatus('local_only');
+        showToast(res.message);
+      }
+    } catch (err: any) {
+      setHeaderApiStatus('error');
+      showToast(`Error saving header: ${err?.message || 'Network error'}`);
+    } finally {
+      setIsSavingHeader(false);
+    }
   };
 
-  const handleSaveFooter = () => {
+  const handleSaveFooter = async () => {
+    await apiSaveFooter(footer);
     onUpdateShell({ ...shell, footer: footer });
-    showToast('Footer configuration saved successfully');
+    showToast('Footer configuration saved via dedicated endpoint');
   };
 
-  const savePromo = (newPromo: PromoBarConfig) => {
+  const savePromo = async (newPromo: PromoBarConfig) => {
     setPromo(newPromo);
+    await apiSavePromoBar(newPromo);
     onUpdateShell({ ...shell, promo_bar: newPromo });
     showToast('Promo bar updated');
   };
 
-  const saveHeader = (newHeader: HeaderConfig) => {
+  const updateHeaderDraft = (newHeader: HeaderConfig) => {
     setHeader(newHeader);
     onUpdateShell({ ...shell, header: newHeader });
-    showToast('Header navigation updated');
   };
 
-  const saveFooter = (newFooter: FooterConfig) => {
+  const saveFooter = async (newFooter: FooterConfig) => {
     setFooter(newFooter);
+    await apiSaveFooter(newFooter);
     onUpdateShell({ ...shell, footer: newFooter });
     showToast('Footer configuration updated');
   };
@@ -123,7 +181,7 @@ export function SiteShellView({ shell, onUpdateShell, showToast }: SiteShellView
       label: 'New Menu Link',
       url: '#/',
     };
-    saveHeader({ ...header, nodes: [...header.nodes, newNode] });
+    updateHeaderDraft({ ...header, nodes: [...header.nodes, newNode] });
   };
 
   const handleAddChildNode = (parentId: string) => {
@@ -144,7 +202,7 @@ export function SiteShellView({ shell, onUpdateShell, showToast }: SiteShellView
       }
       return node;
     });
-    saveHeader({ ...header, nodes: updatedNodes });
+    updateHeaderDraft({ ...header, nodes: updatedNodes });
   };
 
   const handleDeleteNode = (nodeId: string, parentId?: string) => {
@@ -158,9 +216,9 @@ export function SiteShellView({ shell, onUpdateShell, showToast }: SiteShellView
         }
         return node;
       });
-      saveHeader({ ...header, nodes: updatedNodes });
+      updateHeaderDraft({ ...header, nodes: updatedNodes });
     } else {
-      saveHeader({
+      updateHeaderDraft({
         ...header,
         nodes: header.nodes.filter((n) => n.id !== nodeId),
       });
@@ -196,10 +254,10 @@ export function SiteShellView({ shell, onUpdateShell, showToast }: SiteShellView
         }
         return n;
       });
-      saveHeader({ ...header, nodes: updatedNodes });
+      updateHeaderDraft({ ...header, nodes: updatedNodes });
     } else {
       const updatedNodes = header.nodes.map((n) => (n.id === node.id ? { ...updatedItem, children: n.children } : n));
-      saveHeader({ ...header, nodes: updatedNodes });
+      updateHeaderDraft({ ...header, nodes: updatedNodes });
     }
 
     setEditingNode(null);
@@ -380,14 +438,6 @@ export function SiteShellView({ shell, onUpdateShell, showToast }: SiteShellView
                     {promo.enabled ? 'Enabled' : 'Disabled'}
                   </span>
                 </label>
-                <button
-                  type="button"
-                  onClick={handleSavePromo}
-                  className="flex items-center gap-1.5 px-4 py-2 text-xs font-bold text-white bg-amber-800 hover:bg-amber-900 rounded-xl shadow-xs transition-colors cursor-pointer"
-                >
-                  <Save className="w-4 h-4" />
-                  <span>Save Promo Bar</span>
-                </button>
               </div>
             </div>
 
@@ -533,12 +583,6 @@ export function SiteShellView({ shell, onUpdateShell, showToast }: SiteShellView
 
               {/* Actions */}
               <div className="flex items-center gap-2 shrink-0">
-                {header.show_spatial_finder && (
-                  <span className="flex items-center gap-1 px-2 py-1 text-[11px] font-bold text-amber-900 bg-amber-50 rounded-lg border border-amber-200">
-                    <Ruler className="w-3 h-3" />
-                    <span>Clearance</span>
-                  </span>
-                )}
                 {header.show_search && (
                   <div className="w-7 h-7 rounded-lg bg-slate-100 text-slate-600 flex items-center justify-center">
                     <Search className="w-3.5 h-3.5" />
@@ -558,18 +602,35 @@ export function SiteShellView({ shell, onUpdateShell, showToast }: SiteShellView
 
           {/* Header Brand Settings */}
           <div className="bg-white rounded-2xl p-6 border border-slate-200 shadow-2xs space-y-4">
-            <div className="flex items-center justify-between border-b border-slate-100 pb-4">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-100 pb-4">
               <div>
-                <h3 className="text-sm font-bold text-slate-900">Header Brand & Features</h3>
+                <div className="flex items-center gap-2.5">
+                  <h3 className="text-sm font-bold text-slate-900">Header Brand & Features</h3>
+                  <span className={`inline-flex items-center gap-1.5 px-2 py-0.5 text-[10px] font-bold rounded-md border ${
+                    headerApiStatus === 'synced'
+                      ? 'bg-emerald-50 text-emerald-800 border-emerald-200'
+                      : headerApiStatus === 'local_only'
+                      ? 'bg-amber-50 text-amber-800 border-amber-200'
+                      : 'bg-slate-100 text-slate-700 border-slate-200'
+                  }`}>
+                    <span className={`w-1.5 h-1.5 rounded-full ${
+                      headerApiStatus === 'synced' ? 'bg-emerald-500' :
+                      headerApiStatus === 'local_only' ? 'bg-amber-500' : 'bg-slate-400'
+                    }`} />
+                    {headerApiStatus === 'synced' ? 'API Connected' : 'Cached Draft'}
+                  </span>
+                </div>
                 <p className="text-xs text-slate-500">Configure storefront brand identity and action buttons.</p>
               </div>
               <button
                 type="button"
-                onClick={handleSaveHeader}
-                className="flex items-center gap-1.5 px-4 py-2 text-xs font-bold text-white bg-amber-800 hover:bg-amber-900 rounded-xl shadow-xs transition-colors cursor-pointer"
+                onClick={loadHeaderFromApi}
+                disabled={isLoadingHeader}
+                className="inline-flex items-center gap-1.5 px-3.5 py-2 text-xs font-bold text-slate-700 hover:text-slate-900 bg-slate-100 hover:bg-slate-200 rounded-xl transition-colors cursor-pointer disabled:opacity-50 shrink-0 self-start sm:self-auto"
+                title="Fetch latest header configuration from backend API"
               >
-                <Save className="w-4 h-4" />
-                <span>Save Header</span>
+                <RefreshCw className={`w-3.5 h-3.5 text-slate-500 ${isLoadingHeader ? 'animate-spin' : ''}`} />
+                <span>{isLoadingHeader ? 'Syncing...' : 'Sync from API'}</span>
               </button>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -593,15 +654,6 @@ export function SiteShellView({ shell, onUpdateShell, showToast }: SiteShellView
               </div>
             </div>
             <div className="flex flex-wrap items-center gap-6 pt-2">
-              <label className="flex items-center gap-2 text-xs font-bold text-slate-700 cursor-pointer">
-                <input
-                  type="checkbox"
-                  checked={header.show_spatial_finder}
-                  onChange={(e) => setHeader({ ...header, show_spatial_finder: e.target.checked })}
-                  className="accent-amber-700 w-4 h-4 cursor-pointer"
-                />
-                <span>Show Spatial Clearance Finder (3D Fit)</span>
-              </label>
               <label className="flex items-center gap-2 text-xs font-bold text-slate-700 cursor-pointer">
                 <input
                   type="checkbox"
@@ -636,18 +688,10 @@ export function SiteShellView({ shell, onUpdateShell, showToast }: SiteShellView
                 <button
                   type="button"
                   onClick={handleAddTopLevelNode}
-                  className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-xl transition-colors cursor-pointer"
+                  className="inline-flex items-center gap-1.5 px-3.5 py-2 text-xs font-bold text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-xl transition-colors cursor-pointer"
                 >
                   <Plus className="w-3.5 h-3.5" />
                   <span>Add Primary Link</span>
-                </button>
-                <button
-                  type="button"
-                  onClick={handleSaveHeader}
-                  className="inline-flex items-center gap-1.5 px-4 py-1.5 text-xs font-bold text-white bg-amber-800 hover:bg-amber-900 rounded-xl shadow-xs transition-colors cursor-pointer"
-                >
-                  <Save className="w-3.5 h-3.5" />
-                  <span>Save Navigation</span>
                 </button>
               </div>
             </div>
@@ -746,18 +790,47 @@ export function SiteShellView({ shell, onUpdateShell, showToast }: SiteShellView
               ))}
             </div>
 
-            {/* Bottom Action Strip for Header Navigation */}
-            <div className="pt-4 border-t border-slate-100 flex items-center justify-between">
-              <span className="text-xs text-slate-500">
-                {header.nodes.length} primary navigation nodes configured.
-              </span>
+            {/* Bottom Action Strip - Only 1 Header Save Button */}
+            <div className="pt-4 border-t border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+              <div className="space-y-0.5">
+                <div className="flex items-center gap-2">
+                  <span className="text-xs font-bold text-slate-800">
+                    {header.nodes.length} primary navigation nodes
+                  </span>
+                  <span className="text-slate-300">·</span>
+                  <span className="text-[11px] text-slate-500 flex items-center gap-1.5">
+                    <span className={`w-1.5 h-1.5 rounded-full ${
+                      headerApiStatus === 'synced' ? 'bg-emerald-500' :
+                      headerApiStatus === 'local_only' ? 'bg-amber-500' :
+                      headerApiStatus === 'error' ? 'bg-rose-500' : 'bg-slate-400'
+                    }`} />
+                    {headerApiStatus === 'synced' ? 'Synced with API' :
+                     headerApiStatus === 'local_only' ? 'Local storage cache' :
+                     headerApiStatus === 'error' ? 'API sync failed' : 'Ready to save'}
+                  </span>
+                </div>
+                <p className="text-[11px] text-slate-400">
+                  Single save action commits brand settings, search/cart controls, and navigation tree to API.
+                </p>
+              </div>
+
               <button
                 type="button"
                 onClick={handleSaveHeader}
-                className="flex items-center gap-2 px-5 py-2.5 text-xs font-bold text-white bg-amber-800 hover:bg-amber-900 rounded-xl shadow-xs transition-colors cursor-pointer"
+                disabled={isSavingHeader}
+                className="flex items-center justify-center gap-2 px-6 py-2.5 text-xs font-bold text-white bg-amber-800 hover:bg-amber-900 rounded-xl shadow-xs transition-colors cursor-pointer disabled:opacity-60 shrink-0"
               >
-                <Save className="w-4 h-4" />
-                <span>Save Header Navigation</span>
+                {isSavingHeader ? (
+                  <>
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                    <span>Saving Header to API...</span>
+                  </>
+                ) : (
+                  <>
+                    <Save className="w-4 h-4" />
+                    <span>Save Header Configuration</span>
+                  </>
+                )}
               </button>
             </div>
           </div>
@@ -985,7 +1058,7 @@ export function SiteShellView({ shell, onUpdateShell, showToast }: SiteShellView
                   type="submit"
                   className="px-4 py-1.5 text-xs font-bold text-white bg-amber-800 hover:bg-amber-900 rounded-lg shadow-xs"
                 >
-                  Save Link
+                  Apply Changes
                 </button>
               </div>
             </form>

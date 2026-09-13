@@ -36,7 +36,6 @@ export interface HeaderConfig {
   nodes: NavNode[];
   show_search: boolean;
   show_cart: boolean;
-  show_spatial_finder: boolean;
   sticky: boolean;
 }
 
@@ -75,7 +74,7 @@ export interface GlobalShellConfig {
 // ------------------------------------------
 // 4. Page Types & Section Types
 // ------------------------------------------
-export type PageType = 'home' | 'collection' | 'discovery' | 'static';
+export type PageType = 'home' | 'product' | 'collection' | 'static' | 'discovery';
 
 export type SectionType =
   | 'hero_banner'

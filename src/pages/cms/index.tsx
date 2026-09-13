@@ -1,35 +1,41 @@
 import React, { useState, useEffect } from 'react';
 import {
   Layout,
-  Globe,
-  Sliders,
+  PanelTop,
+  Footprints,
+  Menu,
   Layers,
   Eye,
   RotateCcw,
-  Sparkles,
   CheckCircle2,
-  ExternalLink,
   Save,
 } from 'lucide-react';
 import {
   getGlobalShell,
+  fetchGlobalShell,
   saveGlobalShell,
   getCmsPages,
+  fetchCmsPages,
   saveCmsPage,
   createCmsPage,
   deleteCmsPage,
   resetCmsDefaults,
 } from '../../providers/cmsDataProvider';
 import { CMSPage, GlobalShellConfig } from '../../types/cms';
-import { PagesBuilderView } from './PagesBuilderView';
-import { SiteShellView } from './SiteShellView';
+import { PagesListView } from './PagesListView';
+import { HeaderConfigView } from './HeaderConfigView';
+import { FooterConfigView } from './FooterConfigView';
+import { NavigationConfigView } from './NavigationConfigView';
+import { SectionsBuilderView } from './SectionsBuilderView';
 import { StorefrontPreviewModal } from './StorefrontPreviewModal';
-import { LaneList } from '../lanes/list';
+
+export type CmsStudioTab = 'pages' | 'header' | 'footer' | 'navigation' | 'sections';
 
 export function CmsStudio() {
-  const [activeSubTab, setActiveSubTab] = useState<'pages' | 'shell' | 'lanes'>('pages');
+  const [activeSubTab, setActiveSubTab] = useState<CmsStudioTab>('pages');
   const [shell, setShell] = useState<GlobalShellConfig>(getGlobalShell());
   const [pages, setPages] = useState<CMSPage[]>(getCmsPages());
+  const [selectedPageId, setSelectedPageId] = useState<string>(pages[0]?.id || '');
   const [previewOpen, setPreviewOpen] = useState(false);
   const [previewPage, setPreviewPage] = useState<CMSPage | null>(null);
 
@@ -41,98 +47,203 @@ export function CmsStudio() {
   };
 
   useEffect(() => {
-    setShell(getGlobalShell());
-    setPages(getCmsPages());
+    let mounted = true;
+    async function loadData() {
+      try {
+        const [loadedShell, loadedPages] = await Promise.all([
+          fetchGlobalShell(),
+          fetchCmsPages(),
+        ]);
+        if (mounted) {
+          setShell(loadedShell);
+          setPages(loadedPages);
+          if (loadedPages.length > 0 && !selectedPageId) {
+            setSelectedPageId(loadedPages[0].id);
+          }
+        }
+      } catch (err) {
+        console.warn('Failed loading CMS data from content-service:', err);
+      }
+    }
+    loadData();
+    return () => {
+      mounted = false;
+    };
   }, []);
 
-  const handleUpdateShell = (updated: GlobalShellConfig) => {
-    saveGlobalShell(updated);
+  const handleUpdateShell = async (updated: GlobalShellConfig) => {
     setShell(updated);
+    await saveGlobalShell(updated);
   };
 
-  const handleUpdatePage = (updatedPage: CMSPage) => {
-    saveCmsPage(updatedPage);
-    setPages(getCmsPages());
+  const handleUpdatePage = async (updatedPage: CMSPage) => {
+    setPages((prev) => prev.map((p) => (p.id === updatedPage.id ? updatedPage : p)));
+    await saveCmsPage(updatedPage);
   };
 
-  const handleCreatePage = (pageData: Omit<CMSPage, 'id' | 'updated_at'>) => {
-    const created = createCmsPage(pageData);
-    setPages(getCmsPages());
+  const handleCreatePage = async (pageData: Omit<CMSPage, 'id' | 'updated_at'>) => {
+    const created = await createCmsPage(pageData);
+    setPages((prev) => [...prev, created]);
+    setSelectedPageId(created.id);
     return created;
   };
 
-  const handleDeletePage = (id: string) => {
-    deleteCmsPage(id);
-    setPages(getCmsPages());
+  const handleDeletePage = async (id: string) => {
+    const remaining = pages.filter((p) => p.id !== id);
+    setPages(remaining);
+    if (selectedPageId === id && remaining.length > 0) {
+      setSelectedPageId(remaining[0].id);
+    }
+    await deleteCmsPage(id);
   };
 
   const handleOpenPreview = (page?: CMSPage) => {
-    setPreviewPage(page || pages[0]);
+    setPreviewPage(page || pages.find((p) => p.id === selectedPageId) || pages[0]);
     setPreviewOpen(true);
   };
 
-  const handleResetDefaults = () => {
+  const handleResetDefaults = async () => {
     if (confirm('Reset all CMS pages, section layouts, and site shell settings to showcase defaults?')) {
-      const { shell: defaultShell, pages: defaultPages } = resetCmsDefaults();
+      const { shell: defaultShell, pages: defaultPages } = await resetCmsDefaults();
       setShell(defaultShell);
       setPages(defaultPages);
+      if (defaultPages.length > 0) {
+        setSelectedPageId(defaultPages[0].id);
+      }
       showToast('Reset all CMS layouts to showcase defaults');
     }
   };
 
-  const handleSaveAll = () => {
-    saveGlobalShell(shell);
-    pages.forEach((p) => saveCmsPage(p));
+  const handleSaveAll = async () => {
+    await saveGlobalShell(shell);
+    for (const p of pages) {
+      await saveCmsPage(p);
+    }
     showToast('All CMS changes saved successfully');
   };
 
   return (
     <div className="space-y-6">
-      {/* CMS Studio Header Banner */}
-      <div className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-6">
-        <div className="space-y-1">
-          <div className="flex items-center gap-2">
-            <span className="px-2.5 py-0.5 text-[10px] font-black uppercase tracking-wider rounded-md bg-amber-100 text-amber-900 border border-amber-300">
-              EXPERIENCE CMS STUDIO
+      {/* 5 Simplified Top-Level Tabs: Pages -> Header -> Footer -> Navigation -> Sections */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-200 pb-3">
+        <div className="flex items-center gap-1.5 overflow-x-auto">
+          {/* Tab 1: Pages */}
+          <button
+            type="button"
+            onClick={() => setActiveSubTab('pages')}
+            className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+              activeSubTab === 'pages'
+                ? 'bg-amber-800 text-white shadow-xs'
+                : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
+            }`}
+          >
+            <Layout className="w-4 h-4" />
+            <span>Pages</span>
+            <span
+              className={`text-[10px] px-1.5 py-0.2 rounded-md ${
+                activeSubTab === 'pages' ? 'bg-amber-900/60 text-amber-200' : 'bg-slate-200 text-slate-600'
+              }`}
+            >
+              {pages.length}
             </span>
-            <span className="text-xs text-slate-400 font-medium">·</span>
-            <span className="text-xs font-semibold text-slate-500">
-              Page Builder & Storefront Chrome
+          </button>
+
+          {/* Tab 2: Header */}
+          <button
+            type="button"
+            onClick={() => setActiveSubTab('header')}
+            className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+              activeSubTab === 'header'
+                ? 'bg-amber-800 text-white shadow-xs'
+                : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
+            }`}
+          >
+            <PanelTop className="w-4 h-4" />
+            <span>Header</span>
+          </button>
+
+          {/* Tab 3: Footer */}
+          <button
+            type="button"
+            onClick={() => setActiveSubTab('footer')}
+            className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+              activeSubTab === 'footer'
+                ? 'bg-amber-800 text-white shadow-xs'
+                : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
+            }`}
+          >
+            <Footprints className="w-4 h-4" />
+            <span>Footer</span>
+            <span
+              className={`text-[10px] px-1.5 py-0.2 rounded-md ${
+                activeSubTab === 'footer' ? 'bg-amber-900/60 text-amber-200' : 'bg-slate-200 text-slate-600'
+              }`}
+            >
+              {shell.footer.columns.length}
             </span>
-          </div>
-          <h1 className="text-2xl sm:text-3xl font-serif font-black text-slate-900 tracking-tight">
-            Storefront Experience Engine
-          </h1>
-          <p className="text-xs sm:text-sm text-slate-600 max-w-2xl">
-            Configure site-wide promo banners, multi-level navigation trees, footers, and modular page sections (hero banners, category grids, product carousels, testimonials).
-          </p>
+          </button>
+
+          {/* Tab 4: Navigation */}
+          <button
+            type="button"
+            onClick={() => setActiveSubTab('navigation')}
+            className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+              activeSubTab === 'navigation'
+                ? 'bg-amber-800 text-white shadow-xs'
+                : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
+            }`}
+          >
+            <Menu className="w-4 h-4" />
+            <span>Navigation</span>
+            <span
+              className={`text-[10px] px-1.5 py-0.2 rounded-md ${
+                activeSubTab === 'navigation' ? 'bg-amber-900/60 text-amber-200' : 'bg-slate-200 text-slate-600'
+              }`}
+            >
+              {shell.header.nodes.length}
+            </span>
+          </button>
+
+          {/* Tab 5: Sections */}
+          <button
+            type="button"
+            onClick={() => setActiveSubTab('sections')}
+            className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+              activeSubTab === 'sections'
+                ? 'bg-amber-800 text-white shadow-xs'
+                : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
+            }`}
+          >
+            <Layers className="w-4 h-4" />
+            <span>Sections</span>
+          </button>
         </div>
 
-        {/* Global Action Buttons */}
-        <div className="flex items-center gap-2.5 shrink-0">
+        {/* Top Action Buttons */}
+        <div className="flex items-center gap-2 shrink-0">
           <button
             type="button"
             onClick={handleResetDefaults}
-            className="flex items-center gap-1.5 px-3.5 py-2 text-xs font-bold text-slate-600 hover:text-slate-900 bg-slate-100 hover:bg-slate-200/80 rounded-xl transition-colors cursor-pointer"
+            className="flex items-center gap-1.5 px-3 py-2 text-xs font-bold text-slate-600 hover:text-slate-900 bg-slate-100 hover:bg-slate-200/80 rounded-xl transition-colors cursor-pointer"
             title="Reset to showcase defaults"
           >
             <RotateCcw className="w-3.5 h-3.5 text-slate-500" />
-            <span>Reset Defaults</span>
+            <span className="hidden md:inline">Reset Defaults</span>
           </button>
 
           <button
             type="button"
             onClick={handleSaveAll}
-            className="flex items-center gap-2 px-4 py-2.5 text-xs font-bold text-white bg-emerald-700 hover:bg-emerald-800 rounded-xl shadow-xs transition-colors cursor-pointer"
+            className="flex items-center gap-2 px-3.5 py-2 text-xs font-bold text-white bg-emerald-700 hover:bg-emerald-800 rounded-xl shadow-xs transition-colors cursor-pointer"
           >
             <Save className="w-4 h-4" />
-            <span>Save All CMS</span>
+            <span>Save All</span>
           </button>
 
           <button
             type="button"
             onClick={() => handleOpenPreview()}
-            className="flex items-center gap-2 px-4 py-2.5 text-xs font-bold text-white bg-amber-800 hover:bg-amber-900 rounded-xl shadow-xs transition-colors cursor-pointer"
+            className="flex items-center gap-2 px-4 py-2 text-xs font-bold text-white bg-amber-800 hover:bg-amber-900 rounded-xl shadow-xs transition-colors cursor-pointer"
           >
             <Eye className="w-4 h-4" />
             <span>Preview Storefront</span>
@@ -140,75 +251,68 @@ export function CmsStudio() {
         </div>
       </div>
 
-      {/* Sub-Navigation Tabs */}
-      <div className="flex items-center gap-2 border-b border-slate-200 pb-2">
-        <button
-          type="button"
-          onClick={() => setActiveSubTab('pages')}
-          className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
-            activeSubTab === 'pages'
-              ? 'bg-amber-800 text-white shadow-xs'
-              : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
-          }`}
-        >
-          <Layout className="w-4 h-4" />
-          <span>Pages & Section Stacks ({pages.length})</span>
-        </button>
-
-        <button
-          type="button"
-          onClick={() => setActiveSubTab('shell')}
-          className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
-            activeSubTab === 'shell'
-              ? 'bg-amber-800 text-white shadow-xs'
-              : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
-          }`}
-        >
-          <Globe className="w-4 h-4" />
-          <span>Site Shell (Promo, Header, Footer)</span>
-        </button>
-
-        <button
-          type="button"
-          onClick={() => setActiveSubTab('lanes')}
-          className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
-            activeSubTab === 'lanes'
-              ? 'bg-amber-800 text-white shadow-xs'
-              : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
-          }`}
-        >
-          <Layers className="w-4 h-4" />
-          <span>Lanes & Collections Library</span>
-        </button>
-      </div>
-
-      {/* Active Sub-Tab View */}
+      {/* Tab 1: Pages */}
       {activeSubTab === 'pages' && (
-        <PagesBuilderView
+        <PagesListView
           pages={pages}
           onUpdatePage={handleUpdatePage}
           onCreatePage={handleCreatePage}
           onDeletePage={handleDeletePage}
+          onSelectPageForSections={(pageId) => {
+            setSelectedPageId(pageId);
+            setActiveSubTab('sections');
+          }}
           onPreviewStorefront={handleOpenPreview}
           showToast={showToast}
         />
       )}
 
-      {activeSubTab === 'shell' && (
-        <SiteShellView
-          shell={shell}
-          onUpdateShell={handleUpdateShell}
+      {/* Tab 2: Header */}
+      {activeSubTab === 'header' && (
+        <HeaderConfigView
+          header={shell.header}
+          promo={shell.promo_bar}
+          onUpdateHeader={(updated) => handleUpdateShell({ ...shell, header: updated })}
+          onUpdatePromo={(updated) => handleUpdateShell({ ...shell, promo_bar: updated })}
           showToast={showToast}
         />
       )}
 
-      {activeSubTab === 'lanes' && <LaneList />}
+      {/* Tab 3: Footer */}
+      {activeSubTab === 'footer' && (
+        <FooterConfigView
+          footer={shell.footer}
+          onUpdateFooter={(updated) => handleUpdateShell({ ...shell, footer: updated })}
+          showToast={showToast}
+        />
+      )}
+
+      {/* Tab 4: Navigation */}
+      {activeSubTab === 'navigation' && (
+        <NavigationConfigView
+          header={shell.header}
+          onUpdateHeader={(updated) => handleUpdateShell({ ...shell, header: updated })}
+          showToast={showToast}
+        />
+      )}
+
+      {/* Tab 5: Sections */}
+      {activeSubTab === 'sections' && (
+        <SectionsBuilderView
+          pages={pages}
+          selectedPageId={selectedPageId || pages[0]?.id || ''}
+          onSelectPageId={setSelectedPageId}
+          onUpdatePage={handleUpdatePage}
+          onPreviewStorefront={handleOpenPreview}
+          showToast={showToast}
+        />
+      )}
 
       {/* Live Storefront Preview Modal */}
       <StorefrontPreviewModal
         isOpen={previewOpen}
         onClose={() => setPreviewOpen(false)}
-        page={previewPage || pages[0]}
+        page={previewPage || pages.find((p) => p.id === selectedPageId) || pages[0]}
         shell={shell}
       />
 
@@ -222,4 +326,3 @@ export function CmsStudio() {
     </div>
   );
 }
-

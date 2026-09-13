@@ -23,7 +23,7 @@
 │         │        │ (Cloud Run)             │     │ (Cloud Run)          │ │
 │         │        │ • Catalog Ground Truth  │     │ • Content Lanes      │ │
 │         │        │ • Full CRUD APIs        │     │ • Hero Rails & CMS   │ │
-│         │        │ • CounterCheck™ Spatial │     │ • Merchandising API  │ │
+│         │        │ • Equipment Clearances  │     │ • Merchandising API  │ │
 │         │        └─────────────────────────┘     └──────────────────────┘ │
 │         │                                                    ▲            │
 │         └────────────────────────────────────────────────────┘            │
@@ -31,7 +31,7 @@
 ```
 
 `pim-ui` connects directly to two core microservices hosted on Google Cloud Run:
-1. [`product-catalog-service`](https://github.com/dipeshsingh2012/product-catalog-service) — Serves catalog ground truth, inventory status, and spatial specifications (`https://product-catalog-service-518971663061.us-central1.run.app`).
+1. [`product-catalog-service`](https://github.com/dipeshsingh2012/product-catalog-service) — Serves catalog ground truth, inventory status, and equipment clearance specifications (`https://product-catalog-service-518971663061.us-central1.run.app`).
 2. `content-service` — Serves content lanes, promotional collections, and homepage merchandising layouts (`https://content-service-518971663061.us-central1.run.app`).
 
 `pim-ui` connects directly to these live services to query, enrich, and publish catalog products and merchandising lanes in real time.
@@ -151,7 +151,7 @@ The **Experience CMS** module empowers merchandisers and content managers to vis
 
 ### 🛍️ 2. Product Information Management (PIM) Capabilities
 
-The **PIM Catalog** module serves as the authoritative interface for product enrichment, inventory status, and spatial compliance:
+The **PIM Catalog** module serves as the authoritative interface for product enrichment, inventory status, and dimensional compliance:
 
 * **Catalog Dashboard & Data Grid:**
   * **Live Catalog KPIs:** Real-time counters for Total SKUs, Active Coffee Lots, Space-Verified Gear, and In-Stock percentage.
@@ -163,7 +163,7 @@ The **PIM Catalog** module serves as the authoritative interface for product enr
   * **Identity & Classification:** Product name, SKU, brand, category, lifecycle state, and HSN tax codes (`0901` for coffee, `8419` for appliances, or exempt).
   * **Commercial Pricing & Stock:** Selling price in INR (₹), Compare-At MSRP strikethrough price, and promotional badges (`EXCLUSIVE HARVEST`, `BESTSELLER`, `NEW`, `FLAGSHIP GEAR`, `SAVE 15%`).
   * **Roastery & Sensory Specs:** Roast profile selector (`Light` through `Vienna Dark`), origin estate/farm, altitude (MASL), processing method, and interactive flavor/aroma note tag manager.
-  * **CounterCheck™ Spatial Dimensions:** Physical dimensions (width, height, depth in cm, weight in kg) and operational headroom checks (top clearance for hoppers, side/rear clearance for ventilation) validated against standard 45cm cabinetry.
+  * **CounterCheck™ Dimensions & Clearance:** Physical dimensions (width, height, depth in cm, weight in kg) and operational headroom checks (top clearance for hoppers, side/rear clearance for ventilation) validated against standard 45cm cabinetry.
   * **Media & Brand Story:** Image URLs with live preview, cutout PNG support, and rich description copy.
 
 * **Storefront Deep Linking:**

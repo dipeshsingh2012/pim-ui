@@ -118,11 +118,20 @@ const FALLBACK_LANES: any[] = [
   },
 ];
 
-function getBaseUrl(resource: string): string {
+export function resolveResourcePath(resource: string): { baseUrl: string; endpoint: string } {
   if (resource === 'lanes' || resource === 'content_lanes' || resource === 'menus') {
-    return CONTENT_API_URL;
+    return { baseUrl: CONTENT_API_URL, endpoint: resource };
   }
-  return CATALOG_API_URL;
+  if (resource === 'pages' || resource === 'cms_pages' || resource === 'cms/pages') {
+    return { baseUrl: CONTENT_API_URL, endpoint: 'cms/pages' };
+  }
+  if (resource === 'cms/shell' || resource === 'shell' || resource === 'cms_shell') {
+    return { baseUrl: CONTENT_API_URL, endpoint: 'cms/shell' };
+  }
+  if (resource.startsWith('cms/')) {
+    return { baseUrl: CONTENT_API_URL, endpoint: resource };
+  }
+  return { baseUrl: CATALOG_API_URL, endpoint: resource };
 }
 
 export const dataProvider: DataProvider = {
@@ -130,7 +139,7 @@ export const dataProvider: DataProvider = {
     const current = pagination?.currentPage ?? (pagination as any)?.current ?? 1;
     const pageSize = pagination?.pageSize ?? 50;
     const offset = (current - 1) * pageSize;
-    const baseUrl = getBaseUrl(resource);
+    const { baseUrl, endpoint } = resolveResourcePath(resource);
 
     const params = new URLSearchParams();
     params.set('offset', String(offset));
@@ -167,7 +176,7 @@ export const dataProvider: DataProvider = {
       try {
         const controller = new AbortController();
         const timeoutId = setTimeout(() => controller.abort(), 10000);
-        const response = await fetch(`${baseUrl}/${resource}?${params.toString()}`, { signal: controller.signal });
+        const response = await fetch(`${baseUrl}/${endpoint}?${params.toString()}`, { signal: controller.signal });
         clearTimeout(timeoutId);
         if (response.ok) {
           const json = await response.json();
@@ -189,12 +198,12 @@ export const dataProvider: DataProvider = {
   },
 
   getOne: async ({ resource, id }) => {
-    const baseUrl = getBaseUrl(resource);
+    const { baseUrl, endpoint } = resolveResourcePath(resource);
     if (baseUrl) {
       try {
         const controller = new AbortController();
         const timeoutId = setTimeout(() => controller.abort(), 10000);
-        const response = await fetch(`${baseUrl}/${resource}/${id}`, { signal: controller.signal });
+        const response = await fetch(`${baseUrl}/${endpoint}/${id}`, { signal: controller.signal });
         clearTimeout(timeoutId);
         if (response.ok) {
           const data = await response.json();
@@ -210,10 +219,10 @@ export const dataProvider: DataProvider = {
   },
 
   create: async ({ resource, variables }) => {
-    const baseUrl = getBaseUrl(resource);
+    const { baseUrl, endpoint } = resolveResourcePath(resource);
     if (baseUrl) {
       try {
-        const response = await fetch(`${baseUrl}/${resource}`, {
+        const response = await fetch(`${baseUrl}/${endpoint}`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -235,10 +244,10 @@ export const dataProvider: DataProvider = {
   },
 
   update: async ({ resource, id, variables }) => {
-    const baseUrl = getBaseUrl(resource);
+    const { baseUrl, endpoint } = resolveResourcePath(resource);
     if (baseUrl) {
       try {
-        const response = await fetch(`${baseUrl}/${resource}/${id}`, {
+        const response = await fetch(`${baseUrl}/${endpoint}/${id}`, {
           method: 'PATCH',
           headers: {
             'Content-Type': 'application/json',
@@ -260,10 +269,10 @@ export const dataProvider: DataProvider = {
   },
 
   deleteOne: async ({ resource, id }) => {
-    const baseUrl = getBaseUrl(resource);
+    const { baseUrl, endpoint } = resolveResourcePath(resource);
     if (baseUrl) {
       try {
-        await fetch(`${baseUrl}/${resource}/${id}`, {
+        await fetch(`${baseUrl}/${endpoint}/${id}`, {
           method: 'DELETE',
         });
       } catch {
