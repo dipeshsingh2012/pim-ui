@@ -1,12 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import {
-  Palette,
   Sparkles,
   Save,
-  RotateCcw,
   Check,
   CheckCircle2,
   RefreshCw,
+  RotateCcw,
   Monitor,
   Smartphone,
   Coffee,
@@ -215,37 +214,25 @@ export function ThemeConfigView({
 
   return (
     <div className="space-y-8 animate-in fade-in duration-200">
-      {/* Top Banner & Action Header */}
-      <div className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200/80 shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-6">
-        <div className="space-y-2">
-          <div className="flex items-center gap-2.5">
-            <div
-              className="w-10 h-10 rounded-2xl flex items-center justify-center shadow-xs transition-colors duration-300"
-              style={{ backgroundColor: theme.primary_color, color: '#ffffff' }}
-            >
-              <Palette className="w-5 h-5" />
-            </div>
-            <div>
-              <div className="flex items-center gap-2">
-                <h1 className="text-xl sm:text-2xl font-bold font-serif text-slate-900 tracking-tight">
-                  Store Theme & Visual Styling
-                </h1>
-                <span
-                  className="px-2.5 py-0.5 text-[10px] font-black uppercase tracking-wider rounded-md"
-                  style={{
-                    backgroundColor: `${theme.accent_color}25`,
-                    color: theme.primary_color,
-                    border: `1px solid ${theme.primary_color}40`,
-                  }}
-                >
-                  {PRESET_METADATA[theme.preset]?.vibe || 'Active Theme'}
-                </span>
-              </div>
-              <p className="text-xs text-slate-500 font-medium">
-                Curate brand colorways, typography, elevation, and seasonal aesthetics published live across the digital store.
-              </p>
-            </div>
-          </div>
+      {/* Top Action Controls Bar */}
+      <div className="bg-white rounded-2xl p-4 border border-slate-200 shadow-2xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div className="flex items-center gap-2">
+          <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">
+            Active Theme:
+          </span>
+          <span
+            className="px-2.5 py-0.5 text-xs font-bold rounded-md"
+            style={{
+              backgroundColor: `${theme.accent_color}25`,
+              color: theme.primary_color,
+              border: `1px solid ${theme.primary_color}40`,
+            }}
+          >
+            {PRESET_METADATA[theme.preset]?.title || theme.name}
+          </span>
+          <span className="text-xs text-slate-400 font-mono hidden sm:inline">
+            ({PRESET_METADATA[theme.preset]?.vibe || 'Preset'})
+          </span>
         </div>
 
         {/* Action Controls */}
@@ -275,7 +262,7 @@ export function ThemeConfigView({
             type="button"
             onClick={handlePublish}
             disabled={isSaving}
-            className="flex items-center gap-2 px-5 py-2.5 text-white rounded-xl text-xs font-bold shadow-md transition-all cursor-pointer hover:opacity-95 disabled:opacity-50"
+            className="flex items-center gap-2 px-4 py-2 text-white rounded-xl text-xs font-bold shadow-xs transition-all cursor-pointer hover:opacity-95 disabled:opacity-50"
             style={{ backgroundColor: theme.primary_color }}
           >
             {isSaving ? (

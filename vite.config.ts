@@ -37,14 +37,14 @@ const proxyAgent = new https.Agent({ lookup: resilientLookup, keepAlive: true })
 
 const proxyConfig = {
   '/api/catalog': {
-    target: 'https://product-catalog-service-518971663061.us-central1.run.app',
+    target: 'https://product-catalog-service-fzdcrf2fxq-uc.a.run.app',
     changeOrigin: true,
     agent: proxyAgent,
     rewrite: (path: string) => path.replace(/^\/api\/catalog(\/api\/v1)?/, '/api/v1'),
     secure: false,
   },
   '/api/content': {
-    target: 'https://content-service-518971663061.us-central1.run.app',
+    target: 'https://content-service-fzdcrf2fxq-uc.a.run.app',
     changeOrigin: true,
     agent: proxyAgent,
     rewrite: (path: string) => path.replace(/^\/api\/content(\/api\/v1)?/, '/api/v1'),

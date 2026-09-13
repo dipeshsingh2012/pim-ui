@@ -1,8 +1,8 @@
 import type { DataProvider } from '@refinedev/core';
 import type { Product } from '../types/product';
 
-const DEFAULT_CATALOG_URL = 'https://product-catalog-service-518971663061.us-central1.run.app';
-const DEFAULT_CONTENT_URL = 'https://content-service-518971663061.us-central1.run.app';
+const DEFAULT_CATALOG_URL = 'https://product-catalog-service-fzdcrf2fxq-uc.a.run.app';
+const DEFAULT_CONTENT_URL = 'https://content-service-fzdcrf2fxq-uc.a.run.app';
 
 function normalizeApiUrl(rawUrl: string | undefined, defaultUrl: string): string {
   const url = rawUrl && rawUrl.trim() !== '' ? rawUrl.trim() : defaultUrl;
