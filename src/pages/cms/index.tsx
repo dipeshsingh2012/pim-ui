@@ -5,6 +5,7 @@ import {
   Footprints,
   Menu,
   Layers,
+  Palette,
   Eye,
   CheckCircle2,
 } from 'lucide-react';
@@ -27,9 +28,10 @@ import { HeaderConfigView } from './HeaderConfigView';
 import { FooterConfigView } from './FooterConfigView';
 import { NavigationConfigView } from './NavigationConfigView';
 import { SectionsBuilderView } from './SectionsBuilderView';
-import { StorefrontPreviewModal } from './StorefrontPreviewModal';
+import { ThemeConfigView } from './ThemeConfigView';
+import { StorePreviewModal } from './StorePreviewModal';
 
-export type CmsStudioTab = 'pages' | 'header' | 'footer' | 'navigation' | 'sections';
+export type CmsStudioTab = 'pages' | 'header' | 'footer' | 'navigation' | 'sections' | 'themes';
 
 export function CmsStudio() {
   const [activeSubTab, setActiveSubTab] = useState<CmsStudioTab>('pages');
@@ -179,6 +181,20 @@ export function CmsStudio() {
             <Layers className="w-4 h-4" />
             <span>Sections</span>
           </button>
+
+          {/* Tab 6: Themes & Styling */}
+          <button
+            type="button"
+            onClick={() => setActiveSubTab('themes')}
+            className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+              activeSubTab === 'themes'
+                ? 'bg-amber-800 text-white shadow-xs'
+                : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
+            }`}
+          >
+            <Palette className="w-4 h-4" />
+            <span>Themes & Styling</span>
+          </button>
         </div>
 
         {/* Top Action Buttons */}
@@ -251,8 +267,17 @@ export function CmsStudio() {
         />
       )}
 
+      {/* Tab 6: Themes & Styling */}
+      {activeSubTab === 'themes' && (
+        <ThemeConfigView
+          shell={shell}
+          onUpdateShellTheme={(updatedTheme) => handleUpdateShell({ ...shell, theme: updatedTheme })}
+          showToast={showToast}
+        />
+      )}
+
       {/* Live Store Preview Modal */}
-      <StorefrontPreviewModal
+      <StorePreviewModal
         isOpen={previewOpen}
         onClose={() => setPreviewOpen(false)}
         page={previewPage || pages.find((p) => p.id === selectedPageId) || pages[0]}

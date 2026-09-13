@@ -19,31 +19,16 @@ interface PagesListViewProps {
   onDeletePage: (id: string) => void;
   onSelectPageForSections: (pageId: string) => void;
   onPreviewStore?: (page: CMSPage) => void;
-  onPreviewStorefront?: (page: CMSPage) => void;
   showToast: (msg: string) => void;
 }
 
 export const ALLOWED_PAGE_TYPES: {
-  type: 'home' | 'product' | 'collection' | 'static';
+  type: 'collection' | 'static';
   label: string;
   icon: string;
   description: string;
   defaultSlug: string;
 }[] = [
-  {
-    type: 'home',
-    label: 'Homepage',
-    icon: '🏠',
-    description: 'Flagship store entry and brand showcase',
-    defaultSlug: '/',
-  },
-  {
-    type: 'product',
-    label: 'Product Page (PDP)',
-    icon: '📦',
-    description: 'Product detail showcase and specifications',
-    defaultSlug: '/products/new-item',
-  },
   {
     type: 'collection',
     label: 'Collection Page (PLP)',
@@ -77,15 +62,13 @@ export function PagesListView({
   onDeletePage,
   onSelectPageForSections,
   onPreviewStore,
-  onPreviewStorefront,
   showToast,
 }: PagesListViewProps) {
   const handlePreview = (p: CMSPage) => {
     if (onPreviewStore) onPreviewStore(p);
-    else if (onPreviewStorefront) onPreviewStorefront(p);
   };
 
-  const [filterType, setFilterType] = useState<string>('all');
+  const [filterType, setFilterType] = useState<string>('home');
   const [searchQuery, setSearchQuery] = useState('');
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [editingPage, setEditingPage] = useState<CMSPage | null>(null);
@@ -93,7 +76,7 @@ export function PagesListView({
   // New Page Form State
   const [newPageTitle, setNewPageTitle] = useState('');
   const [newPageSlug, setNewPageSlug] = useState('/collections/featured');
-  const [newPageType, setNewPageType] = useState<'home' | 'product' | 'collection' | 'static'>('collection');
+  const [newPageType, setNewPageType] = useState<'collection' | 'static'>('collection');
   const [newPageDescription, setNewPageDescription] = useState('');
 
   // Edit Page Form State
@@ -102,26 +85,22 @@ export function PagesListView({
   const [editDescription, setEditDescription] = useState('');
   const [editPublished, setEditPublished] = useState(true);
 
-  const homeCount = pages.filter((p) => p.page_type === 'home').length;
   const productCount = pages.filter((p) => p.page_type === 'product').length;
   const collectionCount = pages.filter((p) => p.page_type === 'collection').length;
   const staticCount = pages.filter((p) => p.page_type === 'static' || p.page_type === 'discovery').length;
 
   const filterTabs = [
-    { type: 'all', label: 'All Pages', count: pages.length },
-    { type: 'home', label: 'Homepage', icon: '🏠', count: homeCount },
+    { type: 'home', label: 'Homepage', icon: '🏠' },
     { type: 'product', label: 'Product Pages', icon: '📦', count: productCount },
     { type: 'collection', label: 'Collections', icon: '☕', count: collectionCount },
     { type: 'static', label: 'Content & Static', icon: '📄', count: staticCount },
   ];
 
   const filteredPages = pages.filter((p) => {
-    if (filterType !== 'all') {
-      if (filterType === 'static') {
-        if (p.page_type !== 'static' && p.page_type !== 'discovery') return false;
-      } else if (p.page_type !== filterType) {
-        return false;
-      }
+    if (filterType === 'static') {
+      if (p.page_type !== 'static' && p.page_type !== 'discovery') return false;
+    } else if (p.page_type !== filterType) {
+      return false;
     }
     if (searchQuery.trim()) {
       const q = searchQuery.toLowerCase();
@@ -219,19 +198,21 @@ export function PagesListView({
               >
                 {tab.icon && <span>{tab.icon}</span>}
                 <span>{tab.label}</span>
-                <span
-                  className={`text-[10px] px-1.5 py-0.2 rounded-md font-mono ${
-                    isSelected ? 'bg-amber-900/60 text-amber-200' : 'bg-slate-200 text-slate-600'
-                  }`}
-                >
-                  {tab.count}
-                </span>
+                {typeof tab.count === 'number' && (
+                  <span
+                    className={`text-[10px] px-1.5 py-0.2 rounded-md font-mono ${
+                      isSelected ? 'bg-amber-900/60 text-amber-200' : 'bg-slate-200 text-slate-600'
+                    }`}
+                  >
+                    {tab.count}
+                  </span>
+                )}
               </button>
             );
           })}
         </div>
 
-        {/* Search & Create Action */}
+        {/* Search & Action Buttons */}
         <div className="flex items-center gap-2.5 shrink-0">
           <div className="relative w-48 sm:w-56">
             <Search className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
@@ -244,19 +225,47 @@ export function PagesListView({
             />
           </div>
 
-          <button
-            type="button"
-            onClick={() => {
-              setNewPageTitle('');
-              setNewPageSlug('/collections/featured');
-              setNewPageType('collection');
-              setShowCreateModal(true);
-            }}
-            className="flex items-center gap-1.5 px-3.5 py-1.5 text-xs font-bold text-white bg-amber-800 hover:bg-amber-900 rounded-xl shadow-xs transition-colors cursor-pointer shrink-0"
-          >
-            <Plus className="w-3.5 h-3.5" />
-            <span>Create Page</span>
-          </button>
+          {filterType === 'home' ? (
+            <button
+              type="button"
+              onClick={() => {
+                const homePage = pages.find((p) => p.page_type === 'home');
+                if (homePage) onSelectPageForSections(homePage.id);
+              }}
+              className="flex items-center gap-1.5 px-3.5 py-1.5 text-xs font-bold text-white bg-amber-800 hover:bg-amber-900 rounded-xl shadow-xs transition-colors cursor-pointer shrink-0"
+            >
+              <SlidersHorizontal className="w-3.5 h-3.5" />
+              <span>Configure Layout</span>
+            </button>
+          ) : filterType === 'product' ? (
+            <button
+              type="button"
+              onClick={() => {
+                const prodPage =
+                  filteredPages.find((p) => p.page_type === 'product') ||
+                  pages.find((p) => p.page_type === 'product');
+                if (prodPage) onSelectPageForSections(prodPage.id);
+              }}
+              className="flex items-center gap-1.5 px-3.5 py-1.5 text-xs font-bold text-white bg-amber-800 hover:bg-amber-900 rounded-xl shadow-xs transition-colors cursor-pointer shrink-0"
+            >
+              <SlidersHorizontal className="w-3.5 h-3.5" />
+              <span>Configure Layout</span>
+            </button>
+          ) : (
+            <button
+              type="button"
+              onClick={() => {
+                setNewPageTitle('');
+                setNewPageSlug(filterType === 'static' ? '/about' : '/collections/featured');
+                setNewPageType(filterType === 'static' ? 'static' : 'collection');
+                setShowCreateModal(true);
+              }}
+              className="flex items-center gap-1.5 px-3.5 py-1.5 text-xs font-bold text-white bg-amber-800 hover:bg-amber-900 rounded-xl shadow-xs transition-colors cursor-pointer shrink-0"
+            >
+              <Plus className="w-3.5 h-3.5" />
+              <span>Create Page</span>
+            </button>
+          )}
         </div>
       </div>
 
@@ -277,8 +286,6 @@ export function PagesListView({
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {filteredPages.map((page) => {
             const meta = PAGE_TYPE_LABELS[page.page_type] || { label: page.page_type, icon: '📄' };
-            const isProductPage = page.page_type === 'product';
-            const isFallbackTemplate = isProductPage && (page.slug === '/products/:id' || page.id === 'page_product_default');
 
             return (
               <div
@@ -295,11 +302,6 @@ export function PagesListView({
                       <div>
                         <div className="flex items-center gap-2 flex-wrap">
                           <h4 className="text-sm font-bold text-slate-900 leading-snug">{page.title}</h4>
-                          {isFallbackTemplate && (
-                            <span className="text-[9px] font-bold text-amber-900 bg-amber-100/90 px-1.5 py-0.5 rounded border border-amber-300">
-                              Universal Fallback
-                            </span>
-                          )}
                         </div>
                         <div className="flex items-center gap-2 mt-0.5 flex-wrap">
                           <span className="text-xs font-mono text-slate-500 bg-slate-50 px-2 py-0.5 rounded border border-slate-200">
@@ -497,7 +499,7 @@ export function PagesListView({
               <h3 className="text-base font-bold text-slate-900">Edit Page Settings</h3>
               <p className="text-xs text-slate-500">
                 {editingPage.page_type === 'home'
-                  ? 'Flagship store homepage entry settings'
+                  ? 'Homepage entry settings'
                   : 'Customize page title, route, and visibility'}
               </p>
             </div>

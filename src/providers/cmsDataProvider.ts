@@ -3,6 +3,8 @@ import {
   PromoBarConfig,
   HeaderConfig,
   FooterConfig,
+  ThemeConfig,
+  ThemePreset,
   CMSPage,
   PageSection,
   SectionType,
@@ -12,6 +14,103 @@ import { CONTENT_API_URL } from './dataProvider';
 
 const STORAGE_SHELL_KEY = 'pim_cms_global_shell_v1';
 const STORAGE_PAGES_KEY = 'pim_cms_pages_v1';
+const STORAGE_THEME_KEY = 'pim_cms_theme_v1';
+
+// ==========================================
+// Default Theme Presets
+// ==========================================
+export const DEFAULT_THEME_PRESETS: Record<ThemePreset, ThemeConfig> = {
+  alpine: {
+    id: 'theme_hill_jhil_alpine',
+    name: 'Hill Jhil Alpine Tarn',
+    preset: 'alpine',
+    mode: 'light',
+    primary_color: '#085454',
+    accent_color: '#0d9488',
+    surface_color: '#ffffff',
+    background_color: '#f0fdfa',
+    text_color: '#042f2e',
+    font_family: 'serif',
+    border_radius: 'rounded-2xl',
+    badge_text: 'ALPINE ESTATE HARVEST',
+    is_active: true,
+  },
+  amber: {
+    id: 'theme_warm_amber',
+    name: 'Warm Amber Roast',
+    preset: 'amber',
+    mode: 'light',
+    primary_color: '#92400e',
+    accent_color: '#f59e0b',
+    surface_color: '#ffffff',
+    background_color: '#fbf9f6',
+    text_color: '#1c1917',
+    font_family: 'serif',
+    border_radius: 'rounded-2xl',
+    badge_text: 'FLAGSHIP HARVEST',
+    is_active: true,
+  },
+  espresso: {
+    id: 'theme_midnight_espresso',
+    name: 'Midnight Espresso',
+    preset: 'espresso',
+    mode: 'dark',
+    primary_color: '#1c1917',
+    accent_color: '#d97706',
+    surface_color: '#18181b',
+    background_color: '#09090b',
+    text_color: '#f4f4f5',
+    font_family: 'sans',
+    border_radius: 'rounded-xl',
+    badge_text: 'BARISTA NIGHTS',
+    is_active: false,
+  },
+  emerald: {
+    id: 'theme_highland_emerald',
+    name: 'Highland Emerald',
+    preset: 'emerald',
+    mode: 'light',
+    primary_color: '#064e3b',
+    accent_color: '#10b981',
+    surface_color: '#ffffff',
+    background_color: '#f0fdf4',
+    text_color: '#064e3b',
+    font_family: 'sans',
+    border_radius: 'rounded-2xl',
+    badge_text: 'ESTATE ORIGINS',
+    is_active: false,
+  },
+  crimson: {
+    id: 'theme_berry_crimson',
+    name: 'Berry Crimson Velvet',
+    preset: 'crimson',
+    mode: 'light',
+    primary_color: '#881337',
+    accent_color: '#f43f5e',
+    surface_color: '#ffffff',
+    background_color: '#fff1f2',
+    text_color: '#4c0519',
+    font_family: 'serif',
+    border_radius: 'rounded-2xl',
+    badge_text: 'LIMITED NANO-LOT',
+    is_active: false,
+  },
+  slate: {
+    id: 'theme_modern_slate',
+    name: 'Modern Minimal Slate',
+    preset: 'slate',
+    mode: 'light',
+    primary_color: '#0f172a',
+    accent_color: '#64748b',
+    surface_color: '#ffffff',
+    background_color: '#f8fafc',
+    text_color: '#0f172a',
+    font_family: 'sans',
+    border_radius: 'rounded-lg',
+    badge_text: 'PRECISION LAB',
+    is_active: false,
+  },
+};
 
 // ==========================================
 // Default Seed Data: Global Site Shell
@@ -166,6 +265,7 @@ export const DEFAULT_GLOBAL_SHELL: GlobalShellConfig = {
     ],
     copyright: '© 2026 Hiljhil Roasters Co. All rights reserved. Precision-crafted for specialty coffee devotees.',
   },
+  theme: DEFAULT_THEME_PRESETS.alpine,
 };
 
 // ==========================================
@@ -173,87 +273,872 @@ export const DEFAULT_GLOBAL_SHELL: GlobalShellConfig = {
 // ==========================================
 export const SEED_CATALOG_PRODUCTS: Product[] = [
   {
-    id: 'prod_breville_barista_touch',
-    name: 'Barista Touch Espresso Machine',
-    brand: 'Breville',
-    sku: 'BES880BSS',
-    category: 'espresso_machine',
-    price: 999.95,
-    compare_at_price: 1199.95,
-    status: 'active',
-    in_stock: true,
-    badge: 'FLAGSHIP GEAR',
-    rating: 4.9,
-    review_count: 142,
-    tax_category: '8419',
-    width_cm: 32.2,
-    height_cm: 40.7,
-    depth_cm: 32.2,
-    weight_kg: 10.3,
-    top_clearance_cm: 12.0,
-    side_clearance_cm: 5.0,
-    rear_clearance_cm: 5.0,
-    image_url: 'https://images.unsplash.com/photo-1570968915860-54d5c301fa9f?w=600&auto=format&fit=crop&q=80',
-    description: 'Automated touchscreen espresso machine with integrated precision grinder.',
-    taste_notes: ['Espresso', 'Microfoam', 'Touchscreen'],
+    "id": "prod_mooleh_manay_excelsa",
+    "name": "Excelsa by Mooleh Manay Estate",
+    "brand": "Hiljhil Roasters",
+    "sku": "HJ-EXCELSA-100",
+    "category": "producer_series",
+    "price": 600,
+    "compare_at_price": null,
+    "status": "active",
+    "in_stock": true,
+    "badge": "NANO LOT",
+    "rating": 5,
+    "review_count": 28,
+    "tax_category": "coffee_beans",
+    "width_cm": 10,
+    "height_cm": 18,
+    "depth_cm": 5,
+    "weight_kg": 0.1,
+    "top_clearance_cm": 0,
+    "side_clearance_cm": 0,
+    "rear_clearance_cm": 0,
+    "roast_level": "light",
+    "process_method": "carbonic_maceration",
+    "estate_name": "Mooleh Manay Estate",
+    "region": "Coorg, Karnataka",
+    "elevation_m": 1100,
+    "varietal": "Excelsa",
+    "image_url": "https://cdn.shopify.com/s/files/1/0738/1409/files/final.png?v=1788875724",
+    "description": "Exploration beyond Arabica and Robusta with rare Excelsa cherries. 132-hour dual-phase fermentation with wine yeast and lactobacillus creates a creamy, fruit-forward mouthfeel.",
+    "taste_notes": [
+      "Wild Berries",
+      "Red Plum",
+      "Ripe Banana",
+      "Nutmeg",
+      "Sweet Cedar",
+      "Malt"
+    ]
   },
   {
-    id: 'prod_artisan_guji',
-    name: 'Ethiopian Guji Single Origin (250g)',
-    brand: 'Artisan Roasters',
-    sku: 'ETH-GUJ-250',
-    category: 'coffee_beans',
-    price: 22.0,
-    compare_at_price: null,
-    status: 'active',
-    in_stock: true,
-    badge: 'EXCLUSIVE HARVEST',
-    rating: 5.0,
-    review_count: 88,
-    tax_category: '0901',
-    width_cm: 10.0,
-    height_cm: 20.0,
-    depth_cm: 6.0,
-    weight_kg: 0.25,
-    top_clearance_cm: 0,
-    side_clearance_cm: 0,
-    rear_clearance_cm: 0,
-    roast_level: 'Light Medium',
-    process_method: 'Washed',
-    estate_name: 'Shakiso Highlands',
-    region: 'Oromia, Guji',
-    elevation_m: 2100,
-    varietal: 'Heirloom',
-    image_url: 'https://images.unsplash.com/photo-1559056199-641a0ac8b55e?w=600&auto=format&fit=crop&q=80',
-    description: 'Bergamot, candied peach, and jasmine blossoms in a sparkling cup.',
-    taste_notes: ['Jasmine', 'Bergamot', 'Peach'],
+    "id": "prod_baarbara_estate_whiskey_barrel",
+    "name": "Baarbara Estate - Whiskey Barrel Aged",
+    "brand": "Hiljhil Roasters",
+    "sku": "HJ-BAARBARA-WBA-250",
+    "category": "single_origin",
+    "price": 1250,
+    "compare_at_price": null,
+    "status": "active",
+    "in_stock": true,
+    "badge": "EXCLUSIVE LOT",
+    "rating": 5,
+    "review_count": 64,
+    "tax_category": "coffee_beans",
+    "width_cm": 12,
+    "height_cm": 20,
+    "depth_cm": 6,
+    "weight_kg": 0.25,
+    "top_clearance_cm": 0,
+    "side_clearance_cm": 0,
+    "rear_clearance_cm": 0,
+    "roast_level": "medium",
+    "process_method": "whiskey_barrel",
+    "estate_name": "Baarbara Estate",
+    "region": "Baba Budangiri, Karnataka",
+    "elevation_m": 1450,
+    "varietal": "Arabica Selection",
+    "image_url": "https://cdn.shopify.com/s/files/1/0738/1409/files/1_6.jpg?v=1787560255",
+    "description": "Aged for nearly four months in freshly emptied malt whiskey oak barrels in a controlled microclimate. Wine-like aromas with non-alcoholic whiskey oak and Irish cream finish.",
+    "taste_notes": [
+      "Red Plum",
+      "Whiskey Oak",
+      "Ripe Banana",
+      "Cocoa",
+      "Sweet Cardamom",
+      "Irish Cream"
+    ]
   },
   {
-    id: 'prod_delonghi_dedica',
-    name: 'Dedica Deluxe Slim Espresso Machine',
-    brand: "De'Longhi",
-    sku: 'EC680M',
-    category: 'espresso_machine',
-    price: 299.95,
-    compare_at_price: 349.95,
-    status: 'active',
-    in_stock: true,
-    badge: 'BESTSELLER',
-    rating: 4.6,
-    review_count: 310,
-    tax_category: '8419',
-    width_cm: 14.9,
-    height_cm: 30.5,
-    depth_cm: 33.0,
-    weight_kg: 4.2,
-    top_clearance_cm: 5.0,
-    side_clearance_cm: 3.0,
-    rear_clearance_cm: 4.0,
-    image_url: 'https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?w=600&auto=format&fit=crop&q=80',
-    description: 'Ultra-slim 6-inch wide manual espresso machine for tight counters.',
-    taste_notes: ['Compact', '15-Bar Pump', 'Steam Wand'],
+    "id": "prod_riverdale_estate_mosto",
+    "name": "Riverdale Estate - Mosto",
+    "brand": "Hiljhil Roasters",
+    "sku": "HJ-RIVERDALE-MOSTO-200",
+    "category": "producer_series",
+    "price": 1000,
+    "compare_at_price": null,
+    "status": "active",
+    "in_stock": true,
+    "badge": "PRODUCER SERIES",
+    "rating": 4.9,
+    "review_count": 31,
+    "tax_category": "coffee_beans",
+    "width_cm": 11,
+    "height_cm": 19,
+    "depth_cm": 5.5,
+    "weight_kg": 0.2,
+    "top_clearance_cm": 0,
+    "side_clearance_cm": 0,
+    "rear_clearance_cm": 0,
+    "roast_level": "light",
+    "process_method": "carbonic_maceration",
+    "estate_name": "Riverdale Estate",
+    "region": "Shevaroy Hills, Tamil Nadu",
+    "elevation_m": 1500,
+    "varietal": "SLN 9",
+    "image_url": "https://cdn.shopify.com/s/files/1/0738/1409/files/PS-Mosto-list.png?v=1787554172",
+    "description": "Fermented with microbe-rich Gesha Mosto liquid starter culture through a 72-hour controlled fermentation, followed by slow drying on raised beds for 30 days.",
+    "taste_notes": [
+      "Pink Pomelo",
+      "Tart Cherries",
+      "Chamomile",
+      "Pomegranate",
+      "Gooseberry"
+    ]
   },
+  {
+    "id": "prod_raxidi_lobo_pichia_yeast",
+    "name": "Raxidi Lobo Estate - Pichia Yeast",
+    "brand": "Hiljhil Roasters",
+    "sku": "HJ-RAXIDI-PICHIA-200",
+    "category": "producer_series",
+    "price": 1000,
+    "compare_at_price": null,
+    "status": "active",
+    "in_stock": true,
+    "badge": "PRODUCER SERIES",
+    "rating": 4.9,
+    "review_count": 22,
+    "tax_category": "coffee_beans",
+    "width_cm": 11,
+    "height_cm": 19,
+    "depth_cm": 5.5,
+    "weight_kg": 0.2,
+    "top_clearance_cm": 0,
+    "side_clearance_cm": 0,
+    "rear_clearance_cm": 0,
+    "roast_level": "light",
+    "process_method": "anaerobic",
+    "estate_name": "Raxidi Lobo Estate",
+    "region": "Karnataka",
+    "elevation_m": 1200,
+    "varietal": "Arabica Selection",
+    "image_url": "https://cdn.shopify.com/s/files/1/0738/1409/files/PS-Listing_Web.png?v=1784289488",
+    "description": "Selected ripe red cherries guided by a 48-hour stainless steel anaerobic fermentation with Pichia yeast strain, then slow dried on raised beds for 21 days.",
+    "taste_notes": [
+      "Strawberry Jam",
+      "Raspberry",
+      "Plum Tart",
+      "Marigold",
+      "Red Cherry",
+      "Candied Orange Peel"
+    ]
+  },
+  {
+    "id": "prod_the_monsoon_trio",
+    "name": "The Monsoon Trio (Discovery Pack)",
+    "brand": "Hiljhil Roasters",
+    "sku": "HJ-MONSOON-TRIO-225",
+    "category": "sampler",
+    "price": 600,
+    "compare_at_price": 650,
+    "status": "active",
+    "in_stock": true,
+    "badge": "DISCOVERY BOX",
+    "rating": 4.8,
+    "review_count": 89,
+    "tax_category": "coffee_beans",
+    "width_cm": 15,
+    "height_cm": 22,
+    "depth_cm": 7,
+    "weight_kg": 0.225,
+    "top_clearance_cm": 0,
+    "side_clearance_cm": 0,
+    "rear_clearance_cm": 0,
+    "roast_level": "medium_dark",
+    "process_method": "monsooned",
+    "estate_name": "Multi-Estate Assortment",
+    "region": "Karnataka & Tamil Nadu",
+    "elevation_m": 1300,
+    "varietal": "Monsoon Malabar AA & Arabica Washed",
+    "image_url": "https://cdn.shopify.com/s/files/1/0738/1409/files/Card-01_a5dbef83-3fa2-4cf6-ba07-c0227a545720.jpg?v=1787035346",
+    "description": "Curated trio bringing together comforting medium-dark roasts: Monsoon Malabar AA from Hoysala Estate, St. Joseph Estate washed, and Sampigehoney Estate.",
+    "taste_notes": [
+      "Cocoa Nibs",
+      "Raisins",
+      "Orange Marmalade",
+      "Clove",
+      "Toffee",
+      "Dark Chocolate"
+    ]
+  },
+  {
+    "id": "prod_sampigehoney_estate",
+    "name": "Sampigehoney Estate",
+    "brand": "Hiljhil Roasters",
+    "sku": "HJ-SAMPIGE-250",
+    "category": "single_origin",
+    "price": 700,
+    "compare_at_price": null,
+    "status": "active",
+    "in_stock": true,
+    "badge": "SEASONAL ROSTER",
+    "rating": 4.9,
+    "review_count": 115,
+    "tax_category": "coffee_beans",
+    "width_cm": 12,
+    "height_cm": 20,
+    "depth_cm": 6,
+    "weight_kg": 0.25,
+    "top_clearance_cm": 0,
+    "side_clearance_cm": 0,
+    "rear_clearance_cm": 0,
+    "roast_level": "medium_dark",
+    "process_method": "washed",
+    "estate_name": "Sampigehoney Estate",
+    "region": "Chikmagalur, Karnataka",
+    "elevation_m": 1250,
+    "varietal": "Arabica Washed",
+    "image_url": "https://cdn.shopify.com/s/files/1/0738/1409/files/1.-Sampigehoney-Estate-_Front_dc9733a5-f382-4f6e-a2fa-a04081f2457a.jpg?v=1786096950",
+    "description": "Comforting washed coffee from Chikmagalur with aromas of honey and raisins, delivering layers of zesty orange marmalade and rich dark chocolate finish.",
+    "taste_notes": [
+      "Orange Marmalade",
+      "Dark Chocolate",
+      "Honey",
+      "Sweet Raisins"
+    ]
+  },
+  {
+    "id": "prod_unakki_estate",
+    "name": "Unakki Estate",
+    "brand": "Hiljhil Roasters",
+    "sku": "HJ-UNAKKI-250",
+    "category": "single_origin",
+    "price": 800,
+    "compare_at_price": null,
+    "status": "active",
+    "in_stock": true,
+    "badge": "HARVEST '26",
+    "rating": 4.9,
+    "review_count": 78,
+    "tax_category": "coffee_beans",
+    "width_cm": 12,
+    "height_cm": 20,
+    "depth_cm": 6,
+    "weight_kg": 0.25,
+    "top_clearance_cm": 0,
+    "side_clearance_cm": 0,
+    "rear_clearance_cm": 0,
+    "roast_level": "medium",
+    "process_method": "washed",
+    "estate_name": "Unakki Estate",
+    "region": "Joldal Palya, Chikmagalur, Karnataka",
+    "elevation_m": 1200,
+    "varietal": "Arabica Washed",
+    "image_url": "https://cdn.shopify.com/s/files/1/0738/1409/files/1.-Unakki-Estate__Front.jpg?v=1786091498",
+    "description": "Grown in the lush forests of Joldal Palya in Chikmagalur. Honey aroma leading into chocolate, brown spices, and raisins with a refined tea-like finish.",
+    "taste_notes": [
+      "Chocolate",
+      "Brown Spices",
+      "Sweet Honey",
+      "Raisins"
+    ]
+  },
+  {
+    "id": "prod_ms_estate",
+    "name": "M.S. Estate",
+    "brand": "Hiljhil Roasters",
+    "sku": "HJ-MS-250",
+    "category": "single_origin",
+    "price": 800,
+    "compare_at_price": null,
+    "status": "active",
+    "in_stock": true,
+    "badge": "PERENNIAL FAVORITE",
+    "rating": 5,
+    "review_count": 184,
+    "tax_category": "coffee_beans",
+    "width_cm": 12,
+    "height_cm": 20,
+    "depth_cm": 6,
+    "weight_kg": 0.25,
+    "top_clearance_cm": 0,
+    "side_clearance_cm": 0,
+    "rear_clearance_cm": 0,
+    "roast_level": "medium",
+    "process_method": "washed",
+    "estate_name": "M.S. Estate",
+    "region": "Chikmagalur, Karnataka",
+    "elevation_m": 1350,
+    "varietal": "S795 & Rare Ethiopian Varietal",
+    "image_url": "https://cdn.shopify.com/s/files/1/0738/1409/files/1.-M.S.-Estate__Front.jpg?v=1784120116",
+    "description": "Cultivating a rare Ethiopian heirloom varietal alongside S795 in Chikmagalur since the late 1990s. Aromas of dried apricots and peaches leading to a lingering chocolate finish.",
+    "taste_notes": [
+      "Dried Apricots",
+      "Peaches",
+      "Chocolate Essence",
+      "Black Tea"
+    ]
+  },
+  {
+    "id": "prod_krishnagiri_estate",
+    "name": "Krishnagiri Estate",
+    "brand": "Hiljhil Roasters",
+    "sku": "HJ-KRISHNAGIRI-250",
+    "category": "single_origin",
+    "price": 700,
+    "compare_at_price": null,
+    "status": "active",
+    "in_stock": true,
+    "badge": "RAINFOREST ALLIANCE",
+    "rating": 4.8,
+    "review_count": 92,
+    "tax_category": "coffee_beans",
+    "width_cm": 12,
+    "height_cm": 20,
+    "depth_cm": 6,
+    "weight_kg": 0.25,
+    "top_clearance_cm": 0,
+    "side_clearance_cm": 0,
+    "rear_clearance_cm": 0,
+    "roast_level": "dark",
+    "process_method": "washed",
+    "estate_name": "Krishnagiri Estate",
+    "region": "Karnataka",
+    "elevation_m": 1200,
+    "varietal": "Arabica Washed",
+    "image_url": "https://cdn.shopify.com/s/files/1/0738/1409/files/1.-Krishnagiri-Estate__Front.jpg?v=1784120117",
+    "description": "Rainforest Alliance-certified farm using custom-designed eco-pulpers to conserve water. A deep dark roast with brown spice aromatics, oak, toasted walnuts, and malt finish.",
+    "taste_notes": [
+      "Brown Spices",
+      "Oak",
+      "Toasted Walnuts",
+      "Malt",
+      "Bittersweet Cocoa"
+    ]
+  },
+  {
+    "id": "prod_salawara_estate",
+    "name": "Salawara Estate",
+    "brand": "Hiljhil Roasters",
+    "sku": "HJ-SALAWARA-250",
+    "category": "single_origin",
+    "price": 850,
+    "compare_at_price": null,
+    "status": "active",
+    "in_stock": true,
+    "badge": "HARVEST '26",
+    "rating": 5,
+    "review_count": 45,
+    "tax_category": "coffee_beans",
+    "width_cm": 12,
+    "height_cm": 20,
+    "depth_cm": 6,
+    "weight_kg": 0.25,
+    "top_clearance_cm": 0,
+    "side_clearance_cm": 0,
+    "rear_clearance_cm": 0,
+    "roast_level": "light",
+    "process_method": "anaerobic",
+    "estate_name": "Salawara Estate",
+    "region": "Chikmagalur, Karnataka",
+    "elevation_m": 1250,
+    "varietal": "Arabica Anaerobic Natural",
+    "image_url": "https://cdn.shopify.com/s/files/1/0738/1409/files/1.-Salawara-Estate__Front_8b9bc3a2-4cc5-48d6-b256-ec2549e4558e.jpg?v=1784115306",
+    "description": "Crafted by third-generation producer Sharan in Chikmagalur. Anaerobic natural lot delivering a burst of fruit: pineapple, molasses on the nose, settling into crisp red apple and almond.",
+    "taste_notes": [
+      "Pineapple",
+      "Molasses",
+      "Red Apple",
+      "Pear",
+      "Roasted Almond"
+    ]
+  },
+  {
+    "id": "prod_kerehaklu_blossom_culture",
+    "name": "Kerehaklu Estate - Blossom Culture",
+    "brand": "Hiljhil Roasters",
+    "sku": "HJ-KEREHAKLU-BC-200",
+    "category": "producer_series",
+    "price": 1000,
+    "compare_at_price": null,
+    "status": "active",
+    "in_stock": true,
+    "badge": "PRODUCER SERIES",
+    "rating": 5,
+    "review_count": 36,
+    "tax_category": "coffee_beans",
+    "width_cm": 11,
+    "height_cm": 19,
+    "depth_cm": 5.5,
+    "weight_kg": 0.2,
+    "top_clearance_cm": 0,
+    "side_clearance_cm": 0,
+    "rear_clearance_cm": 0,
+    "roast_level": "light",
+    "process_method": "anaerobic",
+    "estate_name": "Kerehaklu Estate",
+    "region": "Chikmagalur, Karnataka",
+    "elevation_m": 1300,
+    "varietal": "Arabica Blossom Fermentation",
+    "image_url": "https://cdn.shopify.com/s/files/1/0738/1409/files/finalproductimgs.png?v=1782896537",
+    "description": "Wild blossoms collected from the fog-shrouded block to create a starter culture for 71-hour anoxic fermentation. Jammy ripe berries, orange blossom, and sun melon.",
+    "taste_notes": [
+      "Ripe Berries",
+      "Strawberry",
+      "Orange Blossom",
+      "Pomegranate",
+      "Sun Melon"
+    ]
+  },
+  {
+    "id": "prod_attikan_estate",
+    "name": "Attikan Estate",
+    "brand": "Hiljhil Roasters",
+    "sku": "HJ-ATTIKAN-250",
+    "category": "single_origin",
+    "price": 700,
+    "compare_at_price": 700,
+    "status": "active",
+    "in_stock": true,
+    "badge": "BESTSELLER",
+    "rating": 5,
+    "review_count": 420,
+    "tax_category": "coffee_beans",
+    "width_cm": 12,
+    "height_cm": 20,
+    "depth_cm": 6,
+    "weight_kg": 0.25,
+    "top_clearance_cm": 0,
+    "side_clearance_cm": 0,
+    "rear_clearance_cm": 0,
+    "roast_level": "medium_dark",
+    "process_method": "washed",
+    "estate_name": "Attikan Estate",
+    "region": "Biligiriranga Hills, Karnataka",
+    "elevation_m": 1650,
+    "varietal": "Selection 9, S795, Cauvery, Kent",
+    "image_url": "https://cdn.shopify.com/s/files/1/0738/1409/files/Attikan-estate-Front.jpg?v=1734956514",
+    "description": "Grown in the cloud-draped Biligiriranga Hills at 1650 meters, amongst the highest coffee elevations in India. Sweet with nutty overtones, balanced acidity, and rich dark chocolate crema.",
+    "taste_notes": [
+      "Dark Chocolate",
+      "Roasted Almonds",
+      "Sweet Fig",
+      "Nutty"
+    ]
+  },
+  {
+    "id": "prod_13th_birthday_blend",
+    "name": "13th Birthday Blend",
+    "brand": "Hiljhil Roasters",
+    "sku": "HJ-13BDAY-250",
+    "category": "blend",
+    "price": 800,
+    "compare_at_price": null,
+    "status": "active",
+    "in_stock": true,
+    "badge": "LIMITED RELEASE",
+    "rating": 4.9,
+    "review_count": 52,
+    "tax_category": "coffee_beans",
+    "width_cm": 12,
+    "height_cm": 20,
+    "depth_cm": 6,
+    "weight_kg": 0.25,
+    "top_clearance_cm": 0,
+    "side_clearance_cm": 0,
+    "rear_clearance_cm": 0,
+    "roast_level": "medium",
+    "process_method": "natural",
+    "estate_name": "Stanmore, Orchardale, Riverdale & Unakki",
+    "region": "Yercaud & Chikmagalur",
+    "elevation_m": 1400,
+    "varietal": "Multi-Estate Blend",
+    "image_url": "https://cdn.shopify.com/s/files/1/0738/1409/files/Card_01_1_c34d4c4f-016a-4780-af62-97ce1a125f21.jpg?v=1767077475",
+    "description": "Celebratory anniversary blend reminiscent of classic Black Forest cake. Natural lots from Yercaud paired with a washed base from Unakki Estate. Chocolate-covered strawberries finish.",
+    "taste_notes": [
+      "Strawberry",
+      "Dark Chocolate",
+      "Black Forest Cherry",
+      "Pear"
+    ]
+  },
+  {
+    "id": "prod_howdia_estate",
+    "name": "Howdia Estate",
+    "brand": "Hiljhil Roasters",
+    "sku": "HJ-HOWDIA-250",
+    "category": "single_origin",
+    "price": 850,
+    "compare_at_price": null,
+    "status": "active",
+    "in_stock": true,
+    "badge": "ROASTER FAVORITE",
+    "rating": 4.9,
+    "review_count": 67,
+    "tax_category": "coffee_beans",
+    "width_cm": 12,
+    "height_cm": 20,
+    "depth_cm": 6,
+    "weight_kg": 0.25,
+    "top_clearance_cm": 0,
+    "side_clearance_cm": 0,
+    "rear_clearance_cm": 0,
+    "roast_level": "light",
+    "process_method": "washed",
+    "estate_name": "Howdia Estate",
+    "region": "Pulney Hills, Tamil Nadu",
+    "elevation_m": 1400,
+    "varietal": "Arabica Washed",
+    "image_url": "https://cdn.shopify.com/s/files/1/0738/1409/files/1.-Howdia-Estate__Front.jpg?v=1782107101",
+    "description": "Among our most delicate light roasts, reminiscent of a floral black tea. Bright acidity, orange marmalade notes, and a clean tea-like finish.",
+    "taste_notes": [
+      "Coffee Blossoms",
+      "Orange Marmalade",
+      "Floral Black Tea"
+    ]
+  },
+  {
+    "id": "prod_st_joseph_estate",
+    "name": "St. Joseph Estate",
+    "brand": "Hiljhil Roasters",
+    "sku": "HJ-STJOSEPH-250",
+    "category": "single_origin",
+    "price": 700,
+    "compare_at_price": 700,
+    "status": "active",
+    "in_stock": true,
+    "badge": "PARTNER FARM",
+    "rating": 4.8,
+    "review_count": 73,
+    "tax_category": "coffee_beans",
+    "width_cm": 12,
+    "height_cm": 20,
+    "depth_cm": 6,
+    "weight_kg": 0.25,
+    "top_clearance_cm": 0,
+    "side_clearance_cm": 0,
+    "rear_clearance_cm": 0,
+    "roast_level": "medium_dark",
+    "process_method": "washed",
+    "estate_name": "St. Joseph Estate",
+    "region": "Tamil Nadu",
+    "elevation_m": 1300,
+    "varietal": "Arabica Washed",
+    "image_url": "https://cdn.shopify.com/s/files/1/0738/1409/files/1.-St.Joseph-Estate__Front_2.jpg?v=1764321548",
+    "description": "Cultivated by a community of Jesuit priests with generations of stewardship. Warm brown spices, roasted almonds, grapefruit, and comforting toffee finish.",
+    "taste_notes": [
+      "Grapefruit",
+      "Roasted Almond",
+      "Toffee",
+      "Warm Brown Spices"
+    ]
+  },
+  {
+    "id": "prod_raxidi_lobo_anaerobic_natural",
+    "name": "Raxidi Lobo Estate - Anaerobic Natural",
+    "brand": "Hiljhil Roasters",
+    "sku": "HJ-RAXIDI-AN-250",
+    "category": "single_origin",
+    "price": 900,
+    "compare_at_price": null,
+    "status": "active",
+    "in_stock": true,
+    "badge": "LIMITED RELEASE",
+    "rating": 5,
+    "review_count": 39,
+    "tax_category": "coffee_beans",
+    "width_cm": 12,
+    "height_cm": 20,
+    "depth_cm": 6,
+    "weight_kg": 0.25,
+    "top_clearance_cm": 0,
+    "side_clearance_cm": 0,
+    "rear_clearance_cm": 0,
+    "roast_level": "medium",
+    "process_method": "anaerobic",
+    "estate_name": "Raxidi Lobo Estate",
+    "region": "Karnataka",
+    "elevation_m": 1200,
+    "varietal": "Arabica Anaerobic Natural",
+    "image_url": "https://cdn.shopify.com/s/files/1/0738/1409/files/1.-Raxidi-Lobo-Estate__Front_1f24d4f9-58d2-45c0-8266-c3767720de8d.jpg?v=1777466382",
+    "description": "Carries the sweet nostalgia of drinking fresh mosambi juice in summer. Berries on the nose, settling into bright tart-sweet notes of green apple and plum.",
+    "taste_notes": [
+      "Fresh Mosambi Juice",
+      "Green Apple",
+      "Summer Berries",
+      "Plum"
+    ]
+  },
+  {
+    "id": "prod_kerehaklu_estate_light",
+    "name": "Kerehaklu Estate (Light Roast)",
+    "brand": "Hiljhil Roasters",
+    "sku": "HJ-KEREHAKLU-LT-250",
+    "category": "single_origin",
+    "price": 850,
+    "compare_at_price": null,
+    "status": "active",
+    "in_stock": true,
+    "badge": "HARVEST '26",
+    "rating": 5,
+    "review_count": 88,
+    "tax_category": "coffee_beans",
+    "width_cm": 12,
+    "height_cm": 20,
+    "depth_cm": 6,
+    "weight_kg": 0.25,
+    "top_clearance_cm": 0,
+    "side_clearance_cm": 0,
+    "rear_clearance_cm": 0,
+    "roast_level": "light",
+    "process_method": "washed",
+    "estate_name": "Kerehaklu Estate",
+    "region": "Chikmagalur, Karnataka",
+    "elevation_m": 1300,
+    "varietal": "Selection 9",
+    "image_url": "https://cdn.shopify.com/s/files/1/0738/1409/files/1.-Kerehaklu-Estate__Front.jpg?v=1775204109",
+    "description": "Bright, citrusy light roast. Ripe Selection 9 cherries fermented with farm's local starter microbes for 37 hours, shade dried, then finished in polyhouses.",
+    "taste_notes": [
+      "Orange Blossoms",
+      "Brown Sugar",
+      "Green Grapes",
+      "Orange Marmalade"
+    ]
+  },
+  {
+    "id": "prod_sandalwood_estate",
+    "name": "Sandalwood Estate",
+    "brand": "Hiljhil Roasters",
+    "sku": "HJ-SANDALWOOD-250",
+    "category": "single_origin",
+    "price": 750,
+    "compare_at_price": null,
+    "status": "active",
+    "in_stock": true,
+    "badge": "PERENNIAL ROSTER",
+    "rating": 4.9,
+    "review_count": 134,
+    "tax_category": "coffee_beans",
+    "width_cm": 12,
+    "height_cm": 20,
+    "depth_cm": 6,
+    "weight_kg": 0.25,
+    "top_clearance_cm": 0,
+    "side_clearance_cm": 0,
+    "rear_clearance_cm": 0,
+    "roast_level": "medium_dark",
+    "process_method": "washed",
+    "estate_name": "Sandalwood Estate",
+    "region": "Coorg, Karnataka",
+    "elevation_m": 1200,
+    "varietal": "Sarchimor",
+    "image_url": "https://cdn.shopify.com/s/files/1/0738/1409/files/Sandalwood-Estate-Front.jpg?v=1734957649",
+    "description": "Washed coffee of the resilient Sarchimor varietal grown in lush Coorg. Tasting notes of rich dark chocolate, sweet prune, and lingering butter biscuits aftertaste.",
+    "taste_notes": [
+      "Rich Dark Chocolate",
+      "Sweet Prune",
+      "Orange Marmalade",
+      "Butter Biscuits"
+    ]
+  },
+  {
+    "id": "prod_dhak_blend",
+    "name": "Dhak Blend",
+    "brand": "Hiljhil Roasters",
+    "sku": "HJ-DHAK-250",
+    "category": "blend",
+    "price": 700,
+    "compare_at_price": 650,
+    "status": "active",
+    "in_stock": true,
+    "badge": "BESTSELLER",
+    "rating": 5,
+    "review_count": 312,
+    "tax_category": "coffee_beans",
+    "width_cm": 12,
+    "height_cm": 20,
+    "depth_cm": 6,
+    "weight_kg": 0.25,
+    "top_clearance_cm": 0,
+    "side_clearance_cm": 0,
+    "rear_clearance_cm": 0,
+    "roast_level": "dark",
+    "process_method": "natural",
+    "estate_name": "Chikmagalur Naturals",
+    "region": "Chikmagalur, Karnataka",
+    "elevation_m": 1200,
+    "varietal": "Natural Process Blend",
+    "image_url": "https://cdn.shopify.com/s/files/1/0738/1409/files/Dhak-Blend-Front.jpg?v=1734947063",
+    "description": "Ode to the flame of the forest tree. Naturally dried with cherry for rich sweetness and heavy cocoa body. Superb for milk-based espresso drinks, Moka Pot, and South Indian Filter.",
+    "taste_notes": [
+      "Dark Chocolate",
+      "Fruit Jam",
+      "Heavy Cocoa",
+      "Molasses"
+    ]
+  },
+  {
+    "id": "prod_silver_oak_cafe_blend",
+    "name": "Silver Oak Café Blend",
+    "brand": "Hiljhil Roasters",
+    "sku": "HJ-SILVEROAK-250",
+    "category": "blend",
+    "price": 750,
+    "compare_at_price": 700,
+    "status": "active",
+    "in_stock": true,
+    "badge": "SIGNATURE HOUSE BLEND",
+    "rating": 5,
+    "review_count": 540,
+    "tax_category": "coffee_beans",
+    "width_cm": 12,
+    "height_cm": 20,
+    "depth_cm": 6,
+    "weight_kg": 0.25,
+    "top_clearance_cm": 0,
+    "side_clearance_cm": 0,
+    "rear_clearance_cm": 0,
+    "roast_level": "medium",
+    "process_method": "washed",
+    "estate_name": "Silver Oak Plantations",
+    "region": "Karnataka & Tamil Nadu",
+    "elevation_m": 1350,
+    "varietal": "House Signature Blend",
+    "image_url": "https://cdn.shopify.com/s/files/1/0738/1409/files/SilverOak-blend-Front.jpg?v=1734957127",
+    "description": "The flagship cafe blend poured at Hiljhil roasteries across the country. Named after the shade-providing silver oak trees. Harmonious balance of hazelnut, milk chocolate, and sweet honey.",
+    "taste_notes": [
+      "Hazelnut",
+      "Milk Chocolate",
+      "Sweet Honey",
+      "Caramel"
+    ]
+  },
+  {
+    "id": "prod_amaltas_blend",
+    "name": "Amaltas Blend",
+    "brand": "Hiljhil Roasters",
+    "sku": "HJ-AMALTAS-250",
+    "category": "blend",
+    "price": 700,
+    "compare_at_price": 650,
+    "status": "active",
+    "in_stock": true,
+    "badge": "LIGHT & FRUITY",
+    "rating": 4.9,
+    "review_count": 180,
+    "tax_category": "coffee_beans",
+    "width_cm": 12,
+    "height_cm": 20,
+    "depth_cm": 6,
+    "weight_kg": 0.25,
+    "top_clearance_cm": 0,
+    "side_clearance_cm": 0,
+    "rear_clearance_cm": 0,
+    "roast_level": "light",
+    "process_method": "washed",
+    "estate_name": "Kerala & Tamil Nadu Blend",
+    "region": "Kerala & Tamil Nadu",
+    "elevation_m": 1300,
+    "varietal": "Washed & Natural Arabica",
+    "image_url": "https://cdn.shopify.com/s/files/1/0738/1409/files/Amaltas-Blend-Front.jpg?v=1735023810",
+    "description": "Celebration of the golden Indian summer tree. Combination of washed and natural lots roasted light for refreshing notes of ripe blueberry, sweet citrus, and milk chocolate finish.",
+    "taste_notes": [
+      "Blueberry",
+      "Milk Chocolate",
+      "Sweet Citrus",
+      "Floral"
+    ]
+  },
+  {
+    "id": "prod_cold_brew_blend_bold",
+    "name": "Cold Brew Blend Bold",
+    "brand": "Hiljhil Roasters",
+    "sku": "HJ-COLDBREW-BOLD-250",
+    "category": "blend",
+    "price": 700,
+    "compare_at_price": 650,
+    "status": "active",
+    "in_stock": true,
+    "badge": "COLD BREW FAVORITE",
+    "rating": 5,
+    "review_count": 290,
+    "tax_category": "coffee_beans",
+    "width_cm": 12,
+    "height_cm": 20,
+    "depth_cm": 6,
+    "weight_kg": 0.25,
+    "top_clearance_cm": 0,
+    "side_clearance_cm": 0,
+    "rear_clearance_cm": 0,
+    "roast_level": "medium_dark",
+    "process_method": "washed",
+    "estate_name": "Karnataka Blend",
+    "region": "Karnataka",
+    "elevation_m": 1200,
+    "varietal": "Arabica Washed",
+    "image_url": "https://cdn.shopify.com/s/files/1/0738/1409/files/Cold-Brew-Blend-Bold-Front.jpg?v=1735024000",
+    "description": "Engineered for deep steep extraction. Low acidity, high sweetness, and heavy body. Delivers chocolate-thick iced glasses with roasted nut aromas and bittersweet finish.",
+    "taste_notes": [
+      "Dark Chocolate",
+      "Toffee",
+      "Roasted Nuts",
+      "Bittersweet Finish"
+    ]
+  },
+  {
+    "id": "prod_breville_barista_touch",
+    "name": "Barista Touch Espresso Machine",
+    "brand": "Breville",
+    "sku": "BES880BSS",
+    "category": "espresso_machine",
+    "price": 999.95,
+    "compare_at_price": null,
+    "status": "active",
+    "in_stock": true,
+    "badge": "BESTSELLER",
+    "rating": 5,
+    "review_count": 142,
+    "tax_category": "equipment",
+    "width_cm": 32.2,
+    "height_cm": 40.7,
+    "depth_cm": 32.2,
+    "weight_kg": 10.3,
+    "top_clearance_cm": 12,
+    "side_clearance_cm": 5,
+    "rear_clearance_cm": 5,
+    "roast_level": null,
+    "process_method": null,
+    "estate_name": null,
+    "region": null,
+    "elevation_m": null,
+    "varietal": null,
+    "image_url": "https://images.unsplash.com/photo-1570968915860-54d5c301fa9f?w=600&auto=format&fit=crop&q=80",
+    "description": "Automated touchscreen espresso machine with integrated precision grinder and automated microfoam milk texturing.",
+    "taste_notes": null
+  },
+  {
+    "id": "prod_fellow_ode_gen2",
+    "name": "Fellow Ode Gen 2 Brew Grinder",
+    "brand": "Fellow",
+    "sku": "FEL-ODE-G2-BLK",
+    "category": "grinder",
+    "price": 345,
+    "compare_at_price": null,
+    "status": "active",
+    "in_stock": true,
+    "badge": "PRO GEAR",
+    "rating": 4.9,
+    "review_count": 84,
+    "tax_category": "equipment",
+    "width_cm": 12,
+    "height_cm": 24.1,
+    "depth_cm": 23.9,
+    "weight_kg": 4.5,
+    "top_clearance_cm": 4,
+    "side_clearance_cm": 2,
+    "rear_clearance_cm": 2,
+    "roast_level": null,
+    "process_method": null,
+    "estate_name": null,
+    "region": null,
+    "elevation_m": null,
+    "varietal": null,
+    "image_url": "https://images.unsplash.com/photo-1589396575653-c09c794ff6a6?w=800&auto=format&fit=crop&q=80",
+    "description": "Engineered for pour-over and drip brewing with commercial-grade 64mm flat burrs, anti-static technology, and single-dose zero-retention loading.",
+    "taste_notes": null
+  }
 ];
+
 
 export function generateDefaultProductSections(product: Product): PageSection[] {
   const isCoffee = product.category === 'coffee_beans' || Boolean(product.roast_level);
@@ -380,78 +1265,20 @@ export function generateProductPage(product: Product): CMSPage {
   };
 }
 
-export const DEFAULT_PRODUCT_PAGE: CMSPage = {
-  id: 'page_product_default',
-  page_type: 'product',
-  title: 'Product Detail Page (PDP)',
-  slug: '/products/:id',
-  description: 'Universal product page layout template automatically rendered across all catalog items (espresso gear, whole bean coffees, accessories).',
-  is_published: true,
-  updated_at: new Date().toISOString(),
-  sections: [
-    {
-      id: 'sec_pdp_overview',
-      type: 'product_lane',
-      title: 'Product Media Showcase & Specs',
-      subtitle: 'High-res media carousel, buy box, and CounterCheck™ clearance metrics',
-      is_active: true,
-      sort_order: 1,
-      config: {
-        card_style: 'slider',
-        display_count: 4,
-        show_badges: true,
-        enable_quick_add: true,
-      },
-    },
-    {
-      id: 'sec_pdp_pairing',
-      type: 'product_lane',
-      title: 'Recommended Roaster Pairings',
-      subtitle: 'Fresh whole bean lots and precision companion tools',
-      is_active: true,
-      sort_order: 2,
-      config: {
-        filter_category: 'coffee_beans',
-        card_style: 'slider',
-        limit: 4,
-      },
-    },
-    {
-      id: 'sec_pdp_reviews',
-      type: 'testimonials',
-      title: 'Devotee Extraction Reviews',
-      subtitle: 'Grind calibration notes and home barista feedback',
-      is_active: true,
-      sort_order: 3,
-      config: {
-        testimonials: [
-          {
-            id: 'pdp_test_1',
-            author: 'Marcus V.',
-            role: 'Verified Home Barista',
-            rating: 5,
-            quote: 'Extremely consistent extraction with zero channeling. The spatial tolerance matched my kitchen cabinet height exactly.',
-          },
-        ],
-      },
-    },
-  ],
-};
-
 export const DEFAULT_CMS_PAGES: CMSPage[] = [
   {
     id: 'page_home',
     page_type: 'home',
-    title: 'Flagship Homepage',
+    title: 'Homepage',
     slug: '/',
-    description: 'Main flagship store landing experience featuring hero banner, origin lanes, and curated collections.',
+    description: 'Main store landing experience featuring hero banner, origin lanes, and curated collections.',
     is_published: true,
     updated_at: new Date().toISOString(),
     sections: [
       {
         id: 'sec_home_hero',
         type: 'hero_banner',
-        title: 'Flagship Roastery Hero Banner',
+        title: 'Hero Banner',
         subtitle: 'Primary high-impact hero introducing autumn reserve micro-lots',
         is_active: true,
         sort_order: 1,
@@ -700,7 +1527,6 @@ export const DEFAULT_CMS_PAGES: CMSPage[] = [
     ],
   },
   ...SEED_CATALOG_PRODUCTS.map(generateProductPage),
-  DEFAULT_PRODUCT_PAGE,
   {
     id: 'page_about',
     page_type: 'static',
@@ -801,9 +1627,13 @@ export async function fetchGlobalShell(): Promise<GlobalShellConfig> {
           promo_bar: data.promo_bar,
           header: data.header,
           footer: data.footer,
+          theme: data.theme || DEFAULT_THEME_PRESETS.alpine,
         };
         try {
           localStorage.setItem(STORAGE_SHELL_KEY, JSON.stringify(config));
+          if (config.theme) {
+            localStorage.setItem(STORAGE_THEME_KEY, JSON.stringify(config.theme));
+          }
         } catch {}
         return config;
       }
@@ -817,6 +1647,9 @@ export async function fetchGlobalShell(): Promise<GlobalShellConfig> {
 export async function saveGlobalShell(config: GlobalShellConfig): Promise<void> {
   try {
     localStorage.setItem(STORAGE_SHELL_KEY, JSON.stringify(config));
+    if (config.theme) {
+      localStorage.setItem(STORAGE_THEME_KEY, JSON.stringify(config.theme));
+    }
   } catch (e) {
     console.error('Failed to save global shell to storage:', e);
   }
@@ -832,6 +1665,73 @@ export async function saveGlobalShell(config: GlobalShellConfig): Promise<void> 
       console.warn('Could not sync global shell to content-service:', e);
     }
   }
+}
+
+export function getTheme(): ThemeConfig {
+  try {
+    const raw = localStorage.getItem(STORAGE_THEME_KEY);
+    if (raw) {
+      return JSON.parse(raw);
+    }
+  } catch (e) {
+    console.warn('Failed to read theme from storage, using default:', e);
+  }
+  const shell = getGlobalShell();
+  return shell.theme || DEFAULT_THEME_PRESETS.alpine;
+}
+
+export async function fetchTheme(): Promise<ThemeConfig> {
+  if (CONTENT_API_URL) {
+    try {
+      const res = await fetch(`${CONTENT_API_URL}/cms/shell/theme`, { signal: AbortSignal.timeout(8000) });
+      if (res.ok) {
+        const data = await res.json();
+        try {
+          localStorage.setItem(STORAGE_THEME_KEY, JSON.stringify(data));
+        } catch {}
+        return data;
+      }
+    } catch (e) {
+      console.warn('Could not fetch theme from content-service:', e);
+    }
+  }
+  return getTheme();
+}
+
+export async function saveTheme(theme: ThemeConfig): Promise<{ success: boolean; syncedToApi: boolean; theme: ThemeConfig }> {
+  let syncedToApi = false;
+  try {
+    localStorage.setItem(STORAGE_THEME_KEY, JSON.stringify(theme));
+  } catch (e) {
+    console.error('Failed to save theme locally:', e);
+  }
+
+  try {
+    const currentShell = getGlobalShell();
+    currentShell.theme = theme;
+    localStorage.setItem(STORAGE_SHELL_KEY, JSON.stringify(currentShell));
+  } catch {}
+
+  if (CONTENT_API_URL) {
+    try {
+      const res = await fetch(`${CONTENT_API_URL}/cms/shell/theme`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(theme),
+      });
+      if (res.ok) {
+        syncedToApi = true;
+      }
+    } catch (e) {
+      console.warn('Could not save theme via dedicated endpoint:', e);
+    }
+  }
+
+  return {
+    success: true,
+    syncedToApi,
+    theme,
+  };
 }
 
 export async function fetchPromoBar(): Promise<PromoBarConfig> {
@@ -1008,18 +1908,16 @@ export function syncProductPagesWithCatalog(existingPages: CMSPage[], products: 
     }
   }
 
-  // Ensure default fallback PDP template also exists
-  if (!pages.some((p) => p.id === DEFAULT_PRODUCT_PAGE.id || p.slug === '/products/:id')) {
-    pages.push(DEFAULT_PRODUCT_PAGE);
-  }
+  // Remove any obsolete universal fallback PDP template
+  const cleanedPages = pages.filter((p) => p.id !== 'page_product_default' && p.slug !== '/products/:id');
 
   try {
-    localStorage.setItem(STORAGE_PAGES_KEY, JSON.stringify(pages));
+    localStorage.setItem(STORAGE_PAGES_KEY, JSON.stringify(cleanedPages));
   } catch (e) {
     console.warn('Failed to cache synced CMS pages in storage:', e);
   }
 
-  return pages;
+  return cleanedPages;
 }
 
 export function getCmsPages(): CMSPage[] {

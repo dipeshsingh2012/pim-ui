@@ -1,8 +1,8 @@
 # Product Information Management (PIM) & Experience CMS (`pim-ui`)
 
-> **Dedicated Merchant Catalog Management & Storefront Experience CMS Portal**
+> **Dedicated Merchant Catalog Management & Store Experience CMS Portal**
 
-`pim-ui` is a standalone back-office application built with [Refine](https://refine.dev/), **React 18**, **Vite 5**, and **Tailwind CSS**. It serves as the unified administrative cockpit for merchandisers, catalog managers, and operations teams to configure, enrich, and publish products as well as curate dynamic storefront discovery rails and content lanes across digital commerce channels.
+`pim-ui` is a standalone back-office application built with [Refine](https://refine.dev/), **React 18**, **Vite 5**, and **Tailwind CSS**. It serves as the unified administrative cockpit for merchandisers, catalog managers, and operations teams to configure, enrich, and publish products as well as curate dynamic store discovery rails and content lanes across digital commerce channels.
 
 ---
 
@@ -12,7 +12,7 @@
 ┌───────────────────────────────────────────────────────────────────────────┐
 │                           Commerce Ecosystem                              │
 │                                                                           │
-│   Storefront Shell:                Back-Office PIM & CMS:                 │
+│   Store Shell:                Back-Office PIM & CMS:                 │
 │   mycommerce (Next.js :5170)       pim-ui (Refine / Vite :5180)           │
 │         │     │                              │         │                  │
 │         │     │        ┌─────────────────────┘         │                  │
@@ -79,8 +79,8 @@ VITE_CONTENT_API_URL=https://content-service-518971663061.us-central1.run.app
 # Content / Experience CMS Service (proxied to Cloud Run via Vite)
 VITE_CONTENT_API_URL=/api/content
 
-# Consumer Storefront URL (Port 5170)
-VITE_STOREFRONT_URL=http://localhost:5170
+# Consumer Store URL (Port 5170)
+VITE_STORE_URL=http://localhost:5170
 ```
 *(If omitted, `pim-ui` automatically defaults to these live Cloud Run endpoints).*
 > [!TIP]
@@ -116,7 +116,7 @@ npm run preview
 
 ### 🎨 1. Experience CMS Capabilities (Product & Category Lanes)
 
-The **Experience CMS** module empowers merchandisers and content managers to visually construct, sequence, and publish dynamic discovery rails and category carousels across the storefront:
+The **Experience CMS** module empowers merchandisers and content managers to visually construct, sequence, and publish dynamic discovery rails and category carousels across the store:
 
 * **Dynamic Merchandising Lanes & Rails:**
   * Create, edit, and manage curated rails for the homepage, discovery pages, or global placement.
@@ -125,7 +125,7 @@ The **Experience CMS** module empowers merchandisers and content managers to vis
 
 * **Flexible Presentation & Card Styling:**
   * **Card Styles:** Switch between `circular` (round avatar/story-style cards) and `standard_card` (square/rectangular commerce cards).
-  * **Navigation Controls:** Toggle interactive previous/next navigation arrows (`has_navigation_arrows`) on storefront sliders.
+  * **Navigation Controls:** Toggle interactive previous/next navigation arrows (`has_navigation_arrows`) on store sliders.
 
 * **Dual Item Addition Modes:**
   * **Catalog Product Picker:** Search and attach products directly from the live catalog by SKU, name, or brand. Images, titles, and prices automatically populate from catalog data.
@@ -133,14 +133,14 @@ The **Experience CMS** module empowers merchandisers and content managers to vis
 
 * **Interactive Sequence & Ordering Editor:**
   * Reorder items within any lane using instant **Move Up** and **Move Down** controls.
-  * Set top-level lane sort priorities (`sort_order`) to determine the vertical hierarchy on storefront landing pages.
+  * Set top-level lane sort priorities (`sort_order`) to determine the vertical hierarchy on store landing pages.
 
 * **Live Horizontal Rail Preview:**
   * Built-in interactive horizontal preview track inside both the Lane List and Lane Drawer.
   * Real-time preview of card shapes, fallback images, badges, prices, and arrow controls before publishing.
 
 * **Lifecycle Management & Publishing Controls:**
-  * One-click status toggle between `Active` (live on storefront) and `Draft` (hidden for review).
+  * One-click status toggle between `Active` (live on store) and `Draft` (hidden for review).
   * Filter and search lanes by placement, lifecycle state, slug, or title.
   * Delete lanes with confirmation dialogues and toast feedback.
 
@@ -157,7 +157,7 @@ The **PIM Catalog** module serves as the authoritative interface for product enr
   * **Live Catalog KPIs:** Real-time counters for Total SKUs, Active Coffee Lots, Space-Verified Gear, and In-Stock percentage.
   * **Instant Debounced Search:** Fast query across titles, SKUs, roastery brands, and descriptions.
   * **Multi-Facet Filters:** Filter across categories (`Coffee Beans`, `Espresso Machines`, `Grinders`, `Brewing Equipment`, `Drinkware`) and lifecycle states (`Active`, `Draft`, `Archived`).
-  * **1-Click Inventory Control:** Real-time toggle switch for `In Stock` / `Out of Stock` with immediate storefront propagation.
+  * **1-Click Inventory Control:** Real-time toggle switch for `In Stock` / `Out of Stock` with immediate store propagation.
 
 * **Multi-Tab Product Configuration Drawer:**
   * **Identity & Classification:** Product name, SKU, brand, category, lifecycle state, and HSN tax codes (`0901` for coffee, `8419` for appliances, or exempt).
@@ -166,8 +166,8 @@ The **PIM Catalog** module serves as the authoritative interface for product enr
   * **CounterCheck™ Dimensions & Clearance:** Physical dimensions (width, height, depth in cm, weight in kg) and operational headroom checks (top clearance for hoppers, side/rear clearance for ventilation) validated against standard 45cm cabinetry.
   * **Media & Brand Story:** Image URLs with live preview, cutout PNG support, and rich description copy.
 
-* **Storefront Deep Linking:**
-  * Direct **"Preview in Storefront"** action on every product row, navigating straight to the canonical Next.js Product Detail Page (`${VITE_STOREFRONT_URL}/product/[id]`).
+* **Store Deep Linking:**
+  * Direct **"Preview in Store"** action on every product row, navigating straight to the canonical Next.js Product Detail Page (`${VITE_STORE_URL}/product/[id]`).
 
 ---
 
@@ -177,7 +177,7 @@ The **PIM Catalog** module serves as the authoritative interface for product enr
 | :--- | :--- | :--- |
 | `VITE_CATALOG_API_URL` | `https://product-catalog-service-518971663061.us-central1.run.app` | Base REST API URL of `product-catalog-service` |
 | `VITE_CONTENT_API_URL` | `https://content-service-518971663061.us-central1.run.app` | Base REST API URL of `content-service` |
-| `VITE_STOREFRONT_URL` | `http://localhost:5170` | Canonical URL of consumer storefront |
+| `VITE_STORE_URL` | `http://localhost:5170` | Canonical URL of consumer store |
 
 ---
 

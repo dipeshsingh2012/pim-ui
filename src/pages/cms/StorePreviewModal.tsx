@@ -19,7 +19,7 @@ import {
 } from 'lucide-react';
 import { CMSPage, GlobalShellConfig, ThemeColor } from '../../types/cms';
 
-interface StorefrontPreviewModalProps {
+interface StorePreviewModalProps {
   isOpen: boolean;
   onClose: () => void;
   page: CMSPage | null;
@@ -54,12 +54,12 @@ const THEME_STYLES: Record<ThemeColor, { bg: string; text: string; badgeBg: stri
   },
 };
 
-export function StorefrontPreviewModal({
+export function StorePreviewModal({
   isOpen,
   onClose,
   page,
   shell,
-}: StorefrontPreviewModalProps) {
+}: StorePreviewModalProps) {
   if (!isOpen || !page) return null;
 
   const [previewMode, setPreviewMode] = useState<'iframe' | 'simulator'>('iframe');
@@ -68,10 +68,10 @@ export function StorefrontPreviewModal({
   const [isLoadingIframe, setIsLoadingIframe] = useState<boolean>(true);
 
   const DEFAULT_DEPLOYED_URL = 'https://mycommerce.vercel.app';
-  const [storefrontBaseUrl, setStorefrontBaseUrl] = useState<string>(() => {
+  const [storeBaseUrl, setStoreBaseUrl] = useState<string>(() => {
     return (
-      localStorage.getItem('pim_storefront_url') ||
-      import.meta.env.VITE_STOREFRONT_URL ||
+      localStorage.getItem('pim_store_url') ||
+      import.meta.env.VITE_STORE_URL ||
       DEFAULT_DEPLOYED_URL
     );
   });
@@ -85,7 +85,7 @@ export function StorefrontPreviewModal({
     mobile: 'max-w-sm',
   };
 
-  const getTargetUrl = (base = storefrontBaseUrl) => {
+  const getTargetUrl = (base = storeBaseUrl) => {
     const cleanBase = base.replace(/\/$/, '');
     let slug = page.slug || '/';
     if (page.page_type === 'product' && (slug === '/products/:id' || slug.includes(':id'))) {
@@ -100,9 +100,9 @@ export function StorefrontPreviewModal({
     return `${cleanBase}/#${slug.startsWith('/') ? slug : `/${slug}`}`;
   };
 
-  const currentUrl = getTargetUrl(storefrontBaseUrl);
+  const currentUrl = getTargetUrl(storeBaseUrl);
 
-  const handleUpdateStorefrontBaseUrl = (newBase: string) => {
+  const handleUpdateStoreBaseUrl = (newBase: string) => {
     let trimmed = newBase.trim();
     if (!trimmed) return;
     if (!trimmed.startsWith('http://') && !trimmed.startsWith('https://')) {
@@ -112,8 +112,8 @@ export function StorefrontPreviewModal({
       const parsed = new URL(trimmed);
       trimmed = `${parsed.protocol}//${parsed.host}`;
     } catch {}
-    setStorefrontBaseUrl(trimmed);
-    localStorage.setItem('pim_storefront_url', trimmed);
+    setStoreBaseUrl(trimmed);
+    localStorage.setItem('pim_store_url', trimmed);
     setIsEditingUrl(false);
     setIsLoadingIframe(true);
     setIframeKey((k) => k + 1);
@@ -252,7 +252,7 @@ export function StorefrontPreviewModal({
                   onSubmit={(e) => {
                     e.preventDefault();
                     if (urlInputValue.trim()) {
-                      handleUpdateStorefrontBaseUrl(urlInputValue);
+                      handleUpdateStoreBaseUrl(urlInputValue);
                     } else {
                       setIsEditingUrl(false);
                     }
@@ -268,7 +268,7 @@ export function StorefrontPreviewModal({
                       onChange={(e) => setUrlInputValue(e.target.value)}
                       onBlur={() => {
                         if (urlInputValue.trim()) {
-                          handleUpdateStorefrontBaseUrl(urlInputValue);
+                          handleUpdateStoreBaseUrl(urlInputValue);
                         }
                         setIsEditingUrl(false);
                       }}
@@ -278,7 +278,7 @@ export function StorefrontPreviewModal({
                   ) : (
                     <span
                       onClick={() => {
-                        setUrlInputValue(storefrontBaseUrl);
+                        setUrlInputValue(storeBaseUrl);
                         setIsEditingUrl(true);
                       }}
                       className="truncate cursor-text flex-1 select-all hover:text-white"
@@ -325,7 +325,7 @@ export function StorefrontPreviewModal({
                       Connecting to live deployed store at <span className="font-mono text-amber-300">{currentUrl}</span>
                     </div>
                     <p className="text-[11px] text-slate-500">
-                      Live Host: <span className="font-mono text-slate-300">{storefrontBaseUrl}</span>
+                      Live Host: <span className="font-mono text-slate-300">{storeBaseUrl}</span>
                     </p>
                   </div>
                 )}
@@ -346,15 +346,15 @@ export function StorefrontPreviewModal({
                 <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
                 <span>
                   Rendering live deployed store app from{' '}
-                  <span className="font-mono text-slate-200 font-bold">{storefrontBaseUrl}</span>
+                  <span className="font-mono text-slate-200 font-bold">{storeBaseUrl}</span>
                 </span>
               </div>
               <div className="flex items-center gap-3 text-[11px]">
                 <button
                   type="button"
                   onClick={() => {
-                    const entered = prompt('Enter custom deployed Store URL:', storefrontBaseUrl);
-                    if (entered) handleUpdateStorefrontBaseUrl(entered);
+                    const entered = prompt('Enter custom deployed Store URL:', storeBaseUrl);
+                    if (entered) handleUpdateStoreBaseUrl(entered);
                   }}
                   className="text-slate-400 hover:text-slate-200 underline cursor-pointer"
                 >
@@ -373,14 +373,31 @@ export function StorefrontPreviewModal({
           </div>
         ) : (
           <div
-            className={`w-full ${viewportWidths[viewport]} bg-white shadow-2xl rounded-2xl overflow-hidden border border-slate-800 flex flex-col transition-all duration-300 min-h-screen text-slate-900 font-sans`}
+            className={`w-full ${viewportWidths[viewport]} shadow-2xl rounded-2xl overflow-hidden border border-slate-800 flex flex-col transition-all duration-300 min-h-screen text-slate-900`}
+            style={{
+              backgroundColor: shell.theme?.background_color || '#ffffff',
+              fontFamily:
+                shell.theme?.font_family === 'serif'
+                  ? 'Georgia, Cambria, serif'
+                  : shell.theme?.font_family === 'mono'
+                  ? 'Courier New, monospace'
+                  : 'inherit',
+            }}
           >
           {/* 1. TOP PROMO BAR */}
           {shell.promo_bar.enabled && (
             <div
               className={`py-2 px-4 text-center text-xs font-medium flex items-center justify-center gap-2 ${
-                THEME_STYLES[shell.promo_bar.theme].bg
-              } ${THEME_STYLES[shell.promo_bar.theme].text}`}
+                shell.theme ? '' : `${THEME_STYLES[shell.promo_bar.theme].bg} ${THEME_STYLES[shell.promo_bar.theme].text}`
+              }`}
+              style={
+                shell.theme
+                  ? {
+                      backgroundColor: shell.theme.primary_color,
+                      color: '#ffffff',
+                    }
+                  : undefined
+              }
             >
               {shell.promo_bar.badge && (
                 <span

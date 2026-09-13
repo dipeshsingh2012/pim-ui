@@ -20,7 +20,6 @@ interface SectionsBuilderViewProps {
   onSelectPageId: (id: string) => void;
   onUpdatePage: (page: CMSPage) => void;
   onPreviewStore?: (page: CMSPage) => void;
-  onPreviewStorefront?: (page: CMSPage) => void;
   showToast: (msg: string) => void;
 }
 
@@ -51,12 +50,10 @@ export function SectionsBuilderView({
   onSelectPageId,
   onUpdatePage,
   onPreviewStore,
-  onPreviewStorefront,
   showToast,
 }: SectionsBuilderViewProps) {
   const handlePreview = (p: CMSPage) => {
     if (onPreviewStore) onPreviewStore(p);
-    else if (onPreviewStorefront) onPreviewStorefront(p);
   };
   const [editingSection, setEditingSection] = useState<PageSection | null>(null);
   const [sectionModalOpen, setSectionModalOpen] = useState(false);

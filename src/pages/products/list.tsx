@@ -20,7 +20,7 @@ import { ProductFormModal } from './ProductFormModal';
 import { dataProvider, publishProduct, archiveProduct } from '../../providers/dataProvider';
 import { generateProductPage, saveCmsPage } from '../../providers/cmsDataProvider';
 
-const STOREFRONT_URL = import.meta.env.VITE_STOREFRONT_URL || '';
+const STORE_URL = import.meta.env.VITE_STORE_URL || '';
 
 export function ProductList() {
   const [products, setProducts] = useState<Product[]>([]);
@@ -466,8 +466,8 @@ export function ProductList() {
                         <div className="flex items-center justify-end gap-1.5">
                           {/* Store PDP Link */}
                           <a
-                            href={STOREFRONT_URL ? `${STOREFRONT_URL}/product/${prod.id}` : `#${prod.id}`}
-                            target={STOREFRONT_URL ? '_blank' : undefined}
+                            href={STORE_URL ? `${STORE_URL}/product/${prod.id}` : `#${prod.id}`}
+                            target={STORE_URL ? '_blank' : undefined}
                             rel="noreferrer"
                             title="Preview in Store"
                             className="p-1.5 rounded-lg text-slate-400 hover:text-amber-800 hover:bg-amber-50 transition-colors"

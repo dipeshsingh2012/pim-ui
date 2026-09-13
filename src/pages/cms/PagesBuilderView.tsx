@@ -25,7 +25,7 @@ interface PagesBuilderViewProps {
   onUpdatePage: (page: CMSPage) => void;
   onCreatePage: (pageData: Omit<CMSPage, 'id' | 'updated_at'>) => Promise<CMSPage | void> | void;
   onDeletePage: (id: string) => void;
-  onPreviewStorefront: (page: CMSPage) => void;
+  onPreviewStore: (page: CMSPage) => void;
   showToast: (msg: string) => void;
 }
 
@@ -43,7 +43,7 @@ const SECTION_TYPE_INFO: Record<
 };
 
 const PAGE_TYPE_LABELS: Record<PageType, { label: string; icon: string }> = {
-  home: { label: 'Flagship Homepage', icon: '🏠' },
+  home: { label: 'Homepage', icon: '🏠' },
   product: { label: 'Product Page (PDP)', icon: '📦' },
   collection: { label: 'Collection / PLP', icon: '☕' },
   static: { label: 'Story & Content', icon: '📄' },
@@ -55,7 +55,7 @@ export function PagesBuilderView({
   onUpdatePage,
   onCreatePage,
   onDeletePage,
-  onPreviewStorefront,
+  onPreviewStore,
   showToast,
 }: PagesBuilderViewProps) {
   const [selectedPageId, setSelectedPageId] = useState<string>(pages[0]?.id || '');
@@ -296,7 +296,7 @@ export function PagesBuilderView({
           </button>
           <button
             type="button"
-            onClick={() => onPreviewStorefront(currentPage)}
+            onClick={() => onPreviewStore(currentPage)}
             className="flex items-center gap-1.5 px-3.5 py-2 text-xs font-bold text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-xl transition-colors cursor-pointer"
           >
             <Eye className="w-3.5 h-3.5 text-amber-700" />
@@ -553,7 +553,7 @@ export function PagesBuilderView({
           <div className="flex items-center gap-2">
             <button
               type="button"
-              onClick={() => onPreviewStorefront(currentPage)}
+              onClick={() => onPreviewStore(currentPage)}
               className="flex items-center gap-1.5 px-3.5 py-2 text-xs font-bold text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-xl transition-colors cursor-pointer"
             >
               <Eye className="w-3.5 h-3.5 text-amber-700" />

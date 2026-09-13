@@ -22,15 +22,14 @@ function resilientLookup(
     callback = options;
     options = {};
   }
-  dns.lookup(hostname, options, (err, address, family) => {
-    if (!err) return callback(null, address, family);
-    resolver.resolve4(hostname, (resErr, addresses) => {
-      if (resErr || !addresses || addresses.length === 0) return callback(err);
+  resolver.resolve4(hostname, (resErr, addresses) => {
+    if (!resErr && addresses && addresses.length > 0) {
       if (options && options.all) {
         return callback(null, addresses.map((addr) => ({ address: addr, family: 4 })));
       }
-      callback(null, addresses[0], 4);
-    });
+      return callback(null, addresses[0], 4);
+    }
+    dns.lookup(hostname, options, callback);
   });
 }
 

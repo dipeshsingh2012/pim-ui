@@ -4,6 +4,14 @@
   "outputDirectory": "dist",
   "rewrites": [
     {
+      "source": "/api/catalog/:path*",
+      "destination": "https://product-catalog-service-518971663061.us-central1.run.app/api/v1/:path*"
+    },
+    {
+      "source": "/api/content/:path*",
+      "destination": "https://content-service-518971663061.us-central1.run.app/api/v1/:path*"
+    },
+    {
       "source": "/(.*)",
       "destination": "/index.html"
     }

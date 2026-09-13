@@ -7,7 +7,7 @@ interface HeaderProps {
   onSelectTab?: (tab: 'products' | 'cms') => void;
 }
 
-const STOREFRONT_URL = import.meta.env.VITE_STOREFRONT_URL || '';
+const STORE_URL = import.meta.env.VITE_STORE_URL || '';
 
 export function Header({ activeTab = 'products', onSelectTab }: HeaderProps) {
   const [catalogOk, setCatalogOk] = useState<boolean | null>(null);
@@ -117,8 +117,8 @@ export function Header({ activeTab = 'products', onSelectTab }: HeaderProps) {
 
           {/* Direct Store Link */}
           <a
-            href={STOREFRONT_URL || '/'}
-            target={STOREFRONT_URL ? '_blank' : undefined}
+            href={STORE_URL || '/'}
+            target={STORE_URL ? '_blank' : undefined}
             rel="noreferrer"
             className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl text-xs font-bold text-slate-700 bg-slate-100 hover:bg-slate-200 transition-colors border border-slate-300 shadow-2xs"
           >

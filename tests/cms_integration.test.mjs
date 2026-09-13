@@ -181,6 +181,22 @@ test('CMS Endpoints Contract: mock test server verifying all 14 CMS API interact
       } else if (req.url === '/api/v1/cms/shell/footer' && req.method === 'PUT') {
         res.writeHead(200);
         res.end(JSON.stringify(JSON.parse(body)));
+      } else if (req.url === '/api/v1/cms/shell/theme' && req.method === 'GET') {
+        res.writeHead(200);
+        res.end(
+          JSON.stringify({
+            id: 'theme_warm_amber',
+            name: 'Warm Amber Roast',
+            preset: 'amber',
+            primary_color: '#92400e',
+            accent_color: '#f59e0b',
+            font_family: 'serif',
+            border_radius: 'rounded-2xl',
+          })
+        );
+      } else if (req.url === '/api/v1/cms/shell/theme' && req.method === 'PUT') {
+        res.writeHead(200);
+        res.end(JSON.stringify(JSON.parse(body)));
       } else if (req.url?.startsWith('/api/v1/cms/pages') && req.method === 'GET') {
         res.writeHead(200);
         res.end(
@@ -189,7 +205,7 @@ test('CMS Endpoints Contract: mock test server verifying all 14 CMS API interact
               {
                 id: 'page_home',
                 page_type: 'home',
-                title: 'Flagship Homepage',
+                title: 'Homepage',
                 slug: '/',
                 sections: [],
               },
@@ -378,6 +394,23 @@ test('CMS Data Provider Library: directly invoke exported functions against mock
       } else if (req.url === '/api/v1/cms/shell/footer' && req.method === 'GET') {
         res.writeHead(200);
         res.end(JSON.stringify({ brand_name: 'Direct Footer', columns: [] }));
+      } else if (req.url === '/api/v1/cms/shell/theme' && req.method === 'GET') {
+        res.writeHead(200);
+        res.end(
+          JSON.stringify({
+            id: 'theme_warm_amber',
+            name: 'Warm Amber Roast',
+            preset: 'amber',
+            primary_color: '#92400e',
+            accent_color: '#f59e0b',
+            font_family: 'serif',
+            border_radius: 'rounded-2xl',
+            is_active: true,
+          })
+        );
+      } else if (req.url === '/api/v1/cms/shell/theme' && req.method === 'PUT') {
+        res.writeHead(200);
+        res.end(body);
       } else if (req.url === '/api/v1/cms/pages?limit=100' && req.method === 'GET') {
         res.writeHead(200);
         res.end(
@@ -447,6 +480,22 @@ test('CMS Data Provider Library: directly invoke exported functions against mock
     const footer = await cmsProvider.fetchFooter();
     assert.equal(footer.brand_name, 'Direct Footer');
 
+    // 4b. Test fetchTheme & saveTheme
+    const theme = await cmsProvider.fetchTheme();
+    assert.equal(theme.preset, 'amber');
+    assert.equal(theme.primary_color, '#92400e');
+
+    const saveThemeRes = await cmsProvider.saveTheme({
+      ...theme,
+      preset: 'espresso',
+      primary_color: '#1c1917',
+    });
+    assert.equal(saveThemeRes.success, true);
+    assert.equal(saveThemeRes.syncedToApi, true);
+    const storedTheme = JSON.parse(globalThis.localStorage.getItem('pim_cms_theme_v1'));
+    assert.equal(storedTheme.preset, 'espresso');
+    assert.equal(storedTheme.primary_color, '#1c1917');
+
     // 5. Test fetchCmsPages
     const pages = await cmsProvider.fetchCmsPages();
     assert.equal(pages.length, 1);
@@ -495,11 +544,17 @@ test('Product Pages Catalog Sync: CMS provides dedicated product pages for each 
   const cmsProvider = await import(dataUri);
   const { DEFAULT_CMS_PAGES, SEED_CATALOG_PRODUCTS, generateProductPage, syncProductPagesWithCatalog } = cmsProvider;
 
-  // 1. Verify default seed pages contain a product page for each seed product
+  // 1. Verify default seed pages contain a product page for each seed product and NO universal fallback
   const productPages = DEFAULT_CMS_PAGES.filter((p) => p.page_type === 'product');
-  assert.ok(
-    productPages.length >= SEED_CATALOG_PRODUCTS.length,
-    `DEFAULT_CMS_PAGES should have at least ${SEED_CATALOG_PRODUCTS.length} product pages`
+  assert.equal(
+    productPages.some((p) => p.slug === '/products/:id' || p.id === 'page_product_default'),
+    false,
+    'Universal fallback product page (/products/:id) must be removed'
+  );
+  assert.equal(
+    productPages.length,
+    SEED_CATALOG_PRODUCTS.length,
+    `DEFAULT_CMS_PAGES product pages count must match real catalog products count exactly (${SEED_CATALOG_PRODUCTS.length})`
   );
 
   for (const prod of SEED_CATALOG_PRODUCTS) {
@@ -547,7 +602,9 @@ test('Product Pages Catalog Sync: CMS provides dedicated product pages for each 
 
   assert.ok(synced.some((p) => p.slug === '/products/prod_chemex_classic'));
   assert.ok(synced.some((p) => p.slug === '/products/prod_breville_barista_touch'));
-  assert.ok(synced.some((p) => p.slug === '/products/prod_artisan_guji'));
-  assert.ok(synced.some((p) => p.slug === '/products/prod_delonghi_dedica'));
+  assert.ok(synced.some((p) => p.slug === '/products/prod_mooleh_manay_excelsa'));
+  assert.ok(synced.some((p) => p.slug === '/products/fellow_ode_gen2' || p.slug === '/products/prod_fellow_ode_gen2'));
+  assert.equal(synced.some((p) => p.slug === '/products/:id' || p.id === 'page_product_default'), false);
+  assert.ok(synced.length >= 25, `Synced should contain at least 25 pages, got ${synced.length}`);
 });
 

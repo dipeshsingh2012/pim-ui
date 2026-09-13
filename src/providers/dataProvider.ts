@@ -14,110 +14,8 @@ export const CATALOG_API_URL = normalizeApiUrl(import.meta.env.VITE_CATALOG_API_
 export const CONTENT_API_URL = normalizeApiUrl(import.meta.env.VITE_CONTENT_API_URL, DEFAULT_CONTENT_URL);
 export const API_URL = CATALOG_API_URL; // Backwards compatibility alias
 
-export const FALLBACK_PIM_PRODUCTS: Product[] = [
-  {
-    id: 'prod_breville_barista_touch',
-    name: 'Barista Touch Espresso Machine',
-    brand: 'Breville',
-    sku: 'BES880BSS',
-    category: 'espresso_machine',
-    price: 999.95,
-    compare_at_price: 1199.95,
-    status: 'active',
-    in_stock: true,
-    badge: 'FLAGSHIP GEAR',
-    rating: 4.9,
-    review_count: 142,
-    tax_category: '8419',
-    width_cm: 32.2,
-    height_cm: 40.7,
-    depth_cm: 32.2,
-    weight_kg: 10.3,
-    top_clearance_cm: 12.0,
-    side_clearance_cm: 5.0,
-    rear_clearance_cm: 5.0,
-    image_url: 'https://images.unsplash.com/photo-1570968915860-54d5c301fa9f?w=600&auto=format&fit=crop&q=80',
-    description: 'Automated touchscreen espresso machine with integrated precision grinder.',
-    taste_notes: ['Espresso', 'Microfoam', 'Touchscreen'],
-  },
-  {
-    id: 'prod_artisan_guji',
-    name: 'Ethiopian Guji Single Origin (250g)',
-    brand: 'Artisan Roasters',
-    sku: 'ETH-GUJ-250',
-    category: 'coffee_beans',
-    price: 22.0,
-    compare_at_price: null,
-    status: 'active',
-    in_stock: true,
-    badge: 'EXCLUSIVE HARVEST',
-    rating: 5.0,
-    review_count: 88,
-    tax_category: '0901',
-    width_cm: 10.0,
-    height_cm: 20.0,
-    depth_cm: 6.0,
-    weight_kg: 0.25,
-    top_clearance_cm: 0,
-    side_clearance_cm: 0,
-    rear_clearance_cm: 0,
-    roast_level: 'Light Medium',
-    process_method: 'Washed',
-    estate_name: 'Shakiso Highlands',
-    region: 'Oromia, Guji',
-    elevation_m: 2100,
-    varietal: 'Heirloom',
-    image_url: 'https://images.unsplash.com/photo-1559056199-641a0ac8b55e?w=600&auto=format&fit=crop&q=80',
-    description: 'Bergamot, candied peach, and jasmine blossoms in a sparkling cup.',
-    taste_notes: ['Jasmine', 'Bergamot', 'Peach'],
-  },
-  {
-    id: 'prod_delonghi_dedica',
-    name: 'Dedica Deluxe Slim Espresso Machine',
-    brand: "De'Longhi",
-    sku: 'EC680M',
-    category: 'espresso_machine',
-    price: 299.95,
-    compare_at_price: 349.95,
-    status: 'active',
-    in_stock: true,
-    badge: 'BESTSELLER',
-    rating: 4.6,
-    review_count: 310,
-    tax_category: '8419',
-    width_cm: 14.9,
-    height_cm: 30.5,
-    depth_cm: 33.0,
-    weight_kg: 4.2,
-    top_clearance_cm: 5.0,
-    side_clearance_cm: 3.0,
-    rear_clearance_cm: 4.0,
-    image_url: 'https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?w=600&auto=format&fit=crop&q=80',
-    description: 'Ultra-slim 6-inch wide manual espresso machine for tight counters.',
-    taste_notes: ['Compact', '15-Bar Pump', 'Steam Wand'],
-  },
-];
-
-const FALLBACK_LANES: any[] = [
-  {
-    id: 'lane_curated_roasts',
-    title: 'Featured Roaster Harvests',
-    lane_type: 'circular_cards',
-    placement: 'homepage',
-    is_active: true,
-    priority: 1,
-    products: FALLBACK_PIM_PRODUCTS.map((p) => p.id),
-  },
-  {
-    id: 'lane_space_fit_gear',
-    title: 'CounterCheck™ Verified Gear',
-    lane_type: 'product_rail',
-    placement: 'discovery',
-    is_active: true,
-    priority: 2,
-    products: FALLBACK_PIM_PRODUCTS.filter((p) => p.category === 'espresso_machine').map((p) => p.id),
-  },
-];
+export const FALLBACK_PIM_PRODUCTS: Product[] = [];
+export const FALLBACK_LANES: any[] = [];
 
 export function resolveResourcePath(resource: string): { baseUrl: string; endpoint: string } {
   if (resource === 'lanes' || resource === 'content_lanes' || resource === 'menus') {
@@ -186,15 +84,14 @@ export const dataProvider: DataProvider = {
             total: json.total ?? 0,
           };
         }
-      } catch {
-        console.warn(`Could not reach ${resource} at ${baseUrl}, using offline fallback`);
+      } catch (e) {
+        console.error(`Could not reach ${resource} at ${baseUrl}:`, e);
       }
     }
 
-    const fallbackItems = resource === 'products' ? FALLBACK_PIM_PRODUCTS : FALLBACK_LANES;
     return {
-      data: fallbackItems,
-      total: fallbackItems.length,
+      data: [],
+      total: 0,
     };
   },
 
@@ -210,13 +107,11 @@ export const dataProvider: DataProvider = {
           const data = await response.json();
           return { data };
         }
-      } catch {
-        console.warn(`Could not reach ${resource} #${id} at ${baseUrl}, using fallback`);
+      } catch (e) {
+        console.error(`Could not reach ${resource} #${id} at ${baseUrl}:`, e);
       }
     }
-    const fallbackList = resource === 'products' ? FALLBACK_PIM_PRODUCTS : FALLBACK_LANES;
-    const item = fallbackList.find((x) => String(x.id) === String(id)) || fallbackList[0];
-    return { data: item };
+    throw new Error(`Item #${id} not found in ${resource}`);
   },
 
   create: async ({ resource, variables }) => {
@@ -297,41 +192,31 @@ export async function getCatalogFacets(): Promise<import('../types/product').Cat
     }
   }
   return {
-    categories: ['coffee_beans', 'espresso_machine', 'grinder', 'cafe_menu'],
-    brands: ['Artisan Roasters', 'Breville', "De'Longhi"],
-    roast_levels: ['Light', 'Medium Light', 'Medium', 'Medium Dark', 'Dark Espresso'],
-    process_methods: ['Washed', 'Natural', 'Pulp Sun-Dried', 'Honey'],
-    estates: ['Shakiso Highlands', 'Kalledevarapura Estate'],
-    min_price: 22.0,
-    max_price: 1199.95,
-    total_products: 3,
+    categories: [],
+    brands: [],
+    roast_levels: [],
+    process_methods: [],
+    estates: [],
+    min_price: 0,
+    max_price: 0,
+    total_products: 0,
   };
 }
 
 export async function publishProduct(id: string): Promise<import('../types/product').Product> {
   if (CATALOG_API_URL) {
-    try {
-      const res = await fetch(`${CATALOG_API_URL}/products/${id}/publish`, { method: 'POST', signal: AbortSignal.timeout(10000) });
-      if (res.ok) return await res.json();
-    } catch {
-      // Fall through
-    }
+    const res = await fetch(`${CATALOG_API_URL}/products/${id}/publish`, { method: 'POST', signal: AbortSignal.timeout(10000) });
+    if (res.ok) return await res.json();
   }
-  const item = FALLBACK_PIM_PRODUCTS.find((p) => p.id === id) || FALLBACK_PIM_PRODUCTS[0];
-  return { ...item, status: 'active' };
+  throw new Error(`Failed to publish product #${id}`);
 }
 
 export async function archiveProduct(id: string): Promise<import('../types/product').Product> {
   if (CATALOG_API_URL) {
-    try {
-      const res = await fetch(`${CATALOG_API_URL}/products/${id}/archive`, { method: 'POST', signal: AbortSignal.timeout(10000) });
-      if (res.ok) return await res.json();
-    } catch {
-      // Fall through
-    }
+    const res = await fetch(`${CATALOG_API_URL}/products/${id}/archive`, { method: 'POST', signal: AbortSignal.timeout(10000) });
+    if (res.ok) return await res.json();
   }
-  const item = FALLBACK_PIM_PRODUCTS.find((p) => p.id === id) || FALLBACK_PIM_PRODUCTS[0];
-  return { ...item, status: 'archived' };
+  throw new Error(`Failed to archive product #${id}`);
 }
 
 export async function searchByDimensions(params: {
@@ -356,10 +241,5 @@ export async function searchByDimensions(params: {
       // Fall through
     }
   }
-  return FALLBACK_PIM_PRODUCTS.filter((p) => {
-    if (params.category && p.category !== params.category) return false;
-    if (params.max_height_cm && p.height_cm > params.max_height_cm) return false;
-    if (params.exclude_id && p.id === params.exclude_id) return false;
-    return true;
-  });
+  return [];
 }

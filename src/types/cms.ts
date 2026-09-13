@@ -3,6 +3,27 @@
 // ==========================================
 
 export type ThemeColor = 'amber' | 'espresso' | 'emerald' | 'crimson' | 'slate';
+export type ThemePreset = 'alpine' | 'amber' | 'espresso' | 'emerald' | 'crimson' | 'slate';
+export type ThemeMode = 'light' | 'dark' | 'system';
+export type FontFamily = 'sans' | 'serif' | 'mono';
+export type BorderRadius = 'rounded-none' | 'rounded-lg' | 'rounded-xl' | 'rounded-2xl' | 'rounded-full';
+
+export interface ThemeConfig {
+  id: string;
+  name: string;
+  preset: ThemePreset;
+  mode: ThemeMode;
+  primary_color: string;
+  accent_color: string;
+  surface_color: string;
+  background_color: string;
+  text_color: string;
+  font_family: FontFamily;
+  border_radius: BorderRadius;
+  badge_text?: string;
+  is_active: boolean;
+  updated_at?: string;
+}
 
 // ------------------------------------------
 // 1. Global Site Shell: Promo Bar
@@ -69,6 +90,7 @@ export interface GlobalShellConfig {
   promo_bar: PromoBarConfig;
   header: HeaderConfig;
   footer: FooterConfig;
+  theme?: ThemeConfig;
 }
 
 // ------------------------------------------
