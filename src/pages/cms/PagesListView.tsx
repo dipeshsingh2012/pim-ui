@@ -148,10 +148,9 @@ export function PagesListView({
                 : 'bg-slate-100 text-slate-700 hover:bg-slate-200/70'
             }`}
           >
-            All Pages ({pages.length})
+            All Pages
           </button>
           {ALLOWED_PAGE_TYPES.map((pt) => {
-            const count = pages.filter((p) => p.page_type === pt.type).length;
             const isSelected = filterType === pt.type;
             return (
               <button
@@ -166,13 +165,6 @@ export function PagesListView({
               >
                 <span>{pt.icon}</span>
                 <span>{pt.label}</span>
-                <span
-                  className={`text-[10px] px-1.5 py-0.2 rounded-md ${
-                    isSelected ? 'bg-amber-900/60 text-amber-200' : 'bg-slate-200 text-slate-600'
-                  }`}
-                >
-                  {count}
-                </span>
               </button>
             );
           })}

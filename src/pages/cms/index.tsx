@@ -6,9 +6,7 @@ import {
   Menu,
   Layers,
   Eye,
-  RotateCcw,
   CheckCircle2,
-  Save,
 } from 'lucide-react';
 import {
   getGlobalShell,
@@ -19,7 +17,6 @@ import {
   saveCmsPage,
   createCmsPage,
   deleteCmsPage,
-  resetCmsDefaults,
 } from '../../providers/cmsDataProvider';
 import { CMSPage, GlobalShellConfig } from '../../types/cms';
 import { PagesListView } from './PagesListView';
@@ -102,26 +99,6 @@ export function CmsStudio() {
     setPreviewOpen(true);
   };
 
-  const handleResetDefaults = async () => {
-    if (confirm('Reset all CMS pages, section layouts, and site shell settings to showcase defaults?')) {
-      const { shell: defaultShell, pages: defaultPages } = await resetCmsDefaults();
-      setShell(defaultShell);
-      setPages(defaultPages);
-      if (defaultPages.length > 0) {
-        setSelectedPageId(defaultPages[0].id);
-      }
-      showToast('Reset all CMS layouts to showcase defaults');
-    }
-  };
-
-  const handleSaveAll = async () => {
-    await saveGlobalShell(shell);
-    for (const p of pages) {
-      await saveCmsPage(p);
-    }
-    showToast('All CMS changes saved successfully');
-  };
-
   return (
     <div className="space-y-6">
       {/* 5 Simplified Top-Level Tabs: Pages -> Header -> Footer -> Navigation -> Sections */}
@@ -139,13 +116,6 @@ export function CmsStudio() {
           >
             <Layout className="w-4 h-4" />
             <span>Pages</span>
-            <span
-              className={`text-[10px] px-1.5 py-0.2 rounded-md ${
-                activeSubTab === 'pages' ? 'bg-amber-900/60 text-amber-200' : 'bg-slate-200 text-slate-600'
-              }`}
-            >
-              {pages.length}
-            </span>
           </button>
 
           {/* Tab 2: Header */}
@@ -174,13 +144,6 @@ export function CmsStudio() {
           >
             <Footprints className="w-4 h-4" />
             <span>Footer</span>
-            <span
-              className={`text-[10px] px-1.5 py-0.2 rounded-md ${
-                activeSubTab === 'footer' ? 'bg-amber-900/60 text-amber-200' : 'bg-slate-200 text-slate-600'
-              }`}
-            >
-              {shell.footer.columns.length}
-            </span>
           </button>
 
           {/* Tab 4: Navigation */}
@@ -195,13 +158,6 @@ export function CmsStudio() {
           >
             <Menu className="w-4 h-4" />
             <span>Navigation</span>
-            <span
-              className={`text-[10px] px-1.5 py-0.2 rounded-md ${
-                activeSubTab === 'navigation' ? 'bg-amber-900/60 text-amber-200' : 'bg-slate-200 text-slate-600'
-              }`}
-            >
-              {shell.header.nodes.length}
-            </span>
           </button>
 
           {/* Tab 5: Sections */}
@@ -221,25 +177,6 @@ export function CmsStudio() {
 
         {/* Top Action Buttons */}
         <div className="flex items-center gap-2 shrink-0">
-          <button
-            type="button"
-            onClick={handleResetDefaults}
-            className="flex items-center gap-1.5 px-3 py-2 text-xs font-bold text-slate-600 hover:text-slate-900 bg-slate-100 hover:bg-slate-200/80 rounded-xl transition-colors cursor-pointer"
-            title="Reset to showcase defaults"
-          >
-            <RotateCcw className="w-3.5 h-3.5 text-slate-500" />
-            <span className="hidden md:inline">Reset Defaults</span>
-          </button>
-
-          <button
-            type="button"
-            onClick={handleSaveAll}
-            className="flex items-center gap-2 px-3.5 py-2 text-xs font-bold text-white bg-emerald-700 hover:bg-emerald-800 rounded-xl shadow-xs transition-colors cursor-pointer"
-          >
-            <Save className="w-4 h-4" />
-            <span>Save All</span>
-          </button>
-
           <button
             type="button"
             onClick={() => handleOpenPreview()}
