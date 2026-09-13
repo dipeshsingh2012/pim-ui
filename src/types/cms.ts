@@ -54,6 +54,7 @@ export interface HeaderConfig {
   brand_name: string;
   brand_tagline?: string;
   brand_badge?: string;
+  logo_url?: string;
   nodes: NavNode[];
   show_search: boolean;
   show_cart: boolean;

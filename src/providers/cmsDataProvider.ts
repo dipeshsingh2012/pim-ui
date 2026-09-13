@@ -129,6 +129,7 @@ export const DEFAULT_GLOBAL_SHELL: GlobalShellConfig = {
     brand_name: 'Hiljhil Roasters',
     brand_tagline: 'Specialty Sourced & Micro-Lot Roasted',
     brand_badge: 'FLAGSHIP ROASTERY',
+    logo_url: '/logo.jpg',
     show_search: true,
     show_cart: true,
     sticky: true,
@@ -1696,6 +1697,31 @@ export async function fetchTheme(): Promise<ThemeConfig> {
     }
   }
   return getTheme();
+}
+
+export async function fetchThemePresets(): Promise<ThemeConfig[]> {
+  if (CONTENT_API_URL) {
+    try {
+      const res = await fetch(`${CONTENT_API_URL}/cms/shell/theme-presets`, { signal: AbortSignal.timeout(8000) });
+      if (res.ok) {
+        const presets = await res.json();
+        if (Array.isArray(presets) && presets.length > 0) {
+          return presets;
+        }
+      } else {
+        const aliasRes = await fetch(`${CONTENT_API_URL}/cms/theme-presets`, { signal: AbortSignal.timeout(8000) });
+        if (aliasRes.ok) {
+          const presets = await aliasRes.json();
+          if (Array.isArray(presets) && presets.length > 0) {
+            return presets;
+          }
+        }
+      }
+    } catch (e) {
+      console.warn('Could not fetch theme presets from content-service:', e);
+    }
+  }
+  return Object.values(DEFAULT_THEME_PRESETS);
 }
 
 export async function saveTheme(theme: ThemeConfig): Promise<{ success: boolean; syncedToApi: boolean; theme: ThemeConfig }> {

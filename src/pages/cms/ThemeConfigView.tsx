@@ -31,6 +31,7 @@ import {
 import {
   DEFAULT_THEME_PRESETS,
   fetchTheme,
+  fetchThemePresets,
   saveTheme,
 } from '../../providers/cmsDataProvider';
 
@@ -113,14 +114,34 @@ export function ThemeConfigView({
   onUpdateShellTheme,
   showToast,
 }: ThemeConfigViewProps) {
+  const [presets, setPresets] = useState<Record<ThemePreset, ThemeConfig>>(DEFAULT_THEME_PRESETS);
   const [theme, setTheme] = useState<ThemeConfig>(
-    () => shell.theme || DEFAULT_THEME_PRESETS.amber
+    () => shell.theme || DEFAULT_THEME_PRESETS.alpine
   );
   const [previewDevice, setPreviewDevice] = useState<'desktop' | 'mobile'>('desktop');
   const [isSaving, setIsSaving] = useState(false);
   const [isSyncing, setIsSyncing] = useState(false);
   const [syncStatus, setSyncStatus] = useState<'synced' | 'draft'>('synced');
   const [addedMockCart, setAddedMockCart] = useState(false);
+
+  // Fetch presets from PostgreSQL via content-service on mount
+  useEffect(() => {
+    fetchThemePresets()
+      .then((presetList) => {
+        if (presetList && presetList.length > 0) {
+          const map = { ...DEFAULT_THEME_PRESETS };
+          for (const p of presetList) {
+            if (p.preset) {
+              map[p.preset as ThemePreset] = p;
+            }
+          }
+          setPresets(map);
+        }
+      })
+      .catch((err) => {
+        console.warn('Failed to load theme presets from content-service:', err);
+      });
+  }, []);
 
   useEffect(() => {
     if (shell.theme) {
@@ -129,7 +150,7 @@ export function ThemeConfigView({
   }, [shell.theme]);
 
   const handleApplyPreset = (presetKey: ThemePreset) => {
-    const base = DEFAULT_THEME_PRESETS[presetKey];
+    const base = presets[presetKey] || DEFAULT_THEME_PRESETS[presetKey];
     const updated: ThemeConfig = {
       ...base,
       id: `theme_${presetKey}`,
@@ -138,7 +159,7 @@ export function ThemeConfigView({
     };
     setTheme(updated);
     setSyncStatus('draft');
-    showToast(`Applied preset "${PRESET_METADATA[presetKey].title}". Click Publish to make it live.`);
+    showToast(`Applied preset "${PRESET_METADATA[presetKey]?.title || presetKey}". Click Publish to make it live.`);
   };
 
   const handleUpdateField = <K extends keyof ThemeConfig>(field: K, value: ThemeConfig[K]) => {
@@ -286,7 +307,7 @@ export function ThemeConfigView({
                 </h2>
               </div>
               <span className="text-[11px] font-semibold text-slate-400">
-                5 Roastery Palettes Available
+                {Object.keys(PRESET_METADATA).length} Roastery Palettes Available (Postgres Synced)
               </span>
             </div>
 
@@ -294,7 +315,7 @@ export function ThemeConfigView({
               {(Object.keys(PRESET_METADATA) as ThemePreset[]).map((pKey) => {
                 const meta = PRESET_METADATA[pKey];
                 const isSelected = theme.preset === pKey;
-                const presetDefault = DEFAULT_THEME_PRESETS[pKey];
+                const presetDefault = presets[pKey] || DEFAULT_THEME_PRESETS[pKey];
 
                 return (
                   <div
@@ -631,20 +652,11 @@ export function ThemeConfigView({
               <div className="p-3 bg-white/90 backdrop-blur-xs border-b border-slate-200/60 flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <img
-                    src="http://localhost:5170/logo.jpg"
+                    src="/logo.jpg"
                     alt="Hill Jhil"
-                    onError={(e) => {
-                      // Fallback if storefront port is not running
-                      (e.currentTarget as HTMLElement).style.display = 'none';
-                    }}
-                    className="w-7 h-7 rounded-full object-cover border border-teal-700/20 shadow-2xs"
+                    className="w-8 h-8 rounded-full object-cover border-2 shadow-xs shrink-0"
+                    style={{ borderColor: theme.primary_color }}
                   />
-                  <div
-                    className="w-7 h-7 rounded-lg flex items-center justify-center text-white shrink-0"
-                    style={{ backgroundColor: theme.primary_color }}
-                  >
-                    <Coffee className="w-4 h-4" />
-                  </div>
                   <div>
                     <div className="text-xs font-bold leading-tight" style={{ color: theme.primary_color }}>
                       Hill Jhil

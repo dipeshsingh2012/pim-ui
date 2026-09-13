@@ -608,3 +608,78 @@ test('Product Pages Catalog Sync: CMS provides dedicated product pages for each 
   assert.ok(synced.length >= 25, `Synced should contain at least 25 pages, got ${synced.length}`);
 });
 
+// ============================================================================
+// 6. Theme Presets PostgreSQL Contract Integration
+// ============================================================================
+test('Theme Presets: fetchThemePresets retrieves PostgreSQL-backed presets with fallback', async () => {
+  const { default: esbuild } = await import('esbuild');
+
+  const server = http.createServer((req, res) => {
+    res.setHeader('Content-Type', 'application/json');
+    if (req.url === '/api/v1/cms/shell/theme-presets' && req.method === 'GET') {
+      res.writeHead(200);
+      res.end(
+        JSON.stringify([
+          {
+            id: 'theme_hill_jhil_alpine',
+            name: 'Hill Jhil Alpine Tarn',
+            preset: 'alpine',
+            mode: 'light',
+            primary_color: '#085454',
+            accent_color: '#0d9488',
+            surface_color: '#ffffff',
+            background_color: '#f0fdfa',
+            text_color: '#042f2e',
+            font_family: 'serif',
+            border_radius: 'rounded-2xl',
+            is_active: true,
+          },
+          {
+            id: 'theme_warm_amber',
+            name: 'Warm Amber Roast',
+            preset: 'amber',
+            mode: 'light',
+            primary_color: '#92400e',
+            accent_color: '#f59e0b',
+            surface_color: '#ffffff',
+            background_color: '#fbf9f6',
+            text_color: '#1c1917',
+            font_family: 'serif',
+            border_radius: 'rounded-2xl',
+            is_active: false,
+          },
+        ])
+      );
+    } else {
+      res.writeHead(404);
+      res.end(JSON.stringify({ error: 'not found' }));
+    }
+  });
+
+  await new Promise((r) => server.listen(0, '127.0.0.1', r));
+  const port = server.address().port;
+  const mockContentApiUrl = `http://127.0.0.1:${port}/api/v1`;
+
+  try {
+    const rawTs = fs.readFileSync(path.join(rootDir, 'src/providers/cmsDataProvider.ts'), 'utf-8');
+    const replacedTs = rawTs.replace(
+      "import { CONTENT_API_URL } from './dataProvider';",
+      `const CONTENT_API_URL = '${mockContentApiUrl}';`
+    );
+    const transformed = esbuild.transformSync(replacedTs, {
+      loader: 'ts',
+      format: 'esm',
+    });
+    const dataUri = `data:text/javascript;base64,${Buffer.from(transformed.code).toString('base64')}`;
+    const cmsProvider = await import(dataUri);
+
+    const presets = await cmsProvider.fetchThemePresets();
+    assert.equal(presets.length, 2);
+    assert.equal(presets[0].preset, 'alpine');
+    assert.equal(presets[0].primary_color, '#085454');
+    assert.equal(presets[1].preset, 'amber');
+  } finally {
+    server.close();
+  }
+});
+

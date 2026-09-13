@@ -428,10 +428,12 @@ export function StorePreviewModal({
 
           {/* 2. HEADER */}
           <header className="bg-white border-b border-slate-200 sticky top-0 z-30 px-4 py-3 flex items-center justify-between gap-4">
-            <div className="flex items-center gap-2">
-              <div className="w-8 h-8 rounded-lg bg-amber-800 text-white flex items-center justify-center font-black">
-                <Coffee className="w-4 h-4" />
-              </div>
+            <div className="flex items-center gap-2.5">
+              <img
+                src={shell.header.logo_url || '/logo.jpg'}
+                alt={shell.header.brand_name}
+                className="w-8 h-8 rounded-full object-cover border border-amber-800/30 shadow-xs shrink-0"
+              />
               <div>
                 <div className="font-bold text-slate-900 text-sm leading-tight">
                   {shell.header.brand_name}
