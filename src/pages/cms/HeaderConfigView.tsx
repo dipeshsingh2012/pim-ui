@@ -83,7 +83,7 @@ export function HeaderConfigView({
 
   return (
     <div className="space-y-6">
-      {/* Live Storefront Header Preview */}
+      {/* Live Store Header Preview */}
       <div className="bg-white rounded-2xl p-4 border border-slate-200 shadow-2xs space-y-3">
         <div className="flex items-center justify-between">
           <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">
@@ -181,7 +181,7 @@ export function HeaderConfigView({
       <div className="bg-white rounded-2xl p-6 border border-slate-200 shadow-2xs space-y-4">
         <div className="flex items-center justify-between border-b border-slate-100 pb-4">
           <div>
-            <h3 className="text-sm font-bold text-slate-900">Storefront Header Identity</h3>
+            <h3 className="text-sm font-bold text-slate-900">Store Header Identity</h3>
             <p className="text-xs text-slate-500">
               Configure brand logo, tagline, header action buttons, and sticky navigation.
             </p>
@@ -264,7 +264,7 @@ export function HeaderConfigView({
           <div className="flex items-center gap-2">
             <Megaphone className="w-4 h-4 text-amber-800" />
             <div>
-              <h3 className="text-sm font-bold text-slate-900">Storefront Announcement / Promo Bar</h3>
+              <h3 className="text-sm font-bold text-slate-900">Store Announcement / Promo Bar</h3>
               <p className="text-xs text-slate-500">
                 Top notification ribbon for free shipping announcements, discount codes, or fresh harvests.
               </p>

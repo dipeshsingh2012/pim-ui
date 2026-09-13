@@ -87,7 +87,10 @@ export function StorefrontPreviewModal({
 
   const getTargetUrl = (base = storefrontBaseUrl) => {
     const cleanBase = base.replace(/\/$/, '');
-    const slug = page.slug || '/';
+    let slug = page.slug || '/';
+    if (page.page_type === 'product' && (slug === '/products/:id' || slug.includes(':id'))) {
+      slug = '/products/prod_breville_barista_touch';
+    }
     if (slug === '/' || slug === '#/' || slug === '#') {
       return `${cleanBase}/#/`;
     }
@@ -126,7 +129,7 @@ export function StorefrontPreviewModal({
         <div className="flex items-center gap-3">
           <div className="flex items-center gap-2">
             <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse"></span>
-            <span className="font-bold text-sm">Storefront Preview</span>
+            <span className="font-bold text-sm">Store Preview</span>
           </div>
           <span className="text-xs px-2.5 py-1 rounded-lg bg-slate-800 text-amber-300 font-mono border border-slate-700">
             {page.title} ({page.slug})
@@ -145,10 +148,10 @@ export function StorefrontPreviewModal({
                   ? 'bg-amber-800 text-white shadow-xs'
                   : 'text-slate-400 hover:text-white'
               }`}
-              title="Live Storefront via iframe"
+              title="Live Store via iframe"
             >
               <Globe className="w-3.5 h-3.5" />
-              <span>Live Storefront (iFrame)</span>
+              <span>Live Store (iFrame)</span>
             </button>
             <button
               type="button"
@@ -279,7 +282,7 @@ export function StorefrontPreviewModal({
                         setIsEditingUrl(true);
                       }}
                       className="truncate cursor-text flex-1 select-all hover:text-white"
-                      title="Click to edit live deployed storefront host URL"
+                      title="Click to edit live deployed store host URL"
                     >
                       {currentUrl}
                     </span>
@@ -297,7 +300,7 @@ export function StorefrontPreviewModal({
                       setIframeKey((k) => k + 1);
                     }}
                     className="p-1 text-slate-400 hover:text-white rounded-md hover:bg-slate-800 transition-colors cursor-pointer"
-                    title="Reload Storefront Frame"
+                    title="Reload Store Frame"
                   >
                     <RotateCw className={`w-3.5 h-3.5 ${isLoadingIframe ? 'animate-spin text-amber-400' : ''}`} />
                   </button>
@@ -319,7 +322,7 @@ export function StorefrontPreviewModal({
                   <div className="absolute inset-0 z-10 bg-slate-950/90 backdrop-blur-xs flex flex-col items-center justify-center gap-3 text-slate-300">
                     <div className="w-8 h-8 border-3 border-amber-600 border-t-transparent rounded-full animate-spin" />
                     <div className="text-xs font-semibold">
-                      Connecting to live deployed storefront at <span className="font-mono text-amber-300">{currentUrl}</span>
+                      Connecting to live deployed store at <span className="font-mono text-amber-300">{currentUrl}</span>
                     </div>
                     <p className="text-[11px] text-slate-500">
                       Live Host: <span className="font-mono text-slate-300">{storefrontBaseUrl}</span>
@@ -331,7 +334,7 @@ export function StorefrontPreviewModal({
                   src={currentUrl}
                   onLoad={() => setIsLoadingIframe(false)}
                   className="w-full h-full border-0 bg-white"
-                  title="Live Storefront Preview"
+                  title="Live Store Preview"
                   sandbox="allow-same-origin allow-scripts allow-forms allow-popups allow-modals"
                 />
               </div>
@@ -342,7 +345,7 @@ export function StorefrontPreviewModal({
               <div className="flex items-center gap-2">
                 <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
                 <span>
-                  Rendering live deployed storefront app from{' '}
+                  Rendering live deployed store app from{' '}
                   <span className="font-mono text-slate-200 font-bold">{storefrontBaseUrl}</span>
                 </span>
               </div>
@@ -350,7 +353,7 @@ export function StorefrontPreviewModal({
                 <button
                   type="button"
                   onClick={() => {
-                    const entered = prompt('Enter custom deployed Storefront URL:', storefrontBaseUrl);
+                    const entered = prompt('Enter custom deployed Store URL:', storefrontBaseUrl);
                     if (entered) handleUpdateStorefrontBaseUrl(entered);
                   }}
                   className="text-slate-400 hover:text-slate-200 underline cursor-pointer"

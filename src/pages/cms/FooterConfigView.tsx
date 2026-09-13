@@ -91,11 +91,11 @@ export function FooterConfigView({
 
   return (
     <div className="space-y-6">
-      {/* Live Storefront Footer Preview */}
+      {/* Live Store Footer Preview */}
       <div className="bg-white rounded-2xl p-4 border border-slate-200 shadow-2xs space-y-3">
         <div className="flex items-center justify-between">
           <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">
-            Live Storefront Footer Preview
+            Live Store Footer Preview
           </span>
           <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-slate-100 text-slate-700">
             {localFooter.columns.length} Columns Configured

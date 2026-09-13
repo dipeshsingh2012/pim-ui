@@ -433,7 +433,7 @@ export function PagesBuilderView({
             </div>
             <p className="text-sm font-bold text-slate-700">No sections on this page yet</p>
             <p className="text-xs text-slate-500 max-w-sm mx-auto">
-              Add a Hero Banner, Category Lane, or Product Grid to assemble this storefront page experience.
+              Add a Hero Banner, Category Lane, or Product Grid to assemble this page experience.
             </p>
           </div>
         ) : (

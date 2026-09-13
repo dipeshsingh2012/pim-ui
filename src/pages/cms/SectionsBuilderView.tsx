@@ -19,7 +19,8 @@ interface SectionsBuilderViewProps {
   selectedPageId: string;
   onSelectPageId: (id: string) => void;
   onUpdatePage: (page: CMSPage) => void;
-  onPreviewStorefront: (page: CMSPage) => void;
+  onPreviewStore?: (page: CMSPage) => void;
+  onPreviewStorefront?: (page: CMSPage) => void;
   showToast: (msg: string) => void;
 }
 
@@ -49,9 +50,14 @@ export function SectionsBuilderView({
   selectedPageId,
   onSelectPageId,
   onUpdatePage,
+  onPreviewStore,
   onPreviewStorefront,
   showToast,
 }: SectionsBuilderViewProps) {
+  const handlePreview = (p: CMSPage) => {
+    if (onPreviewStore) onPreviewStore(p);
+    else if (onPreviewStorefront) onPreviewStorefront(p);
+  };
   const [editingSection, setEditingSection] = useState<PageSection | null>(null);
   const [sectionModalOpen, setSectionModalOpen] = useState(false);
   const [showAddMenu, setShowAddMenu] = useState(false);
@@ -199,7 +205,7 @@ export function SectionsBuilderView({
       id: `sec_${Date.now()}`,
       type,
       title: `New ${SECTION_TYPE_INFO[type].label}`,
-      subtitle: 'Configured storefront block',
+      subtitle: 'Configured store block',
       is_active: true,
       sort_order: currentPage.sections.length + 1,
       config: defaultConfig,
@@ -216,36 +222,61 @@ export function SectionsBuilderView({
     <div className="space-y-6">
       {/* Top Page Selector Pill Bar */}
       <div className="bg-white rounded-2xl p-4 border border-slate-200 shadow-2xs flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <div className="flex items-center gap-2 overflow-x-auto pb-1 md:pb-0 scrollbar-none">
-          <span className="text-xs font-bold text-slate-500 uppercase tracking-wider shrink-0 mr-1">
+        <div className="flex items-center gap-2 overflow-x-auto pb-1 md:pb-0 scrollbar-none flex-1">
+          <label htmlFor="sections-page-select" className="text-xs font-bold text-slate-500 uppercase tracking-wider shrink-0 mr-1">
             Editing Page:
-          </span>
-          {pages.map((p) => {
-            const isSelected = p.id === currentPage.id;
-            const icon = PAGE_TYPE_ICONS[p.page_type] || '📄';
-            return (
-              <button
-                key={p.id}
-                type="button"
-                onClick={() => onSelectPageId(p.id)}
-                className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-bold transition-all shrink-0 cursor-pointer ${
-                  isSelected
-                    ? 'bg-amber-800 text-white shadow-xs'
-                    : 'bg-slate-100 text-slate-700 hover:bg-slate-200/70'
-                }`}
-              >
-                <span>{icon}</span>
-                <span>{p.title}</span>
-                <span
-                  className={`text-[10px] px-1.5 py-0.5 rounded-md font-mono ${
-                    isSelected ? 'bg-amber-900/60 text-amber-200' : 'bg-slate-200 text-slate-600'
+          </label>
+          <div className="relative shrink-0">
+            <select
+              id="sections-page-select"
+              value={currentPage.id}
+              onChange={(e) => onSelectPageId(e.target.value)}
+              className="text-xs font-bold bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-slate-800 focus:outline-hidden focus:border-amber-700 cursor-pointer"
+            >
+              <optgroup label="Homepage">
+                {pages.filter((p) => p.page_type === 'home').map((p) => (
+                  <option key={p.id} value={p.id}>🏠 {p.title} ({p.slug})</option>
+                ))}
+              </optgroup>
+              <optgroup label="Product Pages (PDP)">
+                {pages.filter((p) => p.page_type === 'product').map((p) => (
+                  <option key={p.id} value={p.id}>📦 {p.title} ({p.slug})</option>
+                ))}
+              </optgroup>
+              <optgroup label="Collections (PLP)">
+                {pages.filter((p) => p.page_type === 'collection').map((p) => (
+                  <option key={p.id} value={p.id}>☕ {p.title} ({p.slug})</option>
+                ))}
+              </optgroup>
+              <optgroup label="Content & Static">
+                {pages.filter((p) => p.page_type === 'static' || p.page_type === 'discovery').map((p) => (
+                  <option key={p.id} value={p.id}>📄 {p.title} ({p.slug})</option>
+                ))}
+              </optgroup>
+            </select>
+          </div>
+
+          <div className="hidden lg:flex items-center gap-1.5 overflow-x-auto ml-2 scrollbar-none">
+            {pages.map((p) => {
+              const isSelected = p.id === currentPage.id;
+              const icon = PAGE_TYPE_ICONS[p.page_type] || '📄';
+              return (
+                <button
+                  key={p.id}
+                  type="button"
+                  onClick={() => onSelectPageId(p.id)}
+                  className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-bold transition-all shrink-0 cursor-pointer ${
+                    isSelected
+                      ? 'bg-amber-800 text-white shadow-xs'
+                      : 'bg-slate-100 text-slate-700 hover:bg-slate-200/70'
                   }`}
                 >
-                  {p.slug}
-                </span>
-              </button>
-            );
-          })}
+                  <span>{icon}</span>
+                  <span className="max-w-[140px] truncate">{p.title}</span>
+                </button>
+              );
+            })}
+          </div>
         </div>
 
         {/* Action Controls */}
@@ -260,7 +291,7 @@ export function SectionsBuilderView({
           </button>
           <button
             type="button"
-            onClick={() => onPreviewStorefront(currentPage)}
+            onClick={() => handlePreview(currentPage)}
             className="flex items-center gap-1.5 px-3.5 py-2 text-xs font-bold text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-xl transition-colors cursor-pointer"
           >
             <Eye className="w-3.5 h-3.5 text-amber-700" />

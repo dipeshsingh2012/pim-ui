@@ -372,14 +372,14 @@ export function SiteShellView({ shell, onUpdateShell, showToast }: SiteShellView
           <div className="bg-white rounded-2xl p-5 border border-slate-200 shadow-2xs space-y-3">
             <div className="flex items-center justify-between">
               <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">
-                Live Storefront Promo Bar Preview
+                Live Store Promo Bar Preview
               </span>
               <span
                 className={`text-[10px] font-black uppercase px-2 py-0.5 rounded-full ${
                   promo.enabled ? 'bg-emerald-100 text-emerald-800' : 'bg-slate-200 text-slate-600'
                 }`}
               >
-                {promo.enabled ? 'Active on Storefront' : 'Disabled'}
+                {promo.enabled ? 'Active on Store' : 'Disabled'}
               </span>
             </div>
 
@@ -411,7 +411,7 @@ export function SiteShellView({ shell, onUpdateShell, showToast }: SiteShellView
               </div>
             ) : (
               <div className="py-3 px-4 bg-slate-100 text-slate-400 text-center rounded-xl text-xs font-semibold border border-dashed border-slate-300">
-                Promo bar is currently disabled and will not display on the storefront.
+                Promo bar is currently disabled and will not display on the store.
               </div>
             )}
           </div>
@@ -422,7 +422,7 @@ export function SiteShellView({ shell, onUpdateShell, showToast }: SiteShellView
               <div>
                 <h3 className="text-sm font-bold text-slate-900">Promo Bar Announcement</h3>
                 <p className="text-xs text-slate-500">
-                  Top-of-page announcement strip across all storefront pages.
+                  Top-of-page announcement strip across all store pages.
                 </p>
               </div>
               <div className="flex items-center gap-3">
@@ -521,7 +521,7 @@ export function SiteShellView({ shell, onUpdateShell, showToast }: SiteShellView
               {/* Bottom Action Strip */}
               <div className="pt-4 border-t border-slate-100 flex items-center justify-between">
                 <span className="text-xs text-slate-500">
-                  Changes save to storage and apply to live storefront.
+                  Changes save to storage and apply to live store.
                 </span>
                 <button
                   type="button"
@@ -545,7 +545,7 @@ export function SiteShellView({ shell, onUpdateShell, showToast }: SiteShellView
           {/* Header Preview */}
           <div className="bg-white rounded-2xl p-4 border border-slate-200 shadow-2xs space-y-3">
             <span className="text-xs font-bold text-slate-500 uppercase tracking-wider block">
-              Storefront Navigation Header Preview
+              Store Navigation Header Preview
             </span>
             <div className="p-3 bg-white rounded-xl border border-slate-200 shadow-xs flex items-center justify-between gap-4">
               {/* Brand Logo */}
@@ -620,7 +620,7 @@ export function SiteShellView({ shell, onUpdateShell, showToast }: SiteShellView
                     {headerApiStatus === 'synced' ? 'API Connected' : 'Cached Draft'}
                   </span>
                 </div>
-                <p className="text-xs text-slate-500">Configure storefront brand identity and action buttons.</p>
+                <p className="text-xs text-slate-500">Configure store brand identity and action buttons.</p>
               </div>
               <button
                 type="button"
@@ -681,7 +681,7 @@ export function SiteShellView({ shell, onUpdateShell, showToast }: SiteShellView
               <div>
                 <h3 className="text-sm font-bold text-slate-900">Navigation Node Tree</h3>
                 <p className="text-xs text-slate-500">
-                  Manage primary storefront menu links and sub-menu dropdown items.
+                  Manage primary store menu links and sub-menu dropdown items.
                 </p>
               </div>
               <div className="flex items-center gap-2">

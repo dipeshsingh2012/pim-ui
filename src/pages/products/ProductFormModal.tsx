@@ -392,7 +392,7 @@ export function ProductFormModal({ isOpen, onClose, onSubmit, initialData, mode 
                   onChange={(e) => setStatus(e.target.value as any)}
                   className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm focus:outline-hidden focus:ring-2 focus:ring-amber-800/20 focus:border-amber-800 bg-white font-medium"
                 >
-                  <option value="active">Active (Published to Storefront)</option>
+                  <option value="active">Active (Published to Store)</option>
                   <option value="draft">Draft (Hidden from Catalog)</option>
                   <option value="archived">Archived</option>
                 </select>
@@ -482,7 +482,7 @@ export function ProductFormModal({ isOpen, onClose, onSubmit, initialData, mode 
                     />
                   </button>
                   <span className="text-xs font-bold text-slate-800">
-                    {inStock ? 'In Stock (Available on Storefront)' : 'Out of Stock (Shows "Sold Out")'}
+                    {inStock ? 'In Stock (Available on Store)' : 'Out of Stock (Shows "Sold Out")'}
                   </span>
                 </div>
               </div>

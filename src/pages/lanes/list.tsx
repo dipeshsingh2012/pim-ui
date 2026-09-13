@@ -139,10 +139,10 @@ export function LaneList() {
             <span className="text-xs font-semibold text-slate-500">• Experience CMS</span>
           </div>
           <h1 className="text-2xl font-serif font-black text-slate-900 tracking-tight mt-1">
-            Storefront Product & Category Lanes
+            Product & Category Lanes
           </h1>
           <p className="text-xs text-slate-500 mt-1 max-w-xl">
-            Configure circular card sliders, bestseller rails, and curated collections published to storefront landing and discovery pages.
+            Configure circular card sliders, bestseller rails, and curated collections published to store landing and discovery pages.
           </p>
         </div>
 
@@ -153,7 +153,7 @@ export function LaneList() {
             rel="noreferrer"
             className="flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold text-slate-700 bg-slate-100 hover:bg-slate-200 transition-colors border border-slate-300"
           >
-            <span>Preview Storefront</span>
+            <span>Preview Store</span>
             <ExternalLink className="w-3.5 h-3.5 text-slate-400" />
           </a>
           <button
@@ -223,7 +223,7 @@ export function LaneList() {
           <Layers className="w-10 h-10 text-slate-300 mx-auto mb-3" />
           <h3 className="text-base font-bold text-slate-800">No Content Lanes Found</h3>
           <p className="text-xs text-slate-500 mt-1 max-w-sm mx-auto">
-            Get started by creating a new category slider or product rail to replace hardcoded storefront content.
+            Get started by creating a new category slider or product rail to replace hardcoded store content.
           </p>
           <button
             onClick={() => {

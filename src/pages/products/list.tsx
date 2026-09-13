@@ -18,6 +18,7 @@ import {
 import { Product } from '../../types/product';
 import { ProductFormModal } from './ProductFormModal';
 import { dataProvider, publishProduct, archiveProduct } from '../../providers/dataProvider';
+import { generateProductPage, saveCmsPage } from '../../providers/cmsDataProvider';
 
 const STOREFRONT_URL = import.meta.env.VITE_STOREFRONT_URL || '';
 
@@ -79,6 +80,14 @@ export function ProductList() {
       resource: 'products',
       variables: values,
     });
+    if (res.data) {
+      try {
+        const newProductPage = generateProductPage(res.data as Product);
+        await saveCmsPage(newProductPage);
+      } catch (e) {
+        console.warn('Could not auto-generate CMS product page:', e);
+      }
+    }
     showToast(`Successfully created "${res.data.name}"`);
     fetchProducts();
   };
@@ -113,7 +122,7 @@ export function ProductList() {
   const handlePublishProduct = async (prod: Product) => {
     try {
       await publishProduct(prod.id);
-      showToast(`Published "${prod.name}" to storefront`);
+      showToast(`Published "${prod.name}" to store`);
       fetchProducts();
     } catch (err: any) {
       console.error('Failed to publish product', err);
@@ -455,12 +464,12 @@ export function ProductList() {
                       {/* Actions */}
                       <td className="py-3 px-4 text-right">
                         <div className="flex items-center justify-end gap-1.5">
-                          {/* Storefront PDP Link */}
+                          {/* Store PDP Link */}
                           <a
                             href={STOREFRONT_URL ? `${STOREFRONT_URL}/product/${prod.id}` : `#${prod.id}`}
                             target={STOREFRONT_URL ? '_blank' : undefined}
                             rel="noreferrer"
-                            title="Preview in Storefront"
+                            title="Preview in Store"
                             className="p-1.5 rounded-lg text-slate-400 hover:text-amber-800 hover:bg-amber-50 transition-colors"
                           >
                             <ExternalLink className="w-4 h-4" />

@@ -1,4 +1,5 @@
 import type { DataProvider } from '@refinedev/core';
+import type { Product } from '../types/product';
 
 const DEFAULT_CATALOG_URL = 'https://product-catalog-service-518971663061.us-central1.run.app';
 const DEFAULT_CONTENT_URL = 'https://content-service-518971663061.us-central1.run.app';
@@ -13,7 +14,7 @@ export const CATALOG_API_URL = normalizeApiUrl(import.meta.env.VITE_CATALOG_API_
 export const CONTENT_API_URL = normalizeApiUrl(import.meta.env.VITE_CONTENT_API_URL, DEFAULT_CONTENT_URL);
 export const API_URL = CATALOG_API_URL; // Backwards compatibility alias
 
-const FALLBACK_PIM_PRODUCTS: any[] = [
+export const FALLBACK_PIM_PRODUCTS: Product[] = [
   {
     id: 'prod_breville_barista_touch',
     name: 'Barista Touch Espresso Machine',

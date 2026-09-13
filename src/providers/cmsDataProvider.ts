@@ -7,6 +7,7 @@ import {
   PageSection,
   SectionType,
 } from '../types/cms';
+import type { Product } from '../types/product';
 import { CONTENT_API_URL } from './dataProvider';
 
 const STORAGE_SHELL_KEY = 'pim_cms_global_shell_v1';
@@ -170,13 +171,280 @@ export const DEFAULT_GLOBAL_SHELL: GlobalShellConfig = {
 // ==========================================
 // Default Seed Data: Pages & Section Layouts
 // ==========================================
+export const SEED_CATALOG_PRODUCTS: Product[] = [
+  {
+    id: 'prod_breville_barista_touch',
+    name: 'Barista Touch Espresso Machine',
+    brand: 'Breville',
+    sku: 'BES880BSS',
+    category: 'espresso_machine',
+    price: 999.95,
+    compare_at_price: 1199.95,
+    status: 'active',
+    in_stock: true,
+    badge: 'FLAGSHIP GEAR',
+    rating: 4.9,
+    review_count: 142,
+    tax_category: '8419',
+    width_cm: 32.2,
+    height_cm: 40.7,
+    depth_cm: 32.2,
+    weight_kg: 10.3,
+    top_clearance_cm: 12.0,
+    side_clearance_cm: 5.0,
+    rear_clearance_cm: 5.0,
+    image_url: 'https://images.unsplash.com/photo-1570968915860-54d5c301fa9f?w=600&auto=format&fit=crop&q=80',
+    description: 'Automated touchscreen espresso machine with integrated precision grinder.',
+    taste_notes: ['Espresso', 'Microfoam', 'Touchscreen'],
+  },
+  {
+    id: 'prod_artisan_guji',
+    name: 'Ethiopian Guji Single Origin (250g)',
+    brand: 'Artisan Roasters',
+    sku: 'ETH-GUJ-250',
+    category: 'coffee_beans',
+    price: 22.0,
+    compare_at_price: null,
+    status: 'active',
+    in_stock: true,
+    badge: 'EXCLUSIVE HARVEST',
+    rating: 5.0,
+    review_count: 88,
+    tax_category: '0901',
+    width_cm: 10.0,
+    height_cm: 20.0,
+    depth_cm: 6.0,
+    weight_kg: 0.25,
+    top_clearance_cm: 0,
+    side_clearance_cm: 0,
+    rear_clearance_cm: 0,
+    roast_level: 'Light Medium',
+    process_method: 'Washed',
+    estate_name: 'Shakiso Highlands',
+    region: 'Oromia, Guji',
+    elevation_m: 2100,
+    varietal: 'Heirloom',
+    image_url: 'https://images.unsplash.com/photo-1559056199-641a0ac8b55e?w=600&auto=format&fit=crop&q=80',
+    description: 'Bergamot, candied peach, and jasmine blossoms in a sparkling cup.',
+    taste_notes: ['Jasmine', 'Bergamot', 'Peach'],
+  },
+  {
+    id: 'prod_delonghi_dedica',
+    name: 'Dedica Deluxe Slim Espresso Machine',
+    brand: "De'Longhi",
+    sku: 'EC680M',
+    category: 'espresso_machine',
+    price: 299.95,
+    compare_at_price: 349.95,
+    status: 'active',
+    in_stock: true,
+    badge: 'BESTSELLER',
+    rating: 4.6,
+    review_count: 310,
+    tax_category: '8419',
+    width_cm: 14.9,
+    height_cm: 30.5,
+    depth_cm: 33.0,
+    weight_kg: 4.2,
+    top_clearance_cm: 5.0,
+    side_clearance_cm: 3.0,
+    rear_clearance_cm: 4.0,
+    image_url: 'https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?w=600&auto=format&fit=crop&q=80',
+    description: 'Ultra-slim 6-inch wide manual espresso machine for tight counters.',
+    taste_notes: ['Compact', '15-Bar Pump', 'Steam Wand'],
+  },
+];
+
+export function generateDefaultProductSections(product: Product): PageSection[] {
+  const isCoffee = product.category === 'coffee_beans' || Boolean(product.roast_level);
+
+  const showcaseSection: PageSection = {
+    id: `sec_pdp_${product.id}_showcase`,
+    type: 'product_lane',
+    title: `${product.name} Showcase & Specifications`,
+    subtitle: `${product.brand} · ${product.badge || (isCoffee ? 'Specialty Harvest' : 'Precision Commercial Gear')}`,
+    is_active: true,
+    sort_order: 1,
+    config: {
+      card_style: 'slider',
+      display_count: 4,
+      show_badges: true,
+      enable_quick_add: true,
+      product_id: product.id,
+    },
+  };
+
+  const featureSection: PageSection = isCoffee
+    ? {
+        id: `sec_pdp_${product.id}_terroir`,
+        type: 'promo_callout',
+        title: `${product.roast_level || 'Artisan'} Terroir & Roast Profile`,
+        subtitle: product.estate_name
+          ? `Harvested at ${product.estate_name}${product.region ? `, ${product.region}` : ''}`
+          : 'Small-batch direct-trade micro-lot extraction',
+        is_active: true,
+        sort_order: 2,
+        config: {
+          headline:
+            product.taste_notes && product.taste_notes.length > 0
+              ? `Tasting Notes: ${product.taste_notes.join(' · ')}`
+              : 'Reserve Micro-Lot Cupping Score',
+          body:
+            product.description ||
+            `Cultivated at ${product.elevation_m || 2000}m altitude. ${product.process_method || 'Washed'} process developing dense fruit sweetness and vibrant floral cup acidity.`,
+          badge: product.process_method ? `${product.process_method.toUpperCase()} PROCESS` : 'MICRO-LOT ROAST',
+          button_text: 'Explore Origin Harvest',
+          button_url: '#/coffees',
+          image_url:
+            product.image_url ||
+            'https://images.unsplash.com/photo-1559056199-641a0ac8b55e?w=800&auto=format&fit=crop&q=80',
+          layout: 'image_right',
+        },
+      }
+    : {
+        id: `sec_pdp_${product.id}_specs`,
+        type: 'promo_callout',
+        title: 'CounterCheck™ Spatial Fit & Engineering Verification',
+        subtitle: 'Guaranteed kitchen cabinet and countertop clearance',
+        is_active: true,
+        sort_order: 2,
+        config: {
+          headline: `Dimensions: ${product.width_cm}cm W × ${product.height_cm}cm H × ${product.depth_cm}cm D (${product.weight_kg || 5}kg)`,
+          body: `Verified spatial clearances: Overhead ${product.top_clearance_cm || 0}cm, Side ${product.side_clearance_cm || 0}cm, Rear ${product.rear_clearance_cm || 0}cm. Engineered for seamless under-cabinet placement with zero steam condensation risk.`,
+          badge: 'SPATIAL FIT VERIFIED',
+          button_text: 'View CounterCheck™ Guide',
+          button_url: '#/discovery',
+          image_url:
+            product.image_url ||
+            'https://images.unsplash.com/photo-1570968915860-54d5c301fa9f?w=800&auto=format&fit=crop&q=80',
+          layout: 'image_left',
+        },
+      };
+
+  const pairingSection: PageSection = {
+    id: `sec_pdp_${product.id}_pairing`,
+    type: 'product_lane',
+    title: isCoffee ? 'Recommended Brewing Gear & Companion Tools' : 'Recommended Roaster Harvest Pairings',
+    subtitle: isCoffee ? 'Precision espresso machines and grinders' : 'Fresh micro-lot harvests roasted daily',
+    is_active: true,
+    sort_order: 3,
+    config: {
+      filter_category: isCoffee ? 'espresso_machine' : 'coffee_beans',
+      card_style: 'slider',
+      limit: 4,
+    },
+  };
+
+  const reviewSection: PageSection = {
+    id: `sec_pdp_${product.id}_reviews`,
+    type: 'testimonials',
+    title: 'Devotee Extraction Reviews',
+    subtitle: `Rated ${product.rating || 4.9} ★ across ${product.review_count || 100}+ verified coffee enthusiasts`,
+    is_active: true,
+    sort_order: 4,
+    config: {
+      testimonials: [
+        {
+          id: `test_${product.id}_1`,
+          author: 'Marcus V.',
+          role: 'Verified Home Barista',
+          rating: 5,
+          quote: `Incredible extraction consistency with the ${product.name}. Essential gear in our daily specialty coffee workflow.`,
+          verified_purchase: true,
+        },
+        {
+          id: `test_${product.id}_2`,
+          author: 'Dr. Elena R.',
+          role: 'Q-Grader & Roaster',
+          rating: 5,
+          quote: `Exceptional tolerances and cup clarity. Surpassed expectations on our cupping table.`,
+          verified_purchase: true,
+        },
+      ],
+    },
+  };
+
+  return [showcaseSection, featureSection, pairingSection, reviewSection];
+}
+
+export function generateProductPage(product: Product): CMSPage {
+  return {
+    id: `page_product_${product.id}`,
+    page_type: 'product',
+    title: `${product.name} (PDP)`,
+    slug: `/products/${product.id}`,
+    description: product.description || `${product.brand} ${product.name} product showcase and specifications.`,
+    is_published: product.status === 'active',
+    updated_at: new Date().toISOString(),
+    sections: generateDefaultProductSections(product),
+  };
+}
+
+export const DEFAULT_PRODUCT_PAGE: CMSPage = {
+  id: 'page_product_default',
+  page_type: 'product',
+  title: 'Product Detail Page (PDP)',
+  slug: '/products/:id',
+  description: 'Universal product page layout template automatically rendered across all catalog items (espresso gear, whole bean coffees, accessories).',
+  is_published: true,
+  updated_at: new Date().toISOString(),
+  sections: [
+    {
+      id: 'sec_pdp_overview',
+      type: 'product_lane',
+      title: 'Product Media Showcase & Specs',
+      subtitle: 'High-res media carousel, buy box, and CounterCheck™ clearance metrics',
+      is_active: true,
+      sort_order: 1,
+      config: {
+        card_style: 'slider',
+        display_count: 4,
+        show_badges: true,
+        enable_quick_add: true,
+      },
+    },
+    {
+      id: 'sec_pdp_pairing',
+      type: 'product_lane',
+      title: 'Recommended Roaster Pairings',
+      subtitle: 'Fresh whole bean lots and precision companion tools',
+      is_active: true,
+      sort_order: 2,
+      config: {
+        filter_category: 'coffee_beans',
+        card_style: 'slider',
+        limit: 4,
+      },
+    },
+    {
+      id: 'sec_pdp_reviews',
+      type: 'testimonials',
+      title: 'Devotee Extraction Reviews',
+      subtitle: 'Grind calibration notes and home barista feedback',
+      is_active: true,
+      sort_order: 3,
+      config: {
+        testimonials: [
+          {
+            id: 'pdp_test_1',
+            author: 'Marcus V.',
+            role: 'Verified Home Barista',
+            rating: 5,
+            quote: 'Extremely consistent extraction with zero channeling. The spatial tolerance matched my kitchen cabinet height exactly.',
+          },
+        ],
+      },
+    },
+  ],
+};
+
 export const DEFAULT_CMS_PAGES: CMSPage[] = [
   {
     id: 'page_home',
     page_type: 'home',
-    title: 'Storefront Flagship Homepage',
+    title: 'Flagship Homepage',
     slug: '/',
-    description: 'Main flagship storefront landing experience featuring hero banner, origin lanes, and curated collections.',
+    description: 'Main flagship store landing experience featuring hero banner, origin lanes, and curated collections.',
     is_published: true,
     updated_at: new Date().toISOString(),
     sections: [
@@ -262,89 +530,82 @@ export const DEFAULT_CMS_PAGES: CMSPage[] = [
         },
       },
       {
-        id: 'sec_home_product_lane',
+        id: 'sec_home_origin_lane',
         type: 'product_lane',
-        title: 'Featured Roaster Harvests',
-        subtitle: 'Direct trade anaerobic lots and competition roast profiles',
+        title: 'Single-Origin Reserve Lots',
+        subtitle: 'Micro-lots with cupping scores exceeding 87.5 points',
         is_active: true,
         sort_order: 3,
         config: {
-          filter_badge: 'NANO LOT',
+          filter_category: 'coffee_beans',
           card_style: 'slider',
-          limit: 6,
+          display_count: 6,
+          show_badges: true,
+          enable_quick_add: true,
         },
       },
       {
-        id: 'sec_home_promo_callout',
-        type: 'promo_callout',
-        title: 'CounterCheck™ Guarantee Highlight',
-        subtitle: 'Dimension fitment guarantee callout',
+        id: 'sec_home_precision_gear',
+        type: 'product_lane',
+        title: 'Benchtop Espresso Gear & Benchmarks',
+        subtitle: 'CounterCheck™ verified spatial clearance equipment',
         is_active: true,
         sort_order: 4,
         config: {
-          headline: 'Guaranteed Kitchen Fit Before You Buy',
-          body: 'Never return an espresso machine that does not clear your kitchen cabinets. CounterCheck™ calculates machine height, top water-reservoir clearance, and portafilter swing radius in real-time.',
-          badge: 'PATENTED FIT TECH',
-          button_text: 'Launch CounterCheck™ Finder',
-          button_url: '#/discovery',
-          image_url:
-            'https://images.unsplash.com/photo-1517668808822-9ebb02f2a0e6?w=800&auto=format&fit=crop&q=80',
-          layout: 'image_right',
+          filter_category: 'espresso_machine',
+          card_style: 'grid',
+          limit: 4,
+          show_badges: true,
+          enable_quick_add: false,
         },
       },
       {
-        id: 'sec_home_product_grid',
-        type: 'product_grid',
-        title: 'Verified Bestsellers & Espresso Gear',
-        subtitle: 'Flagship equipment with 3-year roastery warranty and complimentary dial-in session',
+        id: 'sec_home_roastery_callout',
+        type: 'promo_callout',
+        title: 'Ethical Sourcing & Experimental Fermentation',
+        subtitle: 'Roastery values and producer partnerships',
         is_active: true,
         sort_order: 5,
         config: {
-          columns: 3,
-          limit: 6,
-          show_quick_add: true,
+          headline: 'Carbonic Maceration & Anaerobic Precision',
+          body: 'We collaborate directly with estate farmers in Coorg and Chikmagalur to develop bespoke yeast inoculation and anaerobic fermentation protocols that unlock exotic tropical florals.',
+          badge: 'DIRECT TRADE ETHICS',
+          button_text: 'Read Sourcing Manifesto',
+          button_url: '#/about',
+          image_url:
+            'https://images.unsplash.com/photo-1511537190424-bbbab87ac5eb?w=800&auto=format&fit=crop&q=80',
+          layout: 'image_right',
         },
       },
       {
         id: 'sec_home_testimonials',
         type: 'testimonials',
-        title: 'Devotee Reviews & Barista Feedback',
-        subtitle: 'What coffee champions and home baristas say about our roasts',
+        title: 'What Coffee Devotees Say',
+        subtitle: 'Verified customer cupping reviews',
         is_active: true,
         sort_order: 6,
         config: {
           testimonials: [
             {
               id: 'test_1',
-              author: 'Elena Rostova',
-              role: 'National Barista Finalist 2025',
+              author: 'Elena R.',
+              role: 'Home Barista & Q-Grader',
               avatar_url:
-                'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80',
+                'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150&auto=format&fit=crop&q=80',
               rating: 5,
               quote:
-                'The Mooleh Manay Excelsa is a revelation. The carbonic maceration preserves vibrant berry acidity while delivering deep body and delicate floral jasmine aromatics.',
+                'The Mooleh Manay Excelsa was a revelation—crisp elderflower acidity with a dense cacao finish. CounterCheck™ saved me from buying a machine 2cm too deep!',
               verified_purchase: true,
             },
             {
               id: 'test_2',
-              author: 'Marcus Vance',
-              role: 'Home Barista Devotee',
+              author: 'David K.',
+              role: 'Coffee Roaster & Cafe Owner',
               avatar_url:
                 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&auto=format&fit=crop&q=80',
               rating: 5,
               quote:
-                'CounterCheck™ saved me from purchasing an espresso machine that would have hit my under-cabinet lighting. The machine fit with millimeter accuracy, and the coffee is world-class.',
-              verified_purchase: true,
-            },
-            {
-              id: 'test_3',
-              author: 'Dr. Sarah Lin',
-              role: 'Specialty Coffee Roaster',
-              avatar_url:
-                'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=150&auto=format&fit=crop&q=80',
-              rating: 5,
-              quote:
-                'Hiljhil sets the bar for ethical sourcing in specialty coffee. Transparent farm pricing, zero defects, and roast consistency that never falters across seasonal harvests.',
+                'Best roast development profiles in the country. Packaging keeps nitrogen flush intact for weeks. Invaluable curation for serious home espresso.',
               verified_purchase: true,
             },
           ],
@@ -355,73 +616,69 @@ export const DEFAULT_CMS_PAGES: CMSPage[] = [
   {
     id: 'page_collection_coffees',
     page_type: 'collection',
-    title: 'Whole Bean Coffees Collection (PLP)',
+    title: 'Whole Bean Single Origins & Blends (PLP)',
     slug: '/coffees',
-    description: 'Category listing page for single origins, espresso blends, and seasonal harvest releases.',
+    description: 'Category product listing grid featuring origin terroir filters, roast development level, and process method badges.',
     is_published: true,
     updated_at: new Date().toISOString(),
     sections: [
       {
         id: 'sec_coll_hero',
         type: 'hero_banner',
-        title: 'Coffees Collection Banner',
-        subtitle: 'Collection header banner for coffees',
+        title: 'Collection Header Banner',
+        subtitle: 'Origin catalogue introduction',
         is_active: true,
         sort_order: 1,
         config: {
-          headline: 'Single Origin & Producer Series Harvests',
-          subheadline:
-            'From the high-altitude volcanic soils of Guji to the mist-shrouded hills of Coorg. Direct trade, single-farm traceability.',
-          badge: 'CROP HARVEST 2026',
-          primary_cta_text: 'Shop All Beans',
-          primary_cta_url: '#/coffees',
+          headline: 'Specialty Harvest Collection',
+          subheadline: 'Filter by roast level, cupping score, varietal, and estate processing method.',
+          badge: 'CURRENT ROAST SELECTION',
+          primary_cta_text: 'View Roasting Schedule',
+          primary_cta_url: '#/about',
           background_image:
-            'https://images.unsplash.com/photo-1587734195503-904fca47e0e9?w=1600&auto=format&fit=crop&q=80',
+            'https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=1600&auto=format&fit=crop&q=80',
           overlay_opacity: 60,
-          text_align: 'left',
+          text_align: 'center',
         },
       },
       {
-        id: 'sec_coll_grid',
-        type: 'category_grid',
-        title: 'Explore by Roast Profile',
-        subtitle: 'Choose your ideal flavor profile',
+        id: 'sec_coll_categories',
+        type: 'category_lane',
+        title: 'Filter by Origin & Varietal',
+        subtitle: 'Region shortcuts',
         is_active: true,
         sort_order: 2,
         config: {
-          columns: 4,
+          card_style: 'circular',
+          has_navigation_arrows: false,
           categories: [
             {
-              id: 'cat_light',
-              title: 'Light-Medium Terroir Roasts',
+              id: 'cat_c1',
+              title: 'Coorg Estates',
               image_url:
-                'https://images.unsplash.com/photo-1559056199-641a0ac8b55e?w=400&h=300&fit=crop&q=80',
-              url: '#/coffees?roast=light',
-              badge: 'FLORAL & BRIGHT',
+                'https://images.unsplash.com/photo-1589396575653-c09c794ff6a6?w=200&h=200&fit=crop&q=80',
+              url: '#/coffees',
             },
             {
-              id: 'cat_medium',
-              title: 'House & Balanced Roasts',
+              id: 'cat_c2',
+              title: 'Chikmagalur',
               image_url:
-                'https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?w=400&h=300&fit=crop&q=80',
-              url: '#/coffees?roast=medium',
-              badge: 'CHOCOLATE & CARAMEL',
+                'https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?w=200&h=200&fit=crop&q=80',
+              url: '#/coffees',
             },
             {
-              id: 'cat_anaerobic',
-              title: 'Anaerobic Nano-Lots',
+              id: 'cat_c3',
+              title: 'Anaerobic Naturals',
               image_url:
-                'https://images.unsplash.com/photo-1610632380989-680fe40816c6?w=400&h=300&fit=crop&q=80',
-              url: '#/coffees?process=anaerobic',
-              badge: 'WINE & TROPICAL',
+                'https://images.unsplash.com/photo-1559056199-641a0ac8b55e?w=200&h=200&fit=crop&q=80',
+              url: '#/coffees',
             },
             {
-              id: 'cat_decaf',
-              title: 'Mountain Water Decaf',
+              id: 'cat_c4',
+              title: 'Washed Micro-lots',
               image_url:
-                'https://images.unsplash.com/photo-1587734195503-904fca47e0e9?w=400&h=300&fit=crop&q=80',
-              url: '#/coffees?category=decaf',
-              badge: 'CHEMICAL FREE',
+                'https://images.unsplash.com/photo-1517668808822-9ebb02f2a0e6?w=200&h=200&fit=crop&q=80',
+              url: '#/coffees',
             },
           ],
         },
@@ -442,68 +699,8 @@ export const DEFAULT_CMS_PAGES: CMSPage[] = [
       },
     ],
   },
-  {
-    id: 'page_product_detail',
-    page_type: 'product',
-    title: 'Mooleh Manay Excelsa Product Showcase (PDP)',
-    slug: '/products/mooleh-manay-excelsa',
-    description: 'Product detail showcase featuring terroir specs, roast development curve, and brew guidelines.',
-    is_published: true,
-    updated_at: new Date().toISOString(),
-    sections: [
-      {
-        id: 'sec_pdp_hero',
-        type: 'hero_banner',
-        title: 'Single Origin Lot Product Hero',
-        subtitle: 'Harvest details and cupping scores',
-        is_active: true,
-        sort_order: 1,
-        config: {
-          headline: 'Mooleh Manay Carbonic Maceration Excelsa',
-          subheadline:
-            'Rare single-estate nano lot from Coorg, Karnataka. Vibrant notes of dark cherry, elderflower, and dark chocolate liqueur.',
-          badge: 'CUPPING SCORE: 88.5',
-          primary_cta_text: 'Order Roasted Beans ($24)',
-          primary_cta_url: '#/products/mooleh-manay-excelsa',
-          background_image:
-            'https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?w=1600&auto=format&fit=crop&q=85',
-          overlay_opacity: 65,
-          text_align: 'left',
-        },
-      },
-      {
-        id: 'sec_pdp_callout',
-        type: 'promo_callout',
-        title: 'Fermentation & Roasting Profile',
-        subtitle: 'Technical cupping notes',
-        is_active: true,
-        sort_order: 2,
-        config: {
-          headline: 'Experimental 96-Hour Carbonic Maceration',
-          body: 'Sealed stainless fermentation tanks with CO2 purging allow enzymatic breakdown of mucilage sugars, magnifying stonefruit esters without vinegary acetic development.',
-          badge: 'PROCESS METHOD',
-          button_text: 'Download Roast Curve PDF',
-          button_url: '#/about',
-          image_url:
-            'https://images.unsplash.com/photo-1559056199-641a0ac8b55e?w=800&auto=format&fit=crop&q=80',
-          layout: 'image_right',
-        },
-      },
-      {
-        id: 'sec_pdp_lane',
-        type: 'product_lane',
-        title: 'Recommended Equipment Pairing',
-        subtitle: 'Dialed in precision grinders and brewers for this roast',
-        is_active: true,
-        sort_order: 3,
-        config: {
-          filter_category: 'grinder',
-          card_style: 'slider',
-          limit: 4,
-        },
-      },
-    ],
-  },
+  ...SEED_CATALOG_PRODUCTS.map(generateProductPage),
+  DEFAULT_PRODUCT_PAGE,
   {
     id: 'page_about',
     page_type: 'static',
@@ -788,13 +985,50 @@ export async function saveFooter(footer: FooterConfig): Promise<void> {
   }
 }
 
+export function syncProductPagesWithCatalog(existingPages: CMSPage[], products: Product[]): CMSPage[] {
+  const pages = [...existingPages];
+
+  for (const prod of products) {
+    const expectedId = `page_product_${prod.id}`;
+    const expectedSlug = `/products/${prod.id}`;
+
+    const existingIndex = pages.findIndex(
+      (p) => p.page_type === 'product' && (p.id === expectedId || p.slug === expectedSlug)
+    );
+
+    if (existingIndex >= 0) {
+      const existing = pages[existingIndex];
+      pages[existingIndex] = {
+        ...existing,
+        title: existing.title || `${prod.name} (PDP)`,
+        slug: expectedSlug,
+      };
+    } else {
+      pages.push(generateProductPage(prod));
+    }
+  }
+
+  // Ensure default fallback PDP template also exists
+  if (!pages.some((p) => p.id === DEFAULT_PRODUCT_PAGE.id || p.slug === '/products/:id')) {
+    pages.push(DEFAULT_PRODUCT_PAGE);
+  }
+
+  try {
+    localStorage.setItem(STORAGE_PAGES_KEY, JSON.stringify(pages));
+  } catch (e) {
+    console.warn('Failed to cache synced CMS pages in storage:', e);
+  }
+
+  return pages;
+}
+
 export function getCmsPages(): CMSPage[] {
   try {
     const raw = localStorage.getItem(STORAGE_PAGES_KEY);
     if (raw) {
       const parsed = JSON.parse(raw);
       if (Array.isArray(parsed) && parsed.length > 0) {
-        return parsed;
+        return syncProductPagesWithCatalog(parsed, SEED_CATALOG_PRODUCTS);
       }
     }
   } catch (e) {

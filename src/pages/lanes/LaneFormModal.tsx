@@ -304,7 +304,7 @@ export function LaneFormModal({
               >
                 <option value="homepage">Homepage Only</option>
                 <option value="discovery">Discovery Page</option>
-                <option value="all">All Storefront Pages</option>
+                <option value="all">All Store Pages</option>
               </select>
             </div>
           </div>
@@ -370,7 +370,7 @@ export function LaneFormModal({
             <div className="flex items-center justify-between mb-3">
               <div className="flex items-center gap-1.5 text-xs font-black uppercase tracking-wider text-amber-800">
                 <Eye className="w-3.5 h-3.5" />
-                <span>Live Storefront Preview ({formData.card_style})</span>
+                <span>Live Store Preview ({formData.card_style})</span>
               </div>
               {formData.has_navigation_arrows && (
                 <div className="flex items-center gap-1">

@@ -133,11 +133,11 @@ export function NavigationConfigView({
 
   return (
     <div className="space-y-6">
-      {/* Live Storefront Navigation Preview */}
+      {/* Live Store Navigation Preview */}
       <div className="bg-white rounded-2xl p-4 border border-slate-200 shadow-2xs space-y-3">
         <div className="flex items-center justify-between">
           <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">
-            Live Storefront Navigation Header Preview
+            Live Store Navigation Header Preview
           </span>
           <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-slate-100 text-slate-700">
             {localHeader.nodes.length} Primary Menu Links
@@ -176,7 +176,7 @@ export function NavigationConfigView({
           <div>
             <h3 className="text-sm font-bold text-slate-900">Navigation Node Tree</h3>
             <p className="text-xs text-slate-500">
-              Manage primary menu links and sub-menu dropdown levels for your storefront.
+              Manage primary menu links and sub-menu dropdown levels for your store.
             </p>
           </div>
           <div className="flex items-center gap-2">

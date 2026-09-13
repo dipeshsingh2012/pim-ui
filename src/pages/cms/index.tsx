@@ -17,8 +17,11 @@ import {
   saveCmsPage,
   createCmsPage,
   deleteCmsPage,
+  syncProductPagesWithCatalog,
 } from '../../providers/cmsDataProvider';
+import { dataProvider } from '../../providers/dataProvider';
 import { CMSPage, GlobalShellConfig } from '../../types/cms';
+import { Product } from '../../types/product';
 import { PagesListView } from './PagesListView';
 import { HeaderConfigView } from './HeaderConfigView';
 import { FooterConfigView } from './FooterConfigView';
@@ -31,7 +34,7 @@ export type CmsStudioTab = 'pages' | 'header' | 'footer' | 'navigation' | 'secti
 export function CmsStudio() {
   const [activeSubTab, setActiveSubTab] = useState<CmsStudioTab>('pages');
   const [shell, setShell] = useState<GlobalShellConfig>(getGlobalShell());
-  const [pages, setPages] = useState<CMSPage[]>(getCmsPages());
+  const [pages, setPages] = useState<CMSPage[]>(() => getCmsPages());
   const [selectedPageId, setSelectedPageId] = useState<string>(pages[0]?.id || '');
   const [previewOpen, setPreviewOpen] = useState(false);
   const [previewPage, setPreviewPage] = useState<CMSPage | null>(null);
@@ -47,15 +50,18 @@ export function CmsStudio() {
     let mounted = true;
     async function loadData() {
       try {
-        const [loadedShell, loadedPages] = await Promise.all([
+        const [loadedShell, loadedPages, productsRes] = await Promise.all([
           fetchGlobalShell(),
           fetchCmsPages(),
+          dataProvider.getList({ resource: 'products', pagination: { currentPage: 1, pageSize: 100 } }).catch(() => ({ data: [] })),
         ]);
         if (mounted) {
+          const catalogProducts = (productsRes.data || []) as Product[];
+          const finalPages = syncProductPagesWithCatalog(loadedPages, catalogProducts);
           setShell(loadedShell);
-          setPages(loadedPages);
-          if (loadedPages.length > 0 && !selectedPageId) {
-            setSelectedPageId(loadedPages[0].id);
+          setPages(finalPages);
+          if (finalPages.length > 0 && !selectedPageId) {
+            setSelectedPageId(finalPages[0].id);
           }
         }
       } catch (err) {
@@ -183,7 +189,7 @@ export function CmsStudio() {
             className="flex items-center gap-2 px-4 py-2 text-xs font-bold text-white bg-amber-800 hover:bg-amber-900 rounded-xl shadow-xs transition-colors cursor-pointer"
           >
             <Eye className="w-4 h-4" />
-            <span>Preview Storefront</span>
+            <span>Preview Store</span>
           </button>
         </div>
       </div>
@@ -199,7 +205,7 @@ export function CmsStudio() {
             setSelectedPageId(pageId);
             setActiveSubTab('sections');
           }}
-          onPreviewStorefront={handleOpenPreview}
+          onPreviewStore={handleOpenPreview}
           showToast={showToast}
         />
       )}
@@ -240,12 +246,12 @@ export function CmsStudio() {
           selectedPageId={selectedPageId || pages[0]?.id || ''}
           onSelectPageId={setSelectedPageId}
           onUpdatePage={handleUpdatePage}
-          onPreviewStorefront={handleOpenPreview}
+          onPreviewStore={handleOpenPreview}
           showToast={showToast}
         />
       )}
 
-      {/* Live Storefront Preview Modal */}
+      {/* Live Store Preview Modal */}
       <StorefrontPreviewModal
         isOpen={previewOpen}
         onClose={() => setPreviewOpen(false)}

@@ -476,3 +476,78 @@ test('CMS Data Provider Library: directly invoke exported functions against mock
     server.close();
   }
 });
+
+// ============================================================================
+// 5. Product Pages Catalog Sync: CMS displays dedicated product pages for all DB products
+// ============================================================================
+test('Product Pages Catalog Sync: CMS provides dedicated product pages for each product in the database', async () => {
+  const { default: esbuild } = await import('esbuild');
+  const rawTs = fs.readFileSync(path.join(rootDir, 'src/providers/cmsDataProvider.ts'), 'utf-8');
+  const replacedTs = rawTs.replace(
+    "import { CONTENT_API_URL } from './dataProvider';",
+    "const CONTENT_API_URL = '';"
+  );
+  const transformed = esbuild.transformSync(replacedTs, {
+    loader: 'ts',
+    format: 'esm',
+  });
+  const dataUri = `data:text/javascript;base64,${Buffer.from(transformed.code).toString('base64')}`;
+  const cmsProvider = await import(dataUri);
+  const { DEFAULT_CMS_PAGES, SEED_CATALOG_PRODUCTS, generateProductPage, syncProductPagesWithCatalog } = cmsProvider;
+
+  // 1. Verify default seed pages contain a product page for each seed product
+  const productPages = DEFAULT_CMS_PAGES.filter((p) => p.page_type === 'product');
+  assert.ok(
+    productPages.length >= SEED_CATALOG_PRODUCTS.length,
+    `DEFAULT_CMS_PAGES should have at least ${SEED_CATALOG_PRODUCTS.length} product pages`
+  );
+
+  for (const prod of SEED_CATALOG_PRODUCTS) {
+    const page = productPages.find((p) => p.slug === `/products/${prod.id}` || p.id === `page_product_${prod.id}`);
+    assert.ok(page, `Product page for ${prod.id} (${prod.name}) must exist in default CMS pages`);
+    assert.equal(page.page_type, 'product');
+    assert.ok(page.title.includes(prod.name), `Title should include product name`);
+    assert.ok(page.sections.length > 0, `Product page should have configured sections`);
+  }
+
+  // 2. Test generateProductPage with a custom product
+  const testProduct = {
+    id: 'prod_chemex_classic',
+    name: 'Chemex 8-Cup Classic Pour-Over',
+    brand: 'Chemex',
+    sku: 'CM-8A',
+    category: 'accessories',
+    price: 49.95,
+    status: 'active',
+    in_stock: true,
+    rating: 4.8,
+    review_count: 55,
+    tax_category: 'accessories',
+    width_cm: 13.0,
+    height_cm: 23.0,
+    depth_cm: 13.0,
+    top_clearance_cm: 5.0,
+    side_clearance_cm: 2.0,
+    rear_clearance_cm: 2.0,
+  };
+
+  const generatedPage = generateProductPage(testProduct);
+  assert.equal(generatedPage.id, 'page_product_prod_chemex_classic');
+  assert.equal(generatedPage.slug, '/products/prod_chemex_classic');
+  assert.equal(generatedPage.page_type, 'product');
+  assert.equal(generatedPage.title, 'Chemex 8-Cup Classic Pour-Over (PDP)');
+  assert.ok(generatedPage.sections.length >= 3);
+
+  // 3. Test syncProductPagesWithCatalog dynamic generation
+  const existingPages = [
+    { id: 'page_home', page_type: 'home', title: 'Home', slug: '/', sections: [], is_published: true },
+  ];
+  const catalog = [...SEED_CATALOG_PRODUCTS, testProduct];
+  const synced = syncProductPagesWithCatalog(existingPages, catalog);
+
+  assert.ok(synced.some((p) => p.slug === '/products/prod_chemex_classic'));
+  assert.ok(synced.some((p) => p.slug === '/products/prod_breville_barista_touch'));
+  assert.ok(synced.some((p) => p.slug === '/products/prod_artisan_guji'));
+  assert.ok(synced.some((p) => p.slug === '/products/prod_delonghi_dedica'));
+});
+
