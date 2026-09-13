@@ -1721,10 +1721,44 @@ export async function saveTheme(theme: ThemeConfig): Promise<{ success: boolean;
       });
       if (res.ok) {
         syncedToApi = true;
+      } else {
+        // Dual fallback: update global shell with nested theme
+        const shellRes = await fetch(`${CONTENT_API_URL}/cms/shell`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ theme }),
+        });
+        if (shellRes.ok) {
+          syncedToApi = true;
+        }
       }
     } catch (e) {
-      console.warn('Could not save theme via dedicated endpoint:', e);
+      console.warn('Could not save theme via dedicated endpoint, attempting shell fallback:', e);
+      try {
+        const shellRes = await fetch(`${CONTENT_API_URL}/cms/shell`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ theme }),
+        });
+        if (shellRes.ok) {
+          syncedToApi = true;
+        }
+      } catch (err2) {
+        console.warn('Shell fallback also failed:', err2);
+      }
     }
+  }
+
+  // Broadcast live theme change to preview iframes and listeners
+  if (typeof window !== 'undefined') {
+    try {
+      window.dispatchEvent(new CustomEvent('pim:theme-updated', { detail: theme }));
+      document.querySelectorAll('iframe').forEach((iframe) => {
+        try {
+          iframe.contentWindow?.postMessage({ type: 'PIM_THEME_UPDATED', theme }, '*');
+        } catch {}
+      });
+    } catch {}
   }
 
   return {

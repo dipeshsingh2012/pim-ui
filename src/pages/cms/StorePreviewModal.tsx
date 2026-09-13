@@ -332,7 +332,15 @@ export function StorePreviewModal({
                 <iframe
                   key={iframeKey}
                   src={currentUrl}
-                  onLoad={() => setIsLoadingIframe(false)}
+                  onLoad={(e) => {
+                    setIsLoadingIframe(false);
+                    try {
+                      const iframe = e.currentTarget;
+                      if (shell.theme) {
+                        iframe.contentWindow?.postMessage({ type: 'PIM_THEME_UPDATED', theme: shell.theme }, '*');
+                      }
+                    } catch {}
+                  }}
                   className="w-full h-full border-0 bg-white"
                   title="Live Store Preview"
                   sandbox="allow-same-origin allow-scripts allow-forms allow-popups allow-modals"
