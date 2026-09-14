@@ -51,6 +51,14 @@ const SECTION_TYPE_LABELS: Record<SectionType, { label: string; description: str
     label: 'Feature / Promo Callout',
     description: 'Spotlight card highlighting dimension fitment, sourcing ethics, or craft guarantee.',
   },
+  feature_grid: {
+    label: 'Feature / Card Grid',
+    description: 'Responsive multi-column grid of cafes, coupons, tasting bundles, or brand pillars.',
+  },
+  rich_text: {
+    label: 'Rich Text & Legal Policy',
+    description: 'Formatted legal sections, policy clauses, and editorial prose.',
+  },
 };
 
 export function SectionFormModal({
@@ -722,6 +730,261 @@ export function SectionFormModal({
                   className="w-full px-3 py-2 text-sm rounded-lg border border-slate-200"
                   placeholder="https://images.unsplash.com/..."
                 />
+              </div>
+            </div>
+          )}
+
+          {section.type === 'feature_grid' && (
+            <div className="space-y-4">
+              <div className="flex items-center justify-between">
+                <h4 className="text-xs font-bold uppercase tracking-wider text-amber-900">
+                  Feature / Card Grid Configuration
+                </h4>
+                <div className="flex items-center gap-2">
+                  <label className="text-xs font-bold text-slate-700">Columns:</label>
+                  <select
+                    value={config.columns || 3}
+                    onChange={(e) => updateConfig('columns', Number(e.target.value))}
+                    className="px-2 py-1 text-xs rounded border border-slate-200 bg-white"
+                  >
+                    <option value={1}>1 Column</option>
+                    <option value={2}>2 Columns</option>
+                    <option value={3}>3 Columns</option>
+                    <option value={4}>4 Columns</option>
+                  </select>
+                </div>
+              </div>
+
+              {/* Items List */}
+              <div className="space-y-3">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-bold text-slate-700">Cards & Items ({(config.items || []).length})</span>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const current = config.items || [];
+                      updateConfig('items', [
+                        ...current,
+                        {
+                          id: `card_${Date.now()}`,
+                          title: 'New Card Title',
+                          subtitle: '',
+                          description: 'Description or address details...',
+                          badge: '',
+                          image_url: '',
+                          action_text: '',
+                          action_url: '',
+                        },
+                      ]);
+                    }}
+                    className="px-2 py-1 text-xs font-bold text-amber-800 bg-amber-50 hover:bg-amber-100 rounded flex items-center gap-1"
+                  >
+                    <Plus className="w-3.5 h-3.5" />
+                    <span>Add Card</span>
+                  </button>
+                </div>
+
+                {(config.items || []).map((item: any, idx: number) => (
+                  <div key={item.id || idx} className="p-3 bg-slate-50 rounded-xl border border-slate-200 space-y-2">
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs font-bold text-slate-800">Card #{idx + 1}</span>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          const updated = [...(config.items || [])];
+                          updated.splice(idx, 1);
+                          updateConfig('items', updated);
+                        }}
+                        className="text-red-500 hover:text-red-700 text-xs font-bold flex items-center gap-1"
+                      >
+                        <Trash2 className="w-3.5 h-3.5" /> Remove
+                      </button>
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-2">
+                      <input
+                        type="text"
+                        value={item.title || ''}
+                        onChange={(e) => {
+                          const updated = [...(config.items || [])];
+                          updated[idx] = { ...updated[idx], title: e.target.value };
+                          updateConfig('items', updated);
+                        }}
+                        placeholder="Title / Name"
+                        className="px-2.5 py-1.5 text-xs rounded border border-slate-200 bg-white"
+                      />
+                      <input
+                        type="text"
+                        value={item.subtitle || ''}
+                        onChange={(e) => {
+                          const updated = [...(config.items || [])];
+                          updated[idx] = { ...updated[idx], subtitle: e.target.value };
+                          updateConfig('items', updated);
+                        }}
+                        placeholder="Subtitle / Discount / City"
+                        className="px-2.5 py-1.5 text-xs rounded border border-slate-200 bg-white"
+                      />
+                    </div>
+
+                    <textarea
+                      rows={2}
+                      value={item.description || ''}
+                      onChange={(e) => {
+                        const updated = [...(config.items || [])];
+                        updated[idx] = { ...updated[idx], description: e.target.value };
+                        updateConfig('items', updated);
+                      }}
+                      placeholder="Card description, address, terms..."
+                      className="w-full px-2.5 py-1.5 text-xs rounded border border-slate-200 bg-white"
+                    />
+
+                    <div className="grid grid-cols-3 gap-2">
+                      <input
+                        type="text"
+                        value={item.badge || ''}
+                        onChange={(e) => {
+                          const updated = [...(config.items || [])];
+                          updated[idx] = { ...updated[idx], badge: e.target.value };
+                          updateConfig('items', updated);
+                        }}
+                        placeholder="Badge / Code"
+                        className="px-2.5 py-1.5 text-xs rounded border border-slate-200 bg-white"
+                      />
+                      <input
+                        type="text"
+                        value={item.action_text || ''}
+                        onChange={(e) => {
+                          const updated = [...(config.items || [])];
+                          updated[idx] = { ...updated[idx], action_text: e.target.value };
+                          updateConfig('items', updated);
+                        }}
+                        placeholder="Action Button Text"
+                        className="px-2.5 py-1.5 text-xs rounded border border-slate-200 bg-white"
+                      />
+                      <input
+                        type="text"
+                        value={item.action_url || ''}
+                        onChange={(e) => {
+                          const updated = [...(config.items || [])];
+                          updated[idx] = { ...updated[idx], action_url: e.target.value };
+                          updateConfig('items', updated);
+                        }}
+                        placeholder="Action URL"
+                        className="px-2.5 py-1.5 text-xs rounded border border-slate-200 bg-white"
+                      />
+                    </div>
+
+                    <input
+                      type="text"
+                      value={item.image_url || ''}
+                      onChange={(e) => {
+                        const updated = [...(config.items || [])];
+                        updated[idx] = { ...updated[idx], image_url: e.target.value };
+                        updateConfig('items', updated);
+                      }}
+                      placeholder="Image URL (optional)"
+                      className="w-full px-2.5 py-1.5 text-xs rounded border border-slate-200 bg-white"
+                    />
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {section.type === 'rich_text' && (
+            <div className="space-y-4">
+              <h4 className="text-xs font-bold uppercase tracking-wider text-amber-900">
+                Rich Text & Legal Policy Clauses
+              </h4>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-xs font-bold text-slate-700 mb-1">Headline</label>
+                  <input
+                    type="text"
+                    value={config.headline || ''}
+                    onChange={(e) => updateConfig('headline', e.target.value)}
+                    className="w-full px-3 py-2 text-sm rounded-lg border border-slate-200"
+                    placeholder="e.g. Terms of Service"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-bold text-slate-700 mb-1">Last Updated Note</label>
+                  <input
+                    type="text"
+                    value={config.last_updated || ''}
+                    onChange={(e) => updateConfig('last_updated', e.target.value)}
+                    className="w-full px-3 py-2 text-sm rounded-lg border border-slate-200"
+                    placeholder="e.g. September 10, 2026"
+                  />
+                </div>
+              </div>
+
+              {/* Clauses List */}
+              <div className="space-y-3">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-bold text-slate-700">Sections & Clauses ({(config.clauses || []).length})</span>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const current = config.clauses || [];
+                      updateConfig('clauses', [
+                        ...current,
+                        {
+                          title: `${current.length + 1}. New Clause Section`,
+                          body: 'Clause description and terms...',
+                        },
+                      ]);
+                    }}
+                    className="px-2 py-1 text-xs font-bold text-amber-800 bg-amber-50 hover:bg-amber-100 rounded flex items-center gap-1"
+                  >
+                    <Plus className="w-3.5 h-3.5" />
+                    <span>Add Clause</span>
+                  </button>
+                </div>
+
+                {(config.clauses || []).map((clause: any, idx: number) => (
+                  <div key={idx} className="p-3 bg-slate-50 rounded-xl border border-slate-200 space-y-2">
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs font-bold text-slate-800">Clause #{idx + 1}</span>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          const updated = [...(config.clauses || [])];
+                          updated.splice(idx, 1);
+                          updateConfig('clauses', updated);
+                        }}
+                        className="text-red-500 hover:text-red-700 text-xs font-bold flex items-center gap-1"
+                      >
+                        <Trash2 className="w-3.5 h-3.5" /> Remove
+                      </button>
+                    </div>
+
+                    <input
+                      type="text"
+                      value={clause.title || ''}
+                      onChange={(e) => {
+                        const updated = [...(config.clauses || [])];
+                        updated[idx] = { ...updated[idx], title: e.target.value };
+                        updateConfig('clauses', updated);
+                      }}
+                      placeholder="Clause Title (e.g. 1. Information We Collect)"
+                      className="w-full px-2.5 py-1.5 text-xs font-bold rounded border border-slate-200 bg-white"
+                    />
+
+                    <textarea
+                      rows={3}
+                      value={clause.body || ''}
+                      onChange={(e) => {
+                        const updated = [...(config.clauses || [])];
+                        updated[idx] = { ...updated[idx], body: e.target.value };
+                        updateConfig('clauses', updated);
+                      }}
+                      placeholder="Clause body content..."
+                      className="w-full px-2.5 py-1.5 text-xs rounded border border-slate-200 bg-white"
+                    />
+                  </div>
+                ))}
               </div>
             </div>
           )}

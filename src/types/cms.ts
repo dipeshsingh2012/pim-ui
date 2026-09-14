@@ -106,7 +106,40 @@ export type SectionType =
   | 'product_lane'
   | 'product_grid'
   | 'testimonials'
-  | 'promo_callout';
+  | 'promo_callout'
+  | 'feature_grid'
+  | 'rich_text';
+
+export interface FeatureGridItemConfig {
+  id: string;
+  title: string;
+  subtitle?: string;
+  description: string;
+  badge?: string;
+  image_url?: string;
+  tags?: string[];
+  action_text?: string;
+  action_url?: string;
+  terms?: string;
+}
+
+export interface FeatureGridConfig {
+  columns: 1 | 2 | 3 | 4;
+  items: FeatureGridItemConfig[];
+}
+
+export interface RichTextClause {
+  title: string;
+  body: string;
+}
+
+export interface RichTextConfig {
+  badge?: string;
+  headline?: string;
+  last_updated?: string;
+  body?: string;
+  clauses?: RichTextClause[];
+}
 
 export interface HeroBannerConfig {
   headline: string;

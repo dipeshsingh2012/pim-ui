@@ -40,6 +40,8 @@ const SECTION_TYPE_INFO: Record<
   product_grid: { label: 'Product Grid', badgeColor: 'bg-emerald-50 text-emerald-700 border-emerald-200', icon: '▦' },
   testimonials: { label: 'Testimonials', badgeColor: 'bg-purple-50 text-purple-700 border-purple-200', icon: '⭐' },
   promo_callout: { label: 'Feature Callout', badgeColor: 'bg-rose-50 text-rose-700 border-rose-200', icon: '📢' },
+  feature_grid: { label: 'Card Grid', badgeColor: 'bg-teal-50 text-teal-700 border-teal-200', icon: '🎴' },
+  rich_text: { label: 'Rich Text', badgeColor: 'bg-stone-50 text-stone-700 border-stone-200', icon: '📜' },
 };
 
 const PAGE_TYPE_LABELS: Record<PageType, { label: string; icon: string }> = {
