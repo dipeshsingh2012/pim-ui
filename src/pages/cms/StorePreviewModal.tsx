@@ -67,10 +67,10 @@ export function StorePreviewModal({
   const [iframeKey, setIframeKey] = useState<number>(0);
   const [isLoadingIframe, setIsLoadingIframe] = useState<boolean>(true);
 
-  const DEFAULT_STORE_URL = import.meta.env.VITE_STORE_URL || 'http://localhost:5170';
+  const DEFAULT_STORE_URL = import.meta.env.VITE_STORE_URL || 'https://hilljhil.cafe';
   const [storeBaseUrl, setStoreBaseUrl] = useState<string>(() => {
     const cached = localStorage.getItem('pim_store_url');
-    if (cached && !cached.includes('vercel.app')) {
+    if (cached && !cached.includes('vercel.app') && !cached.includes('localhost')) {
       return cached;
     }
     return DEFAULT_STORE_URL;
@@ -272,7 +272,7 @@ export function StorePreviewModal({
                         setIsEditingUrl(false);
                       }}
                       className="w-full bg-transparent border-0 text-white focus:outline-hidden text-[11px] font-mono"
-                      placeholder="http://localhost:5170"
+                      placeholder="https://hilljhil.cafe"
                     />
                   ) : (
                     <span

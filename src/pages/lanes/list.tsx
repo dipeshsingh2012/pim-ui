@@ -18,7 +18,7 @@ import { ContentLane, LaneFormValues } from '../../types/lane';
 import { dataProvider } from '../../providers/dataProvider';
 import { LaneFormModal } from './LaneFormModal';
 
-const STORE_URL = import.meta.env.VITE_STORE_URL || 'http://localhost:5170';
+const STORE_URL = import.meta.env.VITE_STORE_URL || 'https://hilljhil.cafe';
 
 export function LaneList() {
   const [lanes, setLanes] = useState<ContentLane[]>([]);

@@ -20,7 +20,7 @@ import { ProductFormModal } from './ProductFormModal';
 import { dataProvider, publishProduct, archiveProduct } from '../../providers/dataProvider';
 import { generateProductPage, saveCmsPage } from '../../providers/cmsDataProvider';
 
-const STORE_URL = import.meta.env.VITE_STORE_URL || 'http://localhost:5170';
+const STORE_URL = import.meta.env.VITE_STORE_URL || 'https://hilljhil.cafe';
 
 export function ProductList() {
   const [products, setProducts] = useState<Product[]>([]);

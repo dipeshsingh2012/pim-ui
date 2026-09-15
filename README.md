@@ -79,8 +79,8 @@ VITE_CONTENT_API_URL=https://content-service-518971663061.us-central1.run.app
 # Content / Experience CMS Service (proxied to Cloud Run via Vite)
 VITE_CONTENT_API_URL=/api/content
 
-# Consumer Store URL (Port 5170)
-VITE_STORE_URL=http://localhost:5170
+# Consumer Storefront URL (Production Domain)
+VITE_STORE_URL=https://hilljhil.cafe
 ```
 *(If omitted, `pim-ui` automatically defaults to these live Cloud Run endpoints).*
 > [!TIP]
@@ -177,7 +177,7 @@ The **PIM Catalog** module serves as the authoritative interface for product enr
 | :--- | :--- | :--- |
 | `VITE_CATALOG_API_URL` | `https://product-catalog-service-518971663061.us-central1.run.app` | Base REST API URL of `product-catalog-service` |
 | `VITE_CONTENT_API_URL` | `https://content-service-518971663061.us-central1.run.app` | Base REST API URL of `content-service` |
-| `VITE_STORE_URL` | `http://localhost:5170` | Canonical URL of consumer store |
+| `VITE_STORE_URL` | `https://hilljhil.cafe` | Canonical URL of consumer store |
 
 ---
 
