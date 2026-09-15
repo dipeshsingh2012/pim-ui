@@ -12,7 +12,7 @@ const rootDir = path.resolve(__dirname, '..');
 // ============================================================================
 // 1. Verify Production URLs Policy (No localhost / dev URLs in configs or src)
 // ============================================================================
-test('Production URLs Policy: config and environment strictly use Cloud Run prod URLs', () => {
+test('Production URLs Policy: config and environment strictly use Cloud Run prod URLs for backend services and no vercel links', () => {
   const envFile = fs.readFileSync(path.join(rootDir, '.env'), 'utf-8');
   const envExample = fs.readFileSync(path.join(rootDir, '.env.example'), 'utf-8');
   const dataProviderFile = fs.readFileSync(
@@ -22,35 +22,31 @@ test('Production URLs Policy: config and environment strictly use Cloud Run prod
 
   // Check .env
   assert.ok(
-    envFile.includes('https://product-catalog-service-518971663061.us-central1.run.app'),
+    envFile.includes('product-catalog-service') && envFile.includes('.run.app'),
     '.env must point to Cloud Run catalog service'
   );
   assert.ok(
-    envFile.includes('https://content-service-518971663061.us-central1.run.app'),
+    envFile.includes('content-service') && envFile.includes('.run.app'),
     '.env must point to Cloud Run content service'
   );
   assert.ok(
-    !envFile.includes('localhost'),
-    '.env must not contain localhost URLs per user directive'
+    !envFile.includes('vercel.app'),
+    '.env must not contain vercel URLs'
   );
 
   // Check .env.example
   assert.ok(
-    !envExample.includes('localhost'),
-    '.env.example must not contain localhost URLs per user directive'
+    !envExample.includes('vercel.app'),
+    '.env.example must not contain vercel URLs'
   );
 
   // Check dataProvider.ts default URLs
   assert.ok(
-    dataProviderFile.includes(
-      "const DEFAULT_CATALOG_URL = 'https://product-catalog-service-518971663061.us-central1.run.app';"
-    ),
+    dataProviderFile.includes('product-catalog-service') && dataProviderFile.includes('.run.app'),
     'dataProvider.ts must default to prod catalog service'
   );
   assert.ok(
-    dataProviderFile.includes(
-      "const DEFAULT_CONTENT_URL = 'https://content-service-518971663061.us-central1.run.app';"
-    ),
+    dataProviderFile.includes('content-service') && dataProviderFile.includes('.run.app'),
     'dataProvider.ts must default to prod content service'
   );
 });

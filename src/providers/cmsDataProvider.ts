@@ -120,7 +120,7 @@ export const DEFAULT_GLOBAL_SHELL: GlobalShellConfig = {
     enabled: true,
     text: 'Complimentary express delivery on whole bean harvest orders over $50 · Small-batch roasted daily',
     cta_text: 'Explore Fresh Roasts',
-    cta_url: '#/coffees',
+    cta_url: '/coffees',
     theme: 'amber',
     badge: 'FRESH HARVEST',
     dismissible: true,
@@ -137,75 +137,75 @@ export const DEFAULT_GLOBAL_SHELL: GlobalShellConfig = {
       {
         id: 'nav_coffees',
         label: 'Whole Bean Coffees',
-        url: '#/coffees',
+        url: '/coffees',
         badge: 'FRESH',
         children: [
           {
             id: 'nav_single_origin',
             label: 'Single Origin Lots',
-            url: '#/coffees?category=single_origin',
+            url: '/coffees?category=single_origin',
           },
           {
             id: 'nav_producer_series',
             label: 'Producer Series Nano-Lots',
-            url: '#/coffees?category=producer_series',
+            url: '/coffees?category=producer_series',
             badge: 'EXCLUSIVE',
           },
           {
             id: 'nav_espresso_blends',
             label: 'House & Espresso Blends',
-            url: '#/coffees?category=espresso_blend',
+            url: '/coffees?category=espresso_blend',
           },
           {
             id: 'nav_decaf',
             label: 'Mountain Water Decaf',
-            url: '#/coffees?category=decaf',
+            url: '/coffees?category=decaf',
           },
         ],
       },
       {
         id: 'nav_equipment',
         label: 'Espresso & Brewing Gear',
-        url: '#/equipment',
+        url: '/equipment',
         children: [
           {
             id: 'nav_machines',
             label: 'Espresso Machines',
-            url: '#/equipment?category=espresso_machine',
+            url: '/equipment?category=espresso_machine',
           },
           {
             id: 'nav_grinders',
             label: 'Precision Burr Grinders',
-            url: '#/equipment?category=grinder',
+            url: '/equipment?category=grinder',
           },
           {
             id: 'nav_accessories',
             label: 'Barista Tools & Drinkware',
-            url: '#/equipment?category=accessories',
+            url: '/equipment?category=accessories',
           },
         ],
       },
       {
         id: 'nav_discovery',
         label: 'Discovery (CounterCheck™)',
-        url: '#/discovery',
+        url: '/discovery',
         badge: 'GUIDE',
       },
       {
         id: 'nav_subscriptions',
         label: 'Roast Subscriptions',
-        url: '#/subscriptions',
+        url: '/subscriptions',
         badge: 'SAVE 15%',
       },
       {
         id: 'nav_cafes',
         label: 'Roasteries & Cafes',
-        url: '#/cafes',
+        url: '/cafes',
       },
       {
         id: 'nav_about',
         label: 'Our Story',
-        url: '#/about',
+        url: '/about',
       },
     ],
   },
@@ -221,41 +221,41 @@ export const DEFAULT_GLOBAL_SHELL: GlobalShellConfig = {
         id: 'col_shop',
         title: 'Shop Experience',
         links: [
-          { label: 'Whole Bean Coffees', url: '#/coffees' },
-          { label: 'Espresso Machines', url: '#/equipment?category=espresso_machine' },
-          { label: 'Precision Grinders', url: '#/equipment?category=grinder' },
-          { label: 'Roast Subscriptions', url: '#/subscriptions' },
-          { label: 'Barista Drinkware', url: '#/equipment' },
+          { label: 'Whole Bean Coffees', url: '/coffees' },
+          { label: 'Espresso Machines', url: '/equipment?category=espresso_machine' },
+          { label: 'Precision Grinders', url: '/equipment?category=grinder' },
+          { label: 'Roast Subscriptions', url: '/subscriptions' },
+          { label: 'Barista Drinkware', url: '/equipment' },
         ],
       },
       {
         id: 'col_roastery',
         title: 'Roastery & Craft',
         links: [
-          { label: 'Sourcing Philosophy', url: '#/about' },
-          { label: 'Anaerobic Fermentation', url: '#/about' },
-          { label: 'Direct Trade Transparency', url: '#/about' },
-          { label: 'CounterCheck™ Clearance Guarantee', url: '#/discovery' },
+          { label: 'Sourcing Philosophy', url: '/about' },
+          { label: 'Anaerobic Fermentation', url: '/about' },
+          { label: 'Direct Trade Transparency', url: '/about' },
+          { label: 'CounterCheck™ Clearance Guarantee', url: '/discovery' },
         ],
       },
       {
         id: 'col_guides',
         title: 'Learn & Brew',
         links: [
-          { label: 'Espresso Extraction Guide', url: '#/about' },
-          { label: 'V60 & Chemex Ratio Calculator', url: '#/about' },
-          { label: 'Water Mineralization Science', url: '#/about' },
-          { label: 'Roast Schedule & Freshness', url: '#/coffees' },
+          { label: 'Espresso Extraction Guide', url: '/about' },
+          { label: 'V60 & Chemex Ratio Calculator', url: '/about' },
+          { label: 'Water Mineralization Science', url: '/about' },
+          { label: 'Roast Schedule & Freshness', url: '/coffees' },
         ],
       },
       {
         id: 'col_support',
         title: 'Customer Care & Legal',
         links: [
-          { label: 'Orders & Express Shipping', url: '#/about' },
-          { label: '3-Year Equipment Warranty', url: '#/about' },
-          { label: 'Privacy Policy', url: '#/privacy' },
-          { label: 'Terms of Service', url: '#/terms' },
+          { label: 'Orders & Express Shipping', url: '/about' },
+          { label: '3-Year Equipment Warranty', url: '/about' },
+          { label: 'Privacy Policy', url: '/privacy' },
+          { label: 'Terms of Service', url: '/terms' },
         ],
       },
     ],
@@ -1180,7 +1180,7 @@ export function generateDefaultProductSections(product: Product): PageSection[] 
             `Cultivated at ${product.elevation_m || 2000}m altitude. ${product.process_method || 'Washed'} process developing dense fruit sweetness and vibrant floral cup acidity.`,
           badge: product.process_method ? `${product.process_method.toUpperCase()} PROCESS` : 'MICRO-LOT ROAST',
           button_text: 'Explore Origin Harvest',
-          button_url: '#/coffees',
+          button_url: '/coffees',
           image_url:
             product.image_url ||
             'https://images.unsplash.com/photo-1559056199-641a0ac8b55e?w=800&auto=format&fit=crop&q=80',
@@ -1199,7 +1199,7 @@ export function generateDefaultProductSections(product: Product): PageSection[] 
           body: `Verified spatial clearances: Overhead ${product.top_clearance_cm || 0}cm, Side ${product.side_clearance_cm || 0}cm, Rear ${product.rear_clearance_cm || 0}cm. Engineered for seamless under-cabinet placement with zero steam condensation risk.`,
           badge: 'SPATIAL FIT VERIFIED',
           button_text: 'View CounterCheck™ Guide',
-          button_url: '#/discovery',
+          button_url: '/discovery',
           image_url:
             product.image_url ||
             'https://images.unsplash.com/photo-1570968915860-54d5c301fa9f?w=800&auto=format&fit=crop&q=80',
@@ -1289,9 +1289,9 @@ export const DEFAULT_CMS_PAGES: CMSPage[] = [
             'Direct-trade micro-lots roasted with scientific precision and paired with CounterCheck™ space-fit verified espresso gear.',
           badge: 'AUTUMN 2026 RESERVE',
           primary_cta_text: 'Explore Fresh Harvests',
-          primary_cta_url: '#/coffees',
+          primary_cta_url: '/coffees',
           secondary_cta_text: 'Equipment & Gear Guide',
-          secondary_cta_url: '#/discovery',
+          secondary_cta_url: '/discovery',
           background_image:
             'https://images.unsplash.com/photo-1447933601403-0c6688de566e?w=1600&auto=format&fit=crop&q=85',
           overlay_opacity: 65,
@@ -1314,7 +1314,7 @@ export const DEFAULT_CMS_PAGES: CMSPage[] = [
               title: 'Roasted Coffee',
               image_url:
                 'https://images.unsplash.com/photo-1559056199-641a0ac8b55e?w=300&h=300&fit=crop&q=80',
-              url: '#/coffees',
+              url: '/coffees',
               badge: 'FRESH ROAST',
             },
             {
@@ -1322,7 +1322,7 @@ export const DEFAULT_CMS_PAGES: CMSPage[] = [
               title: 'Espresso Machines',
               image_url:
                 'https://images.unsplash.com/photo-1517668808822-9ebb02f2a0e6?w=300&h=300&fit=crop&q=80',
-              url: '#/equipment',
+              url: '/equipment',
               badge: 'POPULAR',
             },
             {
@@ -1330,28 +1330,28 @@ export const DEFAULT_CMS_PAGES: CMSPage[] = [
               title: 'Brewing Equipment',
               image_url:
                 'https://images.unsplash.com/photo-1544787219-7f47ccb76574?w=300&h=300&fit=crop&q=80',
-              url: '#/equipment',
+              url: '/equipment',
             },
             {
               id: 'cat_grinders',
               title: 'Burr Grinders',
               image_url:
                 'https://images.unsplash.com/photo-1589396575653-c09c794ff6a6?w=300&h=300&fit=crop&q=80',
-              url: '#/equipment',
+              url: '/equipment',
             },
             {
               id: 'cat_drinkware',
               title: 'Barista Drinkware',
               image_url:
                 'https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?w=300&h=300&fit=crop&q=80',
-              url: '#/equipment',
+              url: '/equipment',
             },
             {
               id: 'cat_subs',
               title: 'Roast Subscriptions',
               image_url:
                 'https://images.unsplash.com/photo-1610632380989-680fe40816c6?w=300&h=300&fit=crop&q=80',
-              url: '#/subscriptions',
+              url: '/subscriptions',
               badge: 'SAVE 15%',
             },
           ],
@@ -1399,7 +1399,7 @@ export const DEFAULT_CMS_PAGES: CMSPage[] = [
           body: 'We collaborate directly with estate farmers in Coorg and Chikmagalur to develop bespoke yeast inoculation and anaerobic fermentation protocols that unlock exotic tropical florals.',
           badge: 'DIRECT TRADE ETHICS',
           button_text: 'Read Sourcing Manifesto',
-          button_url: '#/about',
+          button_url: '/about',
           image_url:
             'https://images.unsplash.com/photo-1511537190424-bbbab87ac5eb?w=800&auto=format&fit=crop&q=80',
           layout: 'image_right',
@@ -1462,7 +1462,7 @@ export const DEFAULT_CMS_PAGES: CMSPage[] = [
           subheadline: 'Filter by roast level, cupping score, varietal, and estate processing method.',
           badge: 'CURRENT ROAST SELECTION',
           primary_cta_text: 'View Roasting Schedule',
-          primary_cta_url: '#/about',
+          primary_cta_url: '/about',
           background_image:
             'https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=1600&auto=format&fit=crop&q=80',
           overlay_opacity: 60,
@@ -1485,28 +1485,28 @@ export const DEFAULT_CMS_PAGES: CMSPage[] = [
               title: 'Coorg Estates',
               image_url:
                 'https://images.unsplash.com/photo-1589396575653-c09c794ff6a6?w=200&h=200&fit=crop&q=80',
-              url: '#/coffees',
+              url: '/coffees',
             },
             {
               id: 'cat_c2',
               title: 'Chikmagalur',
               image_url:
                 'https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?w=200&h=200&fit=crop&q=80',
-              url: '#/coffees',
+              url: '/coffees',
             },
             {
               id: 'cat_c3',
               title: 'Anaerobic Naturals',
               image_url:
                 'https://images.unsplash.com/photo-1559056199-641a0ac8b55e?w=200&h=200&fit=crop&q=80',
-              url: '#/coffees',
+              url: '/coffees',
             },
             {
               id: 'cat_c4',
               title: 'Washed Micro-lots',
               image_url:
                 'https://images.unsplash.com/photo-1517668808822-9ebb02f2a0e6?w=200&h=200&fit=crop&q=80',
-              url: '#/coffees',
+              url: '/coffees',
             },
           ],
         },
@@ -1550,7 +1550,7 @@ export const DEFAULT_CMS_PAGES: CMSPage[] = [
             'Founded by coffee obsessives and precision engineers, Hiljhil bridges experimental agricultural fermentation with uncompromising home extraction.',
           badge: 'ROASTERY MANIFESTO',
           primary_cta_text: 'Explore Harvest Lots',
-          primary_cta_url: '#/coffees',
+          primary_cta_url: '/coffees',
           background_image:
             'https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?w=1600&auto=format&fit=crop&q=80',
           overlay_opacity: 65,
@@ -1569,7 +1569,7 @@ export const DEFAULT_CMS_PAGES: CMSPage[] = [
           body: 'We reject commoditized coffee supply chains. We partner directly with estate owners in Karnataka and Oromia, financing raised drying beds and anaerobic fermentation tanks.',
           badge: 'FARM DIRECT',
           button_text: 'View Estate Harvests',
-          button_url: '#/coffees',
+          button_url: '/coffees',
           image_url:
             'https://images.unsplash.com/photo-1559056199-641a0ac8b55e?w=800&auto=format&fit=crop&q=80',
           layout: 'image_right',

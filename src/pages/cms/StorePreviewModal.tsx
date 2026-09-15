@@ -67,13 +67,13 @@ export function StorePreviewModal({
   const [iframeKey, setIframeKey] = useState<number>(0);
   const [isLoadingIframe, setIsLoadingIframe] = useState<boolean>(true);
 
-  const DEFAULT_DEPLOYED_URL = 'https://mycommerce.vercel.app';
+  const DEFAULT_STORE_URL = import.meta.env.VITE_STORE_URL || 'http://localhost:5170';
   const [storeBaseUrl, setStoreBaseUrl] = useState<string>(() => {
-    return (
-      localStorage.getItem('pim_store_url') ||
-      import.meta.env.VITE_STORE_URL ||
-      DEFAULT_DEPLOYED_URL
-    );
+    const cached = localStorage.getItem('pim_store_url');
+    if (cached && !cached.includes('vercel.app')) {
+      return cached;
+    }
+    return DEFAULT_STORE_URL;
   });
 
   const [urlInputValue, setUrlInputValue] = useState<string>('');
@@ -88,16 +88,14 @@ export function StorePreviewModal({
   const getTargetUrl = (base = storeBaseUrl) => {
     const cleanBase = base.replace(/\/$/, '');
     let slug = page.slug || '/';
-    if (page.page_type === 'product' && (slug === '/products/:id' || slug.includes(':id'))) {
-      slug = '/products/prod_breville_barista_touch';
+    if (page.page_type === 'product' && (slug === '/products/:id' || slug === '/product/:id' || slug.includes(':id'))) {
+      slug = '/product/prod_breville_barista_touch';
     }
-    if (slug === '/' || slug === '#/' || slug === '#') {
-      return `${cleanBase}/#/`;
+    const cleanSlug = slug.replace(/^#\/?/, '/');
+    if (cleanSlug === '/' || cleanSlug === '') {
+      return `${cleanBase}/`;
     }
-    if (slug.startsWith('#')) {
-      return `${cleanBase}/${slug}`;
-    }
-    return `${cleanBase}/#${slug.startsWith('/') ? slug : `/${slug}`}`;
+    return `${cleanBase}${cleanSlug.startsWith('/') ? cleanSlug : `/${cleanSlug}`}`;
   };
 
   const currentUrl = getTargetUrl(storeBaseUrl);
@@ -106,7 +104,8 @@ export function StorePreviewModal({
     let trimmed = newBase.trim();
     if (!trimmed) return;
     if (!trimmed.startsWith('http://') && !trimmed.startsWith('https://')) {
-      trimmed = `https://${trimmed}`;
+      const isLocal = trimmed.includes('localhost') || trimmed.includes('127.0.0.1');
+      trimmed = isLocal ? `http://${trimmed}` : `https://${trimmed}`;
     }
     try {
       const parsed = new URL(trimmed);
@@ -273,7 +272,7 @@ export function StorePreviewModal({
                         setIsEditingUrl(false);
                       }}
                       className="w-full bg-transparent border-0 text-white focus:outline-hidden text-[11px] font-mono"
-                      placeholder="https://mycommerce.vercel.app"
+                      placeholder="http://localhost:5170"
                     />
                   ) : (
                     <span

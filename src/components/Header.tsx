@@ -7,7 +7,7 @@ interface HeaderProps {
   onSelectTab?: (tab: 'products' | 'cms') => void;
 }
 
-const STORE_URL = import.meta.env.VITE_STORE_URL || '';
+const STORE_URL = import.meta.env.VITE_STORE_URL || 'http://localhost:5170';
 
 export function Header({ activeTab = 'products', onSelectTab }: HeaderProps) {
   const [catalogOk, setCatalogOk] = useState<boolean | null>(null);

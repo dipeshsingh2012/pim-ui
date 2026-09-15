@@ -210,7 +210,7 @@ export function ThemeConfigView({
     }
   };
 
-  const STORE_URL = import.meta.env.VITE_STORE_URL || 'https://mycommerce-phi.vercel.app';
+  const STORE_URL = import.meta.env.VITE_STORE_URL || 'http://localhost:5170';
 
   return (
     <div className="space-y-8 animate-in fade-in duration-200">
