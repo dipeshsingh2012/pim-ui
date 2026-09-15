@@ -2,7 +2,7 @@
 
 > **Dedicated Merchant Catalog Management & Store Experience CMS Portal**
 
-`pim-ui` is a standalone back-office application built with [Refine](https://refine.dev/), **React 18**, **Vite 5**, and **Tailwind CSS**. It serves as the unified administrative cockpit for merchandisers, catalog managers, and operations teams to configure, enrich, and publish products as well as curate dynamic store discovery rails and content lanes across digital commerce channels.
+`pim-ui` is a standalone back-office application built with [Refine](https://refine.dev/), **React 18**, **Vite 5**, and **Tailwind CSS**. It serves as the unified administrative cockpit for merchandisers, catalog managers, and operations teams to add, enrich, and publish products as well as curate dynamic store discovery rails and content lanes across digital commerce channels.
 
 ---
 
