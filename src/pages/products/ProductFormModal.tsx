@@ -1,6 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { X, Check, Coffee, Ruler, DollarSign, Image as ImageIcon, Tag, Sparkles } from 'lucide-react';
 import { Product } from '../../types/product';
+import { RichTextEditor } from '../../components/RichTextEditor';
+import { MultiImageUpload } from '../../components/MultiImageUpload';
 
 interface Props {
   isOpen: boolean;
@@ -20,62 +22,122 @@ export function ProductFormModal({ isOpen, onClose, onSubmit, initialData, mode 
   // Form state
   const [name, setName] = useState('');
   const [sku, setSku] = useState('');
-  const [brand, setBrand] = useState('Artisan Roasters');
+  const [brand, setBrand] = useState('');
   const [category, setCategory] = useState('single_estate');
   const [status, setStatus] = useState<'active' | 'draft' | 'archived'>('active');
-  const [price, setPrice] = useState(550);
+  const [price, setPrice] = useState<number | ''>('');
   const [compareAtPrice, setCompareAtPrice] = useState<number | ''>('');
   const [inStock, setInStock] = useState(true);
   const [badge, setBadge] = useState('');
   const [taxCategory, setTaxCategory] = useState('single_estate');
 
   const isCoffee = ['single_estate', 'producer_series', 'blends', 'coffee_beans'].includes(category);
-  
+
   // Dimensions & Clearances
-  const [widthCm, setWidthCm] = useState(10);
-  const [heightCm, setHeightCm] = useState(20);
-  const [depthCm, setDepthCm] = useState(6);
-  const [weightKg, setWeightKg] = useState<number | ''>(0.25);
-  const [topClearanceCm, setTopClearanceCm] = useState(0);
-  const [sideClearanceCm, setSideClearanceCm] = useState(0);
-  const [rearClearanceCm, setRearClearanceCm] = useState(0);
+  const [widthCm, setWidthCm] = useState<number | ''>('');
+  const [heightCm, setHeightCm] = useState<number | ''>('');
+  const [depthCm, setDepthCm] = useState<number | ''>('');
+  const [weightKg, setWeightKg] = useState<number | ''>('');
+  const [topClearanceCm, setTopClearanceCm] = useState<number | ''>('');
+  const [sideClearanceCm, setSideClearanceCm] = useState<number | ''>('');
+  const [rearClearanceCm, setRearClearanceCm] = useState<number | ''>('');
 
   // Coffee Specifics
-  const [roastLevel, setRoastLevel] = useState('Medium Light');
-  const [estate, setEstate] = useState('Baarbara Estate, Chikmagalur');
-  const [altitude, setAltitude] = useState('1,450 MASL');
-  const [process, setProcess] = useState('Whiskey Barrel Washed');
-  const [tasteNotes, setTasteNotes] = useState<string[]>(['Ripe Banana', 'Red Plum']);
+  const [roastLevel, setRoastLevel] = useState('');
+  const [estate, setEstate] = useState('');
+  const [altitude, setAltitude] = useState('');
+  const [process, setProcess] = useState('');
+  const [tasteNotes, setTasteNotes] = useState<string[]>([]);
   const [noteInput, setNoteInput] = useState('');
 
   // Media & Description
-  const [imageUrl, setImageUrl] = useState('https://images.unsplash.com/photo-1587734195503-904fca47e0e9?w=800&auto=format&fit=crop&q=80');
-  const [cutoutUrl, setCutoutUrl] = useState('');
+  const [images, setImages] = useState<string[]>([]);
   const [description, setDescription] = useState('');
 
-  // Initialize or reset form
+  // Prevent background scroll when modal is active
   useEffect(() => {
+    if (isOpen) {
+      const originalOverflow = document.body.style.overflow;
+      document.body.style.overflow = 'hidden';
+      return () => {
+        document.body.style.overflow = originalOverflow;
+      };
+    }
+  }, [isOpen]);
+
+  const resetForm = useCallback(() => {
+    setActiveTab('identity');
+    setError(null);
+    setSubmitting(false);
+    setName('');
+    setSku('');
+    setBrand('');
+    setCategory('single_estate');
+    setStatus('active');
+    setPrice('');
+    setCompareAtPrice('');
+    setInStock(true);
+    setBadge('');
+    setTaxCategory('single_estate');
+    setWidthCm('');
+    setHeightCm('');
+    setDepthCm('');
+    setWeightKg('');
+    setTopClearanceCm('');
+    setSideClearanceCm('');
+    setRearClearanceCm('');
+    setImages([]);
+    setDescription('');
+    setTasteNotes([]);
+    setNoteInput('');
+    setRoastLevel('');
+    setEstate('');
+    setAltitude('');
+    setProcess('');
+  }, []);
+
+  // Initialize or reset form on open/change
+  useEffect(() => {
+    if (!isOpen) {
+      resetForm();
+      return;
+    }
+
     if (initialData && mode === 'edit') {
       setName(initialData.name || '');
       setSku(initialData.sku || '');
-      setBrand(initialData.brand || 'Artisan Roasters');
+      setBrand(initialData.brand || '');
       setCategory(initialData.category || 'single_estate');
       setStatus(initialData.status || 'active');
-      setPrice(initialData.price || 0);
+      setPrice(initialData.price ?? '');
       setCompareAtPrice(initialData.compare_at_price ?? '');
       setInStock(initialData.in_stock ?? true);
       setBadge(initialData.badge || '');
       setTaxCategory(initialData.tax_category || 'single_estate');
-      setWidthCm(initialData.width_cm || 0);
-      setHeightCm(initialData.height_cm || 0);
-      setDepthCm(initialData.depth_cm || 0);
+      setWidthCm(initialData.width_cm || '');
+      setHeightCm(initialData.height_cm || '');
+      setDepthCm(initialData.depth_cm || '');
       setWeightKg(initialData.weight_kg ?? '');
-      setTopClearanceCm(initialData.top_clearance_cm || 0);
-      setSideClearanceCm(initialData.side_clearance_cm || 0);
-      setRearClearanceCm(initialData.rear_clearance_cm || 0);
-      setImageUrl(initialData.image_url || '');
-      setCutoutUrl(initialData.cutout_url || '');
+      setTopClearanceCm(initialData.top_clearance_cm || '');
+      setSideClearanceCm(initialData.side_clearance_cm || '');
+      setRearClearanceCm(initialData.rear_clearance_cm || '');
       setDescription(initialData.description || '');
+
+      // Load images
+      const initialImages: string[] = [];
+      if (Array.isArray(initialData.images) && initialData.images.length > 0) {
+        initialImages.push(
+          ...initialData.images
+            .map((img: any) => (typeof img === 'string' ? img : img.src))
+            .filter(Boolean)
+        );
+      } else if (initialData.image_url) {
+        initialImages.push(initialData.image_url);
+      }
+      if (initialData.cutout_url && !initialImages.includes(initialData.cutout_url)) {
+        initialImages.push(initialData.cutout_url);
+      }
+      setImages(initialImages);
 
       // Direct coffee attributes
       if (initialData.roast_level) setRoastLevel(initialData.roast_level);
@@ -97,43 +159,31 @@ export function ProductFormModal({ isOpen, onClose, onSubmit, initialData, mode 
       if (initialData.specs_json) {
         try {
           const specs = JSON.parse(initialData.specs_json);
-          if (!initialData.roast_level && (specs.RoastLevel || specs['Roast Level'])) setRoastLevel(specs.RoastLevel || specs['Roast Level']);
-          if (!initialData.estate_name && (specs.Estate || specs.Origin)) setEstate(specs.Estate || specs.Origin);
-          if (!initialData.elevation_m && specs.Altitude) setAltitude(specs.Altitude);
-          if (!initialData.process_method && specs.Process) setProcess(specs.Process);
+          if (!initialData.roast_level && (specs.RoastLevel || specs['Roast Level'])) {
+            setRoastLevel(specs.RoastLevel || specs['Roast Level']);
+          }
+          if (!initialData.estate_name && (specs.Estate || specs.Origin)) {
+            setEstate(specs.Estate || specs.Origin);
+          }
+          if (!initialData.elevation_m && specs.Altitude) {
+            setAltitude(specs.Altitude);
+          }
+          if (!initialData.process_method && specs.Process) {
+            setProcess(specs.Process);
+          }
         } catch {}
       }
     } else {
-      // Reset for create
-      setName('');
-      setSku('');
-      setBrand('Artisan Roasters');
-      setCategory('single_estate');
-      setStatus('active');
-      setPrice(550);
-      setCompareAtPrice('');
-      setInStock(true);
-      setBadge('NEW');
-      setTaxCategory('single_estate');
-      setWidthCm(10);
-      setHeightCm(20);
-      setDepthCm(6);
-      setWeightKg(0.25);
-      setTopClearanceCm(0);
-      setSideClearanceCm(0);
-      setRearClearanceCm(0);
-      setImageUrl('https://images.unsplash.com/photo-1587734195503-904fca47e0e9?w=800&auto=format&fit=crop&q=80');
-      setCutoutUrl('');
-      setDescription('Single origin specialty harvest batch-roasted fresh weekly at Artisan Roasters.');
-      setTasteNotes(['Hazelnut', 'Dark Chocolate', 'Caramel']);
-      setRoastLevel('Medium');
-      setEstate('Attikan Estate, BR Hills');
-      setAltitude('1,600 MASL');
-      setProcess('Pulp Sun-Dried');
+      resetForm();
     }
-  }, [initialData, mode, isOpen]);
+  }, [initialData, mode, isOpen, resetForm]);
 
   if (!isOpen) return null;
+
+  const handleClose = () => {
+    resetForm();
+    onClose();
+  };
 
   const handleAddNote = () => {
     if (noteInput.trim() && !tasteNotes.includes(noteInput.trim())) {
@@ -169,19 +219,19 @@ export function ProductFormModal({ isOpen, onClose, onSubmit, initialData, mode 
       if (roastLevel) specsObj['Roast Level'] = roastLevel;
       if (process) specsObj['Process'] = process;
     } else {
-      specsObj['Dimensions'] = `${widthCm} x ${heightCm} x ${depthCm} cm`;
-      if (topClearanceCm > 0) {
-        specsObj['Clearance'] = `Requires ${heightCm + topClearanceCm} cm total vertical headroom`;
+      specsObj['Dimensions'] = `${widthCm || 0} x ${heightCm || 0} x ${depthCm || 0} cm`;
+      if (Number(topClearanceCm) > 0) {
+        specsObj['Clearance'] = `Requires ${(Number(heightCm) || 0) + Number(topClearanceCm)} cm total vertical headroom`;
       }
     }
 
     const payload: Partial<Product> = {
       name: name.trim(),
       sku: sku.trim() ? sku.trim().toUpperCase() : undefined,
-      brand: brand.trim(),
+      brand: brand.trim() || 'Artisan Roasters',
       category,
       status,
-      price: Number(price),
+      price: price === '' ? 0 : Number(price),
       compare_at_price: compareAtPrice === '' ? null : Number(compareAtPrice),
       in_stock: inStock,
       badge: badge.trim() || null,
@@ -193,8 +243,8 @@ export function ProductFormModal({ isOpen, onClose, onSubmit, initialData, mode 
       top_clearance_cm: Number(topClearanceCm) || 0,
       side_clearance_cm: Number(sideClearanceCm) || 0,
       rear_clearance_cm: Number(rearClearanceCm) || 0,
-      image_url: imageUrl.trim() || null,
-      cutout_url: cutoutUrl.trim() || null,
+      image_url: images.length > 0 ? images[0] : null,
+      images: images.map((src, idx) => ({ position: idx, src })),
       description: description.trim() || null,
       roast_level: roastLevel ? roastLevel.toLowerCase().replace(/[^a-z0-9]+/g, '_').replace(/^_+|_+$/g, '') : null,
       process_method: process ? process.toLowerCase().replace(/[^a-z0-9]+/g, '_').replace(/^_+|_+$/g, '') : null,
@@ -206,7 +256,7 @@ export function ProductFormModal({ isOpen, onClose, onSubmit, initialData, mode 
 
     try {
       await onSubmit(payload);
-      onClose();
+      handleClose();
     } catch (err: any) {
       setError(err.message || 'Failed to save product');
     } finally {
@@ -214,7 +264,7 @@ export function ProductFormModal({ isOpen, onClose, onSubmit, initialData, mode 
     }
   };
 
-  const totalRequiredHeight = Number(heightCm) + Number(topClearanceCm);
+  const totalRequiredHeight = (Number(heightCm) || 0) + (Number(topClearanceCm) || 0);
 
   return (
     <div className="fixed inset-0 z-50 overflow-y-auto bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4 sm:p-6">
@@ -227,17 +277,14 @@ export function ProductFormModal({ isOpen, onClose, onSubmit, initialData, mode 
             </div>
             <div>
               <h2 className="text-lg font-bold text-slate-900 font-serif">
-                {mode === 'create' ? 'Configure New Product' : `Edit Product: ${initialData?.name}`}
+                {mode === 'create' ? 'Add Product' : `Edit Product: ${initialData?.name}`}
               </h2>
-              <p className="text-xs text-slate-500">
-                Configure commercial attributes, coffee roast specs, and CounterCheck™ clearance dimensions.
-              </p>
             </div>
           </div>
           <button
             type="button"
-            onClick={onClose}
-            className="p-2 rounded-xl text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition-colors"
+            onClick={handleClose}
+            className="p-2 rounded-xl text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition-colors cursor-pointer"
           >
             <X className="w-5 h-5" />
           </button>
@@ -248,7 +295,7 @@ export function ProductFormModal({ isOpen, onClose, onSubmit, initialData, mode 
           <button
             type="button"
             onClick={() => setActiveTab('identity')}
-            className={`py-3 px-3.5 border-b-2 flex items-center gap-2 transition-colors whitespace-nowrap ${
+            className={`py-3 px-3.5 border-b-2 flex items-center gap-2 transition-colors whitespace-nowrap cursor-pointer ${
               activeTab === 'identity'
                 ? 'border-amber-800 text-amber-900'
                 : 'border-transparent text-slate-500 hover:text-slate-800'
@@ -261,7 +308,7 @@ export function ProductFormModal({ isOpen, onClose, onSubmit, initialData, mode 
           <button
             type="button"
             onClick={() => setActiveTab('pricing')}
-            className={`py-3 px-3.5 border-b-2 flex items-center gap-2 transition-colors whitespace-nowrap ${
+            className={`py-3 px-3.5 border-b-2 flex items-center gap-2 transition-colors whitespace-nowrap cursor-pointer ${
               activeTab === 'pricing'
                 ? 'border-amber-800 text-amber-900'
                 : 'border-transparent text-slate-500 hover:text-slate-800'
@@ -275,7 +322,7 @@ export function ProductFormModal({ isOpen, onClose, onSubmit, initialData, mode 
             <button
               type="button"
               onClick={() => setActiveTab('coffee')}
-              className={`py-3 px-3.5 border-b-2 flex items-center gap-2 transition-colors whitespace-nowrap ${
+              className={`py-3 px-3.5 border-b-2 flex items-center gap-2 transition-colors whitespace-nowrap cursor-pointer ${
                 activeTab === 'coffee'
                   ? 'border-amber-800 text-amber-900'
                   : 'border-transparent text-slate-500 hover:text-slate-800'
@@ -289,7 +336,7 @@ export function ProductFormModal({ isOpen, onClose, onSubmit, initialData, mode 
           <button
             type="button"
             onClick={() => setActiveTab('dimensions')}
-            className={`py-3 px-3.5 border-b-2 flex items-center gap-2 transition-colors whitespace-nowrap ${
+            className={`py-3 px-3.5 border-b-2 flex items-center gap-2 transition-colors whitespace-nowrap cursor-pointer ${
               activeTab === 'dimensions'
                 ? 'border-amber-800 text-amber-900'
                 : 'border-transparent text-slate-500 hover:text-slate-800'
@@ -302,14 +349,14 @@ export function ProductFormModal({ isOpen, onClose, onSubmit, initialData, mode 
           <button
             type="button"
             onClick={() => setActiveTab('media')}
-            className={`py-3 px-3.5 border-b-2 flex items-center gap-2 transition-colors whitespace-nowrap ${
+            className={`py-3 px-3.5 border-b-2 flex items-center gap-2 transition-colors whitespace-nowrap cursor-pointer ${
               activeTab === 'media'
                 ? 'border-amber-800 text-amber-900'
                 : 'border-transparent text-slate-500 hover:text-slate-800'
             }`}
           >
             <ImageIcon className="w-4 h-4" />
-            Media & Content
+            Media
           </button>
         </div>
 
@@ -398,7 +445,7 @@ export function ProductFormModal({ isOpen, onClose, onSubmit, initialData, mode 
                 </select>
               </div>
 
-              <div className="space-y-1.5">
+              <div className="space-y-1.5 md:col-span-2">
                 <label className="text-xs font-bold text-slate-700">Tax Code / Category</label>
                 <select
                   value={taxCategory}
@@ -411,6 +458,18 @@ export function ProductFormModal({ isOpen, onClose, onSubmit, initialData, mode 
                   <option value="exempt">Tax Exempt (Gift Cards / Digital)</option>
                 </select>
                 <p className="text-[11px] text-slate-400">Used by checkout & order-service for automated tax rate resolution.</p>
+              </div>
+
+              {/* Rich Text Description moved to first tab */}
+              <div className="md:col-span-2 space-y-2 pt-3 border-t border-slate-100">
+                <label className="text-xs font-bold text-slate-700">
+                  Product Story & Roastery Description (Rich Text)
+                </label>
+                <RichTextEditor
+                  value={description}
+                  onChange={setDescription}
+                  placeholder="Describe bean provenance, roast profile notes, extraction parameters, or equipment capabilities..."
+                />
               </div>
             </div>
           )}
@@ -426,7 +485,8 @@ export function ProductFormModal({ isOpen, onClose, onSubmit, initialData, mode 
                     type="number"
                     step="0.01"
                     value={price}
-                    onChange={(e) => setPrice(parseFloat(e.target.value) || 0)}
+                    onChange={(e) => setPrice(e.target.value === '' ? '' : parseFloat(e.target.value))}
+                    placeholder="0.00"
                     className="w-full pl-8 pr-3.5 py-2.5 rounded-xl border border-slate-300 text-sm focus:outline-hidden focus:ring-2 focus:ring-amber-800/20 focus:border-amber-800 font-bold"
                     required
                   />
@@ -500,6 +560,7 @@ export function ProductFormModal({ isOpen, onClose, onSubmit, initialData, mode 
                     onChange={(e) => setRoastLevel(e.target.value)}
                     className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm focus:outline-hidden focus:ring-2 focus:ring-amber-800/20 focus:border-amber-800 bg-white"
                   >
+                    <option value="">Select Roast Level...</option>
                     <option value="Light">Light (Fruity & Floral)</option>
                     <option value="Medium Light">Medium Light (Balanced Acidity)</option>
                     <option value="Medium">Medium (Sweet & Smooth)</option>
@@ -563,7 +624,7 @@ export function ProductFormModal({ isOpen, onClose, onSubmit, initialData, mode 
                   <button
                     type="button"
                     onClick={handleAddNote}
-                    className="px-4 py-2 bg-amber-800 hover:bg-amber-900 text-white rounded-xl text-xs font-bold transition-colors"
+                    className="px-4 py-2 bg-amber-800 hover:bg-amber-900 text-white rounded-xl text-xs font-bold transition-colors cursor-pointer"
                   >
                     Add Chip
                   </button>
@@ -578,7 +639,7 @@ export function ProductFormModal({ isOpen, onClose, onSubmit, initialData, mode 
                       <button
                         type="button"
                         onClick={() => handleRemoveNote(note)}
-                        className="text-amber-600 hover:text-amber-900"
+                        className="text-amber-600 hover:text-amber-900 cursor-pointer"
                       >
                         <X className="w-3 h-3" />
                       </button>
@@ -604,34 +665,37 @@ export function ProductFormModal({ isOpen, onClose, onSubmit, initialData, mode 
 
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div className="space-y-1.5">
-                  <label className="text-xs font-bold text-slate-700">Width (cm) *</label>
+                  <label className="text-xs font-bold text-slate-700">Width (cm)</label>
                   <input
                     type="number"
                     step="0.1"
                     value={widthCm}
-                    onChange={(e) => setWidthCm(parseFloat(e.target.value) || 0)}
+                    onChange={(e) => setWidthCm(e.target.value === '' ? '' : parseFloat(e.target.value))}
+                    placeholder="0"
                     className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm focus:outline-hidden focus:ring-2 focus:ring-amber-800/20 focus:border-amber-800 font-semibold"
                   />
                 </div>
 
                 <div className="space-y-1.5">
-                  <label className="text-xs font-bold text-slate-700">Height (cm) *</label>
+                  <label className="text-xs font-bold text-slate-700">Height (cm)</label>
                   <input
                     type="number"
                     step="0.1"
                     value={heightCm}
-                    onChange={(e) => setHeightCm(parseFloat(e.target.value) || 0)}
+                    onChange={(e) => setHeightCm(e.target.value === '' ? '' : parseFloat(e.target.value))}
+                    placeholder="0"
                     className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm focus:outline-hidden focus:ring-2 focus:ring-amber-800/20 focus:border-amber-800 font-semibold"
                   />
                 </div>
 
                 <div className="space-y-1.5">
-                  <label className="text-xs font-bold text-slate-700">Depth (cm) *</label>
+                  <label className="text-xs font-bold text-slate-700">Depth (cm)</label>
                   <input
                     type="number"
                     step="0.1"
                     value={depthCm}
-                    onChange={(e) => setDepthCm(parseFloat(e.target.value) || 0)}
+                    onChange={(e) => setDepthCm(e.target.value === '' ? '' : parseFloat(e.target.value))}
+                    placeholder="0"
                     className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm focus:outline-hidden focus:ring-2 focus:ring-amber-800/20 focus:border-amber-800 font-semibold"
                   />
                 </div>
@@ -644,7 +708,7 @@ export function ProductFormModal({ isOpen, onClose, onSubmit, initialData, mode 
                     type="number"
                     step="0.1"
                     value={topClearanceCm}
-                    onChange={(e) => setTopClearanceCm(parseFloat(e.target.value) || 0)}
+                    onChange={(e) => setTopClearanceCm(e.target.value === '' ? '' : parseFloat(e.target.value))}
                     placeholder="For hopper / lid"
                     className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm focus:outline-hidden focus:ring-2 focus:ring-amber-800/20 focus:border-amber-800"
                   />
@@ -656,7 +720,7 @@ export function ProductFormModal({ isOpen, onClose, onSubmit, initialData, mode 
                     type="number"
                     step="0.1"
                     value={sideClearanceCm}
-                    onChange={(e) => setSideClearanceCm(parseFloat(e.target.value) || 0)}
+                    onChange={(e) => setSideClearanceCm(e.target.value === '' ? '' : parseFloat(e.target.value))}
                     placeholder="For ventilation"
                     className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm focus:outline-hidden focus:ring-2 focus:ring-amber-800/20 focus:border-amber-800"
                   />
@@ -668,7 +732,7 @@ export function ProductFormModal({ isOpen, onClose, onSubmit, initialData, mode 
                     type="number"
                     step="0.1"
                     value={rearClearanceCm}
-                    onChange={(e) => setRearClearanceCm(parseFloat(e.target.value) || 0)}
+                    onChange={(e) => setRearClearanceCm(e.target.value === '' ? '' : parseFloat(e.target.value))}
                     placeholder="For airflow / power cables"
                     className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm focus:outline-hidden focus:ring-2 focus:ring-amber-800/20 focus:border-amber-800"
                   />
@@ -681,7 +745,7 @@ export function ProductFormModal({ isOpen, onClose, onSubmit, initialData, mode 
                   <span className="font-bold text-slate-900">Total Vertical Clearance Required: </span>
                   <span className="font-extrabold text-amber-900 text-sm">{totalRequiredHeight.toFixed(1)} cm</span>
                   <span className="text-slate-500 block text-[11px]">
-                    (Base appliance: {heightCm} cm + Top headroom: {topClearanceCm} cm)
+                    (Base appliance: {Number(heightCm) || 0} cm + Top headroom: {Number(topClearanceCm) || 0} cm)
                   </span>
                 </div>
                 <span className={`px-3 py-1 rounded-full font-bold text-[11px] ${
@@ -693,64 +757,14 @@ export function ProductFormModal({ isOpen, onClose, onSubmit, initialData, mode 
             </div>
           )}
 
-          {/* TAB 5: MEDIA & DESCRIPTION */}
+          {/* TAB 5: MEDIA */}
           {activeTab === 'media' && (
-            <div className="space-y-5">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                <div className="space-y-3">
-                  <div className="space-y-1.5">
-                    <label className="text-xs font-bold text-slate-700">High-Res Product Photograph URL</label>
-                    <input
-                      type="url"
-                      value={imageUrl}
-                      onChange={(e) => setImageUrl(e.target.value)}
-                      placeholder="https://images.unsplash.com/..."
-                      className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm focus:outline-hidden focus:ring-2 focus:ring-amber-800/20 focus:border-amber-800"
-                    />
-                  </div>
-
-                  <div className="space-y-1.5">
-                    <label className="text-xs font-bold text-slate-700">Transparent Cutout PNG URL (Optional)</label>
-                    <input
-                      type="url"
-                      value={cutoutUrl}
-                      onChange={(e) => setCutoutUrl(e.target.value)}
-                      placeholder="https://.../cutout.png"
-                      className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm focus:outline-hidden focus:ring-2 focus:ring-amber-800/20 focus:border-amber-800"
-                    />
-                  </div>
-                </div>
-
-                {/* Live Image Preview */}
-                <div className="flex flex-col items-center justify-center p-4 border border-slate-200 rounded-2xl bg-slate-50">
-                  <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-2">Live Photo Preview</span>
-                  {imageUrl ? (
-                    <div className="relative w-40 h-40 rounded-xl overflow-hidden shadow-xs border border-slate-200 bg-white">
-                      <img src={imageUrl} alt="Preview" className="w-full h-full object-cover" />
-                      {badge && (
-                        <span className="absolute top-2 left-2 px-2 py-0.5 bg-amber-400 text-slate-900 text-[9px] font-black rounded-sm tracking-wider">
-                          {badge}
-                        </span>
-                      )}
-                    </div>
-                  ) : (
-                    <div className="w-40 h-40 rounded-xl border-2 border-dashed border-slate-300 flex items-center justify-center text-slate-400 text-xs">
-                      No Image URL
-                    </div>
-                  )}
-                </div>
-              </div>
-
-              <div className="space-y-1.5 pt-2 border-t border-slate-100">
-                <label className="text-xs font-bold text-slate-700">Product Story & Roastery Description</label>
-                <textarea
-                  rows={4}
-                  value={description}
-                  onChange={(e) => setDescription(e.target.value)}
-                  placeholder="Describe bean provenance, roast notes, or machine capabilities..."
-                  className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm focus:outline-hidden focus:ring-2 focus:ring-amber-800/20 focus:border-amber-800 leading-relaxed"
-                />
-              </div>
+            <div className="space-y-4">
+              <MultiImageUpload
+                images={images}
+                onChange={setImages}
+                disabled={submitting}
+              />
             </div>
           )}
 
@@ -758,24 +772,24 @@ export function ProductFormModal({ isOpen, onClose, onSubmit, initialData, mode 
           <div className="pt-4 border-t border-slate-200 flex items-center justify-between">
             <div className="flex items-center gap-2">
               <span className="text-xs text-slate-400">
-                {mode === 'create' ? 'Configuring new SKU' : `SKU: ${sku}`}
+                {mode === 'create' ? 'Adding new product' : `SKU: ${sku}`}
               </span>
             </div>
             <div className="flex items-center gap-3">
               <button
                 type="button"
-                onClick={onClose}
-                className="px-4 py-2.5 rounded-xl border border-slate-300 text-xs font-bold text-slate-700 hover:bg-slate-50 transition-colors"
+                onClick={handleClose}
+                className="px-4 py-2.5 rounded-xl border border-slate-300 text-xs font-bold text-slate-700 hover:bg-slate-50 transition-colors cursor-pointer"
               >
                 Cancel
               </button>
               <button
                 type="submit"
                 disabled={submitting}
-                className="px-6 py-2.5 rounded-xl bg-amber-800 hover:bg-amber-900 text-white text-xs font-bold transition-all shadow-sm flex items-center gap-2 disabled:opacity-50"
+                className="px-6 py-2.5 rounded-xl bg-amber-800 hover:bg-amber-900 text-white text-xs font-bold transition-all shadow-sm flex items-center gap-2 disabled:opacity-50 cursor-pointer"
               >
                 <Check className="w-4 h-4" />
-                {submitting ? 'Saving...' : mode === 'create' ? 'Create Product' : 'Save Changes'}
+                {submitting ? 'Saving...' : mode === 'create' ? 'Add Product' : 'Save Changes'}
               </button>
             </div>
           </div>

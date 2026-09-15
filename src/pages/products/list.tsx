@@ -248,10 +248,10 @@ export function ProductList() {
             <button
               type="button"
               onClick={openCreateModal}
-              className="w-full sm:w-auto px-4 py-2.5 bg-amber-800 hover:bg-amber-900 text-white rounded-xl text-xs font-bold transition-all shadow-sm flex items-center justify-center gap-2"
+              className="w-full sm:w-auto px-4 py-2.5 bg-amber-800 hover:bg-amber-900 text-white rounded-xl text-xs font-bold transition-all shadow-sm flex items-center justify-center gap-2 cursor-pointer"
             >
               <Plus className="w-4 h-4" />
-              Configure New Product
+              Add Product
             </button>
           </div>
         </div>
@@ -529,14 +529,19 @@ export function ProductList() {
         </div>
       </div>
 
-      {/* Configuration Modal */}
-      <ProductFormModal
-        isOpen={modalOpen}
-        mode={modalMode}
-        initialData={selectedProduct}
-        onClose={() => setModalOpen(false)}
-        onSubmit={modalMode === 'create' ? handleCreateProduct : handleUpdateProduct}
-      />
+      {/* Product Form Modal */}
+      {modalOpen && (
+        <ProductFormModal
+          isOpen={modalOpen}
+          mode={modalMode}
+          initialData={selectedProduct}
+          onClose={() => {
+            setModalOpen(false);
+            setSelectedProduct(null);
+          }}
+          onSubmit={modalMode === 'create' ? handleCreateProduct : handleUpdateProduct}
+        />
+      )}
     </div>
   );
 }
